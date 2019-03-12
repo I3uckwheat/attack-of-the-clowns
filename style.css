@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+  padding:0;
+}
+
+#game {
+  background-image: url('https://svgshare.com/i/Biy.svg');
+  border: 1px solid black;
+}
+
+.player {
+	position: absolute;
+  background: red;
+  z-index: 500;
+}
+
+.ground {
+	position: absolute;
+	background: black;
+}
+
+.pole {
+  background-image: linear-gradient(to right, black, grey);
+  z-index: 600;
+  position: absolute;
+}
+
+.box {
+	background: green;
+  position: absolute;
+}
+
+
+
