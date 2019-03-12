@@ -130,7 +130,7 @@ function update() {
     if (player.x + player.width < world.ground.width - 150) {
       player.x += 9;
     } else {
-      world.dirt.orientation -= 1;
+      world.dirt.orientation -= 0.4;
     }
   }  
   if (right === 1) {
@@ -138,7 +138,7 @@ function update() {
     if (player.x > 0 + 150) {
       player.x -= 9;
     } else {
-      world.dirt.orientation += 1;
+      world.dirt.orientation += 0.4;
     }
   }
   if (up === 1) {

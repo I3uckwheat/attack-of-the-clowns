@@ -25,8 +25,7 @@ body {
   border-radius: 100%;
   width: 2960px;
   height: 2960px;
-  background: brown;
-  background: repeating-linear-gradient(#e66465, #e66465 20px, #9198e5 20px, #9198e5 25px);
+  background-image: url("ground.jpg");
   left: -1000px;
   top: 340px;
   z-index: -1;
