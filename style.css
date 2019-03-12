@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding:0;
+  overflow: hidden;
 }
 
 #game {
@@ -19,6 +20,18 @@ body {
 	background: black;
 }
 
+.dirt {
+  position: absolute;
+  border-radius: 100%;
+  width: 2960px;
+  height: 2960px;
+  background: brown;
+  background: repeating-linear-gradient(#e66465, #e66465 20px, #9198e5 20px, #9198e5 25px);
+  left: -1000px;
+  top: 340px;
+  z-index: -1;
+}
+
 .pole {
   background-image: linear-gradient(to right, black, grey);
   z-index: 600;
@@ -30,5 +43,10 @@ body {
   position: absolute;
 }
 
-
+#curtian {
+  background: white;
+  height: 2000px;
+  width: 2000px;
+  z-index: 200;
+}
 

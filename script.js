@@ -26,6 +26,14 @@ const world = {
     element: document.createElement('div'),
     width: 30,
   },
+  dirt: {
+    element: document.createElement('div'),
+    x: 640,
+    y: 0,
+    width: 960,
+    height: 960,
+    orientation: 0
+  },
   box: {
     element: document.createElement('div'),
     width: 160,
@@ -64,6 +72,10 @@ function initalize() {
   world.pole.element.style.height = world.ground.y + 'px';
   world.pole.element.style.left = (world.ground.width)/2 + 'px';
   gameField.appendChild(world.pole.element);
+
+  // Sets up dirt
+  world.dirt.element.classList.add('dirt');
+  gameField.appendChild(world.dirt.element);
 
   // Set up box
   world.box.element.classList.add('box');
@@ -115,14 +127,18 @@ function update() {
   // update player
   if (left === 1) {
     // stop on right edge of world 
-    if (player.x + player.width < world.ground.width) {
+    if (player.x + player.width < world.ground.width - 150) {
       player.x += 9;
+    } else {
+      world.dirt.orientation -= 1;
     }
   }  
   if (right === 1) {
     // stop on left edge of world 
-    if (player.x > 0) {
+    if (player.x > 0 + 150) {
       player.x -= 9;
+    } else {
+      world.dirt.orientation += 1;
     }
   }
   if (up === 1) {
@@ -165,6 +181,8 @@ function update() {
 function draw() {
   player.element.style.left = player.x + 'px';
   player.element.style.top = player.y + player.stats.jumpOffset + 'px';
+
+  world.dirt.element.style.transform = `rotate(${world.dirt.orientation}deg)`;
 }
 
 initalize();
