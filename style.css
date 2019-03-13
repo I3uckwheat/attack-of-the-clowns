@@ -21,13 +21,13 @@ body {
 
 .ring {
   position: absolute;
-  background-image: url("big_ring.svg");
+  background-image: url("big_ring.gif");
   z-index: -1;
 }
 
 .tent {
   position: absolute;
-  background-image: url("tent_top.svg");
+  background-image: url("tent_top.gif");
   z-index: -2;
 }
 
