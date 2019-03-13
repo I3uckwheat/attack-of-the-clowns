@@ -22,7 +22,7 @@ body {
 .dirt {
   position: absolute;
   border-radius: 100%;
-  background-image: url("bigRing.png");
+  background-image: url("big_ring.svg");
   background-size: cover;
   z-index: -1;
 }
