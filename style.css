@@ -5,7 +5,6 @@ body {
 }
 
 #game {
-  background-image: url('https://svgshare.com/i/Biy.svg');
   border: 1px solid black;
 }
 
@@ -23,7 +22,8 @@ body {
 .dirt {
   position: absolute;
   border-radius: 100%;
-  background-image: url("ground.jpg");
+  background-image: url("bigRing.png");
+  background-size: cover;
   z-index: -1;
 }
 

@@ -70,10 +70,10 @@ const gameField = document.querySelector('#game');
 
 const dirt = {
   cssClass: 'dirt',
-  x: -1510,
-  y: 360,
-  width: 4000,
-  height: 4000,
+  x: -2065,
+  y: 100,
+  width: 5000,
+  height: 5000,
   orientation: 0,
 }
 
