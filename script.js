@@ -1,56 +1,98 @@
+class World {
+  constructor(gameField, backgroundElement) {
+    this.width = 960;
+    this.height = 640;
+
+    this.background = backgroundElement;
+
+    this.playFieldObjects = [];
+    
+    // Sets up gamefield 
+    this.gameField = gameField;
+    this.gameField.style.height = this.height + 'px';
+    this.gameField.style.width =  this.width + 'px';
+
+    this.initBackground();
+  }
+
+  initBackground() {
+    this.background.element = document.createElement('div');
+    this.background.element.classList.add(this.background.cssClass);
+    this.background.element.style.width = this.background.height + 'px';
+    this.background.element.style.height = this.background.width + 'px';
+    this.background.element.style.top = this.background.y + 'px';
+    this.background.element.style.left = this.background.x + 'px';
+    this.gameField.appendChild(this.background.element);
+  }
+
+  update(speed) {
+    // TODO - handle wrapping 
+    // maybe make the `x` variable passed in a degree measurement for the circle?
+    this.background.orientation += speed;
+    this.playFieldObjects.forEach(object => {
+      object.x += speed * 13;
+    });
+  }
+
+  draw() {
+    this.background.element.style.transform = `rotate(${this.background.orientation}deg)`;
+    this.playFieldObjects.forEach(object => {
+      object.element.classList.add(object.cssClass);
+      object.element.style.left = object.x + 'px';
+      object.element.style.top = object.y + 'px';
+      object.element.style.height = object.height + 'px';
+      object.element.style.width = object.width + 'px';
+    });
+  }
+
+  // Register an object to be tracked by the world
+  registerDynamic(object) {
+    object.element = document.createElement('div');
+    object.element.classList.add(object.element.cssClass);
+    gameField.appendChild(object.element);
+    this.playFieldObjects.push(object);
+  }
+  
+  // Objects that do not move
+  registerStatic(object) {
+    object.element = document.createElement('div');
+    object.element.classList.add(object.cssClass);
+    object.element.style.left = object.x + 'px';
+    object.element.style.top = object.y + 'px';
+    object.element.style.height = object.height + 'px';
+    object.element.style.width = object.width + 'px';
+
+    gameField.appendChild(object.element);
+  }
+}
+
 const gameField = document.querySelector('#game');
+
+const dirt = {
+  cssClass: 'dirt',
+  x: -1510,
+  y: 360,
+  width: 4000,
+  height: 4000,
+  orientation: 0,
+}
+
 const player = {
   x: 100,
   y: 400,
   width: 70,
   height: 100,
   velocity: 0,
+  mass: .4,
   maxJump: 2,
   element: document.createElement('div'),
-  stats : {
+  stats: {
     jumpCount: 0,
     jumpOffset: 0
   }
 };
 
-const world = {
-  gravity: .4,
-  objects: {
-    ground: {
-      x: 0,
-      y: 640,
-      height: 5,
-      width: 960,
-      element: document.createElement('div'),
-      cssClass: 'ground'
-    },
-    pole: {
-      element: document.createElement('div'),
-      x: 450, 
-      y: 0,
-      width: 30,
-      height: 640,
-      cssClass: 'pole'
-    },
-    dirt: {
-      element: document.createElement('div'),
-      x: -1510,
-      y: 360,
-      width: 4000,
-      height: 4000,
-      orientation: 0,
-      cssClass: 'dirt'
-    },
-    box: {
-      element: document.createElement('div'),
-      x: 600,
-      y: 450,
-      width: 160,
-      height: 140,
-      cssClass: 'box'
-    }
-  }
-}
+const world = new World(gameField, dirt);
 
 let left = 0;
 let right = 0;
@@ -60,25 +102,29 @@ let jump = 0;
 
 
 function initalize() {
-  // Sets up gamefield 
-  gameField.style.height = world.objects.ground.y + 'px';
-  gameField.style.width= world.objects.ground.width + 'px';
-
   // sets up player
   player.element.classList.add('player');
   player.element.style.height = player.height + 'px';
   player.element.style.width = player.width + 'px';
   gameField.appendChild(player.element);
-
+  
   // sets up world
-  Object.values(world.objects).forEach(worldObject => {
-    worldObject.element.classList.add(worldObject.cssClass);
-    worldObject.element.style.top = worldObject.y + 'px';
-    worldObject.element.style.left = worldObject.x + 'px';
-    worldObject.element.style.width = worldObject.width + 'px';
-    worldObject.element.style.height = worldObject.height + 'px';
-    gameField.appendChild(worldObject.element);
+  world.registerStatic({
+   cssClass: 'pole',
+   x: 450, 
+   y: 0,
+   width: 30,
+   height: 640
   });
+
+  world.registerDynamic({
+    cssClass: 'box',
+    x: 600,
+    y: 450,
+    width: 160,
+    height: 140
+  });
+
   
   // sets up movement
   document.addEventListener('keydown', event => {
@@ -122,10 +168,10 @@ function update() {
   // update player
   if (left === 1) {
     // stop on right edge of world 
-    if (player.x + player.width < world.objects.ground.width - 150) {
+    if (player.x + player.width < world.width - 150) {
       player.x += 9;
     } else {
-      world.objects.dirt.orientation -= 0.4;
+      world.update(-.4);
     }
   }  
   if (right === 1) {
@@ -133,7 +179,7 @@ function update() {
     if (player.x > 0 + 150) {
       player.x -= 9;
     } else {
-      world.objects.dirt.orientation += 0.4;
+      world.update(.4);
     }
   }
   if (up === 1) {
@@ -142,8 +188,9 @@ function update() {
     }
   }
   if (down === 1) {
-    if (player.y + player.height < world.objects.ground.y)
+    if (player.y + player.height < world.height) {
       player.y += 9;
+    }
   }
 
   if (jump === 1) {
@@ -152,24 +199,20 @@ function update() {
 
     // only jump if maxJump hasn't been reached
     if (player.stats.jumpCount <= player.maxJump){
-      player.velocity -= 10; 
+       player.velocity -= 10; 
     }
   }
 
-  if (player.stats.jumpOffset > 0) {
-    player.stats.jumpOffset -= player.velocity;	
-  }
-
-  player.stats.jumpOffset += player.velocity;
+   player.stats.jumpOffset += player.velocity;
 
   // reset jumpCount, so you can jump again
   // TODO - terminal velocity
   if(player.stats.jumpOffset > 0) {
     player.velocity = 0;
-    player.stats.jumpOffset = 0;
+    // player.stats.jumpOffset = 0;
     player.stats.jumpCount = 0;
   } else {
-    player.velocity += world.gravity;
+    player.velocity += player.mass;
   }
 }
 
@@ -177,7 +220,7 @@ function draw() {
   player.element.style.left = player.x + 'px';
   player.element.style.top = player.y + player.stats.jumpOffset + 'px';
 
-  world.objects.dirt.element.style.transform = `rotate(${world.objects.dirt.orientation}deg)`;
+  world.draw();
 }
 
 initalize();
