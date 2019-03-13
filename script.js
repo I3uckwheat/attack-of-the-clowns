@@ -1,7 +1,9 @@
 class World {
-  constructor(gameField, backgroundElement) {
+  constructor(gameField, backgroundElement, ceilingElement) {
     this.width = 960;
     this.height = 640;
+
+    this.ceiling = ceilingElement;
 
     this.background = backgroundElement;
 
@@ -13,6 +15,7 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.initBackground();
+    this.initCeiling();
   }
 
   initBackground() {
@@ -25,10 +28,22 @@ class World {
     this.gameField.appendChild(this.background.element);
   }
 
+  initCeiling() {
+    this.ceiling.element = document.createElement('div');
+    this.ceiling.element.classList.add(this.ceiling.cssClass);
+    this.ceiling.element.style.width = this.ceiling.height + 'px';
+    this.ceiling.element.style.height = this.ceiling.width + 'px';
+    this.ceiling.element.style.top = this.ceiling.y + 'px';
+    this.ceiling.element.style.left = this.ceiling.x + 'px';
+    this.gameField.appendChild(this.ceiling.element);
+  }
+
   update(speed) {
     // TODO - handle wrapping 
     // maybe make the `x` variable passed in a degree measurement for the circle?
     this.background.orientation += speed;
+    this.ceiling.orientation -= speed;
+
     this.playFieldObjects.forEach(object => {
       object.x += speed * 13;
     });
@@ -36,6 +51,8 @@ class World {
 
   draw() {
     this.background.element.style.transform = `rotate(${this.background.orientation}deg)`;
+    this.ceiling.element.style.transform = `rotate(${this.ceiling.orientation}deg)`;
+
     this.playFieldObjects.forEach(object => {
       object.element.classList.add(object.cssClass);
       object.element.style.left = object.x + 'px';
@@ -68,12 +85,21 @@ class World {
 
 const gameField = document.querySelector('#game');
 
-const dirt = {
-  cssClass: 'dirt',
+const background = {
+  cssClass: 'ring',
   x: -2065,
   y: 100,
   width: 5000,
   height: 5000,
+  orientation: 0,
+}
+
+const ceiling = {
+  cssClass: 'tent',
+  x: -785,
+  y: -2000,
+  width: 2500,
+  height: 2500,
   orientation: 0,
 }
 
@@ -92,7 +118,7 @@ const player = {
   }
 };
 
-const world = new World(gameField, dirt);
+const world = new World(gameField, background, ceiling);
 
 let left = 0;
 let right = 0;
