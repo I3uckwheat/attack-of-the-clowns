@@ -237,11 +237,13 @@ function update() {
   if (up === 1) {
     if (player.y > 350) {
       player.y -= 9;
+      player.element.style.height = parseInt(player.element.style.height) - 2 +'px';
     }
   }
   if (down === 1) {
     if (player.y + player.height < world.height) {
       player.y += 9;
+      player.element.style.height = parseInt(player.element.style.height) + 2 +'px';
     }
   }
 
