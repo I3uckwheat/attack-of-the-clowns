@@ -45,7 +45,7 @@ class World {
     this.ceiling.orientation -= speed;
 
     this.playFieldObjects.forEach(object => {
-      object.x += speed * 13;
+      object.x += speed * 50;
     });
   }
 
@@ -197,7 +197,7 @@ function update() {
     if (player.x + player.width < world.width - 150) {
       player.x += 9;
     } else {
-      world.update(-.4);
+      world.update(-.1);
     }
   }  
   if (right === 1) {
@@ -205,7 +205,7 @@ function update() {
     if (player.x > 0 + 150) {
       player.x -= 9;
     } else {
-      world.update(.4);
+      world.update(.1);
     }
   }
   if (up === 1) {
