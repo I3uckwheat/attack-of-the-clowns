@@ -148,7 +148,7 @@ function initalize() {
     x: 600,
     y: 450,
     width: 208,
-    height: 158
+    height: 108
   });
 
   
