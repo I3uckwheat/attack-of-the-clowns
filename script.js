@@ -45,7 +45,24 @@ class World {
     this.ceiling.orientation -= speed;
 
     this.playFieldObjects.forEach(object => {
+
+      let objectLocation = parseInt(object.element.style.left)
       object.x += speed * 50;
+
+      // Only adjust y axis if inside view 
+      if(objectLocation > -235 && objectLocation < 970){
+        if (objectLocation >= 360){
+          object.y += speed * 5;
+          //Keep aspect ratio
+          object.width += speed * (object.width/50);
+          object.height += speed * (object.height/50);
+
+        } else {
+          object.y -= speed * 5;
+          object.width -= speed * (object.width/50);
+          object.height -= speed * (object.height/50);
+        }
+      }
     });
   }
 
@@ -57,6 +74,7 @@ class World {
       object.element.classList.add(object.cssClass);
       object.element.style.left = object.x + 'px';
       object.element.style.top = object.y + 'px';
+      //TODO for depth adjust the height and width to account for the y-value they are initially placed on. 
       object.element.style.height = object.height + 'px';
       object.element.style.width = object.width + 'px';
     });
@@ -147,6 +165,14 @@ function initalize() {
     cssClass: 'box',
     x: 600,
     y: 450,
+    width: 218,
+    height: 108
+  });
+
+  world.registerDynamic({
+    cssClass: 'box',
+    x: -2000,
+    y: 550,
     width: 218,
     height: 108
   });

@@ -40,7 +40,8 @@ body {
 .box {
   background-image: url("barrel.svg");
   position: absolute;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 #curtian {
