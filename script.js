@@ -1,7 +1,7 @@
 const gameField = document.querySelector('#game');
 const player = {
-  x: 0,
-  y: 200,
+  x: 100,
+  y: 400,
   width: 70,
   height: 100,
   velocity: 0,
@@ -15,29 +15,40 @@ const player = {
 
 const world = {
   gravity: .4,
-  ground: {
-    x: 0,
-    y: 640,
-    height: 5,
-    width: 960,
-    element: document.createElement('div'),
-  },
-  pole: {
-    element: document.createElement('div'),
-    width: 30,
-  },
-  dirt: {
-    element: document.createElement('div'),
-    x: 640,
-    y: 0,
-    width: 960,
-    height: 960,
-    orientation: 0
-  },
-  box: {
-    element: document.createElement('div'),
-    width: 160,
-    height: 140
+  objects: {
+    ground: {
+      x: 0,
+      y: 640,
+      height: 5,
+      width: 960,
+      element: document.createElement('div'),
+      cssClass: 'ground'
+    },
+    pole: {
+      element: document.createElement('div'),
+      x: 450, 
+      y: 0,
+      width: 30,
+      height: 640,
+      cssClass: 'pole'
+    },
+    dirt: {
+      element: document.createElement('div'),
+      x: -1510,
+      y: 360,
+      width: 4000,
+      height: 4000,
+      orientation: 0,
+      cssClass: 'dirt'
+    },
+    box: {
+      element: document.createElement('div'),
+      x: 600,
+      y: 450,
+      width: 160,
+      height: 140,
+      cssClass: 'box'
+    }
   }
 }
 
@@ -50,8 +61,8 @@ let jump = 0;
 
 function initalize() {
   // Sets up gamefield 
-  gameField.style.height = world.ground.y + 'px';
-  gameField.style.width= world.ground.width + 'px';
+  gameField.style.height = world.objects.ground.y + 'px';
+  gameField.style.width= world.objects.ground.width + 'px';
 
   // sets up player
   player.element.classList.add('player');
@@ -59,32 +70,16 @@ function initalize() {
   player.element.style.width = player.width + 'px';
   gameField.appendChild(player.element);
 
-  // Sets up ground
-  world.ground.element.classList.add('ground');
-  world.ground.element.style.top = world.ground.y + 'px';
-  world.ground.element.style.height = world.ground.height + 'px';
-  world.ground.element.style.width = world.ground.width + 'px';
-  gameField.appendChild(world.ground.element);
-
-  // Sets up pole
-  world.pole.element.classList.add('pole');
-  world.pole.element.style.width = world.pole.width + 'px';
-  world.pole.element.style.height = world.ground.y + 'px';
-  world.pole.element.style.left = (world.ground.width)/2 + 'px';
-  gameField.appendChild(world.pole.element);
-
-  // Sets up dirt
-  world.dirt.element.classList.add('dirt');
-  gameField.appendChild(world.dirt.element);
-
-  // Set up box
-  world.box.element.classList.add('box');
-  world.box.element.style.width = world.box.width + 'px';
-  world.box.element.style.height = world.box.height + 'px';
-  world.box.element.style.top = world.ground.y - world.box.height + 'px';
-  world.box.element.style.left = 700 + 'px';
-  gameField.appendChild(world.box.element);
-
+  // sets up world
+  Object.values(world.objects).forEach(worldObject => {
+    worldObject.element.classList.add(worldObject.cssClass);
+    worldObject.element.style.top = worldObject.y + 'px';
+    worldObject.element.style.left = worldObject.x + 'px';
+    worldObject.element.style.width = worldObject.width + 'px';
+    worldObject.element.style.height = worldObject.height + 'px';
+    gameField.appendChild(worldObject.element);
+  });
+  
   // sets up movement
   document.addEventListener('keydown', event => {
     if (event.code === 'KeyD') {
@@ -127,10 +122,10 @@ function update() {
   // update player
   if (left === 1) {
     // stop on right edge of world 
-    if (player.x + player.width < world.ground.width - 150) {
+    if (player.x + player.width < world.objects.ground.width - 150) {
       player.x += 9;
     } else {
-      world.dirt.orientation -= 0.4;
+      world.objects.dirt.orientation -= 0.4;
     }
   }  
   if (right === 1) {
@@ -138,7 +133,7 @@ function update() {
     if (player.x > 0 + 150) {
       player.x -= 9;
     } else {
-      world.dirt.orientation += 0.4;
+      world.objects.dirt.orientation += 0.4;
     }
   }
   if (up === 1) {
@@ -147,7 +142,7 @@ function update() {
     }
   }
   if (down === 1) {
-    if (player.y + player.height < world.ground.y)
+    if (player.y + player.height < world.objects.ground.y)
       player.y += 9;
   }
 
@@ -182,7 +177,7 @@ function draw() {
   player.element.style.left = player.x + 'px';
   player.element.style.top = player.y + player.stats.jumpOffset + 'px';
 
-  world.dirt.element.style.transform = `rotate(${world.dirt.orientation}deg)`;
+  world.objects.dirt.element.style.transform = `rotate(${world.objects.dirt.orientation}deg)`;
 }
 
 initalize();

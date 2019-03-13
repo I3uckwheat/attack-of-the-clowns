@@ -23,11 +23,7 @@ body {
 .dirt {
   position: absolute;
   border-radius: 100%;
-  width: 2960px;
-  height: 2960px;
   background-image: url("ground.jpg");
-  left: -1000px;
-  top: 340px;
   z-index: -1;
 }
 
