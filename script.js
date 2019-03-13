@@ -57,12 +57,16 @@ class World {
           object.width += speed * (object.width/50);
           object.height += speed * (object.height/50);
 
+
         } else {
           object.y -= speed * 5;
           object.width -= speed * (object.width/50);
           object.height -= speed * (object.height/50);
         }
+        object.element.style.zIndex = object.y;
+
       }
+      
     });
   }
 
@@ -77,6 +81,7 @@ class World {
       //TODO for depth adjust the height and width to account for the y-value they are initially placed on. 
       object.element.style.height = object.height + 'px';
       object.element.style.width = object.width + 'px';
+      object.element.style.zIndex = object.y;
     });
   }
 
@@ -150,6 +155,8 @@ function initalize() {
   player.element.classList.add('player');
   player.element.style.height = player.height + 'px';
   player.element.style.width = player.width + 'px';
+  player.element.style.zIndex = player.y;
+
   gameField.appendChild(player.element);
   
   // sets up world
@@ -236,12 +243,14 @@ function update() {
   }
   if (up === 1) {
     if (player.y > 350) {
+      player.element.style.zIndex = player.y;
       player.y -= 9;
       player.element.style.height = parseInt(player.element.style.height) - 2 +'px';
     }
   }
   if (down === 1) {
     if (player.y + player.height < world.height) {
+      player.element.style.zIndex = player.y;
       player.y += 9;
       player.element.style.height = parseInt(player.element.style.height) + 2 +'px';
     }
