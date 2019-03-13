@@ -38,8 +38,9 @@ body {
 }
 
 .box {
-	background: green;
+  background-image: url("barrel.svg");
   position: absolute;
+  background-size: cover;
 }
 
 #curtian {

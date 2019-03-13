@@ -147,8 +147,8 @@ function initalize() {
     cssClass: 'box',
     x: 600,
     y: 450,
-    width: 160,
-    height: 140
+    width: 208,
+    height: 158
   });
 
   
