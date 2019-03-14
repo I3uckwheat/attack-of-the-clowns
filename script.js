@@ -129,8 +129,8 @@ const ceiling = {
 const player = {
   x: 100,
   y: 400,
-  width: 70,
-  height: 100,
+  width: 32,
+  height: 64,
   velocity: 0,
   mass: .4,
   maxJump: 2,
