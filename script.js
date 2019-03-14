@@ -53,15 +53,10 @@ class World {
       if(objectLocation > -235 && objectLocation < 970){
         if (objectLocation >= 360){
           object.y += speed * 5;
-          //Keep aspect ratio
-          object.width += speed * (object.width/50);
-          object.height += speed * (object.height/50);
-
 
         } else {
           object.y -= speed * 5;
-          object.width -= speed * (object.width/50);
-          object.height -= speed * (object.height/50);
+
         }
         object.element.style.zIndex = object.y;
 
@@ -78,7 +73,6 @@ class World {
       object.element.classList.add(object.cssClass);
       object.element.style.left = object.x + 'px';
       object.element.style.top = object.y + 'px';
-      //TODO for depth adjust the height and width to account for the y-value they are initially placed on. 
       object.element.style.height = object.height + 'px';
       object.element.style.width = object.width + 'px';
       object.element.style.zIndex = object.y;
@@ -245,14 +239,12 @@ function update() {
     if (player.y > 350) {
       player.element.style.zIndex = player.y;
       player.y -= 9;
-      player.element.style.height = parseInt(player.element.style.height) - 2 +'px';
     }
   }
   if (down === 1) {
     if (player.y + player.height < world.height) {
       player.element.style.zIndex = player.y;
       player.y += 9;
-      player.element.style.height = parseInt(player.element.style.height) + 2 +'px';
     }
   }
 

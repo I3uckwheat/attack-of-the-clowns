@@ -10,8 +10,23 @@ body {
 
 .player {
 	position: absolute;
-  background: red;
+  background: url("clownWalk.png") left center;
   z-index: 500;
+  animation: walk .7s steps(5, end) infinite;
+  background-size: cover;
+}
+
+.walking-right {
+  animation: walk 0.8s steps(5, end) infinite;
+  transform: scaleX(-1);
+}
+
+.walking-left {
+  animation: walk 0.8s steps(5, end) infinite;
+}
+
+@keyframes walk {
+  100% { background-position: -160px; }
 }
 
 .ground {
