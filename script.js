@@ -201,9 +201,11 @@ function initalize() {
   document.addEventListener('keyup', event => {
     if (event.code === 'KeyD') {
       left = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'KeyA') {
       right = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'KeyW') {
       up = 0;
@@ -220,6 +222,7 @@ function initalize() {
 function update() {
   // update player
   if (left === 1) {
+    player.element.classList.add('walking', 'facing-left')
     // stop on right edge of world 
     if (player.x + player.width < world.width - 150) {
       player.x += 9;
@@ -228,6 +231,9 @@ function update() {
     }
   }  
   if (right === 1) {
+    player.element.classList.add('walking')
+    player.element.classList.remove('facing-left')
+
     // stop on left edge of world 
     if (player.x > 0 + 150) {
       player.x -= 9;

@@ -12,17 +12,14 @@ body {
 	position: absolute;
   background: url("clownWalk.png") left center;
   z-index: 500;
-  animation: walk .7s steps(5, end) infinite;
-  background-size: cover;
 }
 
-.walking-right {
+.walking {
   animation: walk 0.8s steps(5, end) infinite;
+}
+
+.facing-left {
   transform: scaleX(-1);
-}
-
-.walking-left {
-  animation: walk 0.8s steps(5, end) infinite;
 }
 
 @keyframes walk {
