@@ -82,7 +82,7 @@ const background = {
       element: document.getElementById('ring'),
       position: 0,
       speed: .2,
-      reset: 20.9,
+      reset: 10.4,
     },
     pole: {
       element: document.getElementById('pole'),
@@ -94,7 +94,7 @@ const background = {
       element: document.getElementById('ceiling'),
       position: 0,
       speed: -.02,
-      reset: 19.25,
+      reset: -19.25,
     },
     crowd: {
       element: document.getElementById('crowd'),
