@@ -62,8 +62,8 @@ const gameField = document.querySelector('#game');
 const player = {
   x: 100,
   y: 400,
-  width: 32,
-  height: 64,
+  width: 200,
+  height: 200,
   velocity: 0,
   mass: .4,
   maxJump: 2,
