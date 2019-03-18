@@ -1,6 +1,6 @@
 # Attack of the Clowns
 
-https://i3uckwheat.github.io/attack-of-the-clowns/
+https://morrowdavidson.github.io/attack-of-the-clowns/
 
 Attack of the Clowns is an in-browser game written using vanilla JavaScript. This game was created as part of the [Roll the Dice Game Jam](https://itch.io/jam/roll-the-dice-game-jam). The rules for this game jam are as follows:
 
