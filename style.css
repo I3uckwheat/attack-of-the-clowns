@@ -10,31 +10,14 @@ body {
 }
 
 .player {
-	position: absolute;
+  position: absolute;
   background: red;
   z-index: 500;
 }
 
-.ground {
-	position: absolute;
-	background: black;
-}
-
-.dirt {
-  position: absolute;
-  border-radius: 100%;
-  background-image: url("ground.jpg");
-  z-index: -1;
-}
-
-.pole {
-  background-image: linear-gradient(to right, black, grey);
-  z-index: 600;
-  position: absolute;
-}
 
 .box {
-	background: green;
+  background: green;
   position: absolute;
 }
 
@@ -45,3 +28,46 @@ body {
   z-index: 200;
 }
 
+#ring {
+  height: 711px;
+  width: 2595px;
+  position:absolute;
+  left: -800px;
+  top: 260px;
+  transform: rotate(10.1deg);
+  transform-origin: 50% 2500px;
+  background-image:url(https://svgshare.com/i/Bp4.svg);
+}
+
+#crowd {
+  background-image:url("https://i.ibb.co/893FMDL/crows.png");
+  width: 4000px;
+  height: 4000px;
+  position: absolute;
+  top: 40px;
+  left: -1520px;
+  background-position: 0px 0px;
+  border-radius: 4000px;
+}
+
+#ceiling {
+  height: 604.79px;
+  width: 1209.58px;
+  position:absolute;
+  left: -120px;
+  top: -260px;
+  transform-origin: 50% 0%;
+  background-image:url(https://svgshare.com/i/Bqd.svg);
+}
+
+#pole
+{
+  width: 30px;
+  height: 640px;
+  padding: 0px;
+  margin-right: 465px;
+  margin-left:465px;
+  z-index: 200;
+  position:absolute;
+  background-image: url('https://svgshare.com/i/Bqo.svg')
+}
