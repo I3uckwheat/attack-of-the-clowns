@@ -3,6 +3,8 @@ class World {
     this.width = 960;
     this.height = 640;
 
+    this.playFieldObjects = [];
+
     // Sets up gamefield 
     this.gameField = gameField;
     this.gameField.style.height = this.height + 'px';
@@ -15,7 +17,23 @@ class World {
     // TODO - handle wrapping 
     // maybe make the `x` variable passed in a degree measurement for the circle?
     this.playFieldObjects.forEach(object => {
-      object.x += speed * 13;
+
+      let objectLocation = parseInt(object.element.style.left)
+      object.x += speed * 50;
+
+      // Only adjust y axis if inside view 
+      if(objectLocation > -235 && objectLocation < 970){
+        if (objectLocation >= 360){
+          object.y += speed * 5;
+
+        } else {
+          object.y -= speed * 5;
+
+        }
+        object.element.style.zIndex = object.y;
+
+      }
+
     });
   }
 
@@ -26,6 +44,7 @@ class World {
       object.element.style.top = object.y + 'px';
       object.element.style.height = object.height + 'px';
       object.element.style.width = object.width + 'px';
+      object.element.style.zIndex = object.y;
     });
   }
 
@@ -43,8 +62,8 @@ const gameField = document.querySelector('#game');
 const player = {
   x: 100,
   y: 400,
-  width: 70,
-  height: 100,
+  width: 32,
+  height: 64,
   velocity: 0,
   mass: .4,
   maxJump: 2,
@@ -102,7 +121,6 @@ const background = {
   }
 }
 
-
 let left = 0;
 let right = 0;
 let up = 0;
@@ -115,16 +133,17 @@ function initalize() {
   player.element.classList.add('player');
   player.element.style.height = player.height + 'px';
   player.element.style.width = player.width + 'px';
+  player.element.style.zIndex = player.y;
+
   gameField.appendChild(player.element);
   
   world.register({
     cssClass: 'box',
     x: 600,
     y: 450,
-    width: 160,
-    height: 140
+    width: 218,
+    height: 108
   });
-
   
   // sets up movement
   document.addEventListener('keydown', event => {
@@ -148,9 +167,11 @@ function initalize() {
   document.addEventListener('keyup', event => {
     if (event.code === 'KeyD') {
       left = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'KeyA') {
       right = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'KeyW') {
       up = 0;
@@ -167,30 +188,36 @@ function initalize() {
 function update() {
   // update player
   if (left === 1) {
+    player.element.classList.add('walking', 'facing-left')
     // stop on right edge of world 
     if (player.x + player.width < world.width - 150) {
       player.x += 9;
     } else {
-      world.update(-.4);
+      world.update(-.1);
       background.left();
     }
   }  
   if (right === 1) {
+    player.element.classList.add('walking')
+    player.element.classList.remove('facing-left')
+
     // stop on left edge of world 
     if (player.x > 0 + 150) {
       player.x -= 9;
     } else {
-      world.update(.4);
+      world.update(.1);
       background.right();
     }
   }
   if (up === 1) {
     if (player.y > 350) {
+      player.element.style.zIndex = player.y;
       player.y -= 9;
     }
   }
   if (down === 1) {
     if (player.y + player.height < world.height) {
+      player.element.style.zIndex = player.y;
       player.y += 9;
     }
   }

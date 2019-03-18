@@ -5,20 +5,55 @@ body {
 }
 
 #game {
-  background-image: url('https://svgshare.com/i/Biy.svg');
   border: 1px solid black;
 }
 
 .player {
-  position: absolute;
-  background: red;
+	position: absolute;
+  background: url("clownWalk.png") left center;
   z-index: 500;
 }
 
+.walking {
+  animation: walk 0.8s steps(5, end) infinite;
+}
+
+.facing-left {
+  transform: scaleX(-1);
+}
+
+@keyframes walk {
+  100% { background-position: -160px; }
+}
+
+.ground {
+	position: absolute;
+	background: black;
+}
+
+.ring {
+  position: absolute;
+  background-image: url("big_ring02.svg");
+  z-index: -1;
+}
+
+.tent {
+  position: absolute;
+  background-image: url("tent_top.svg");
+  z-index: -2;
+}
+
+.pole {
+  background-image: linear-gradient(to right, black, grey);
+  z-index: 600;
+  position: absolute;
+}
 
 .box {
-  background: green;
+  background-image: url("barrel.svg");
   position: absolute;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 #curtian {
