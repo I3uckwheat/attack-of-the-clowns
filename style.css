@@ -10,7 +10,7 @@ body {
 
 .player {
 	position: absolute;
-  background: url("clownWalk3.png") left center;
+  background: url("assets/clownWalk3.png") left center;
   z-index: 500;
   transform: scaleX(-1);
   background-position: 200px;
@@ -35,7 +35,7 @@ body {
 }
 
 .box {
-  background-image: url("barrel.svg");
+  background-image: url("assets/barrel.svg");
   position: absolute;
   background-size: contain;
   background-repeat: no-repeat;
@@ -52,5 +52,5 @@ body {
   height: 711px;
   width: 2595px;
   position:absolute;
-  background-image:url("ring.png");
+  background-image:url("assets/ring.png");
 }
