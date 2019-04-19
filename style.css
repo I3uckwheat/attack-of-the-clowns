@@ -34,18 +34,6 @@ body {
 	background: black;
 }
 
-.ring {
-  position: absolute;
-  background-image: url("big_ring02.svg");
-  z-index: -1;
-}
-
-.tent {
-  position: absolute;
-  background-image: url("tent_top.svg");
-  z-index: -2;
-}
-
 .box {
   background-image: url("barrel.svg");
   position: absolute;
@@ -64,30 +52,5 @@ body {
   height: 711px;
   width: 2595px;
   position:absolute;
-  left: -800px;
-  top: 260px;
-  transform: rotate(10.1deg);
-  transform-origin: 50% 2500px;
-  background-image:url(https://svgshare.com/i/Bp4.svg);
-}
-
-#crowd {
-  background-image:url("https://i.ibb.co/893FMDL/crows.png");
-  width: 4000px;
-  height: 4000px;
-  position: absolute;
-  top: 40px;
-  left: -1520px;
-  background-position: 0px 0px;
-  border-radius: 4000px;
-}
-
-#ceiling {
-  height: 604.79px;
-  width: 1209.58px;
-  position:absolute;
-  left: -120px;
-  top: -260px;
-  transform-origin: 50% 0%;
-  background-image:url(https://svgshare.com/i/Bqd.svg);
+  background-image:url("ring.png");
 }

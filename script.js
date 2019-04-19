@@ -1,7 +1,7 @@
 class World {
   constructor(gameField) {
     this.width = 1300;
-    this.height = 840;
+    this.height = 700;
 
     // the second number is the amount of walkable height from the bottom of the playArea
     this.vTravelHeight = this.height - 500; 
@@ -52,7 +52,7 @@ class World {
   }
 
   willCollide(rect1, rect2, offset) {
-    return rect1.x - offset.x < rect2.x + rect2.width &&
+    return rect1.x < rect2.x + rect2.width &&
           rect1.x + rect1.width > rect2.x &&
           rect1.y < rect2.y + rect2.height &&
           rect1.y + rect1.height > rect2.y
@@ -76,20 +76,8 @@ const background = {
     ring: {
       element: document.getElementById('ring'),
       position: 0,
-      speed: 1,
-      reset: 100.4,
-    },
-    ceiling: {
-      element: document.getElementById('ceiling'),
-      position: 0,
-      speed: -.02,
-      reset: -190.25,
-    },
-    crowd: {
-      element: document.getElementById('crowd'),
-      position: 0,
-      speed: .4,
-      reset: 2880,
+      speed: 5,
+      reset: 520,
     },
   }, 
   right: function() {
@@ -103,9 +91,7 @@ const background = {
     });
   },
   draw: function() {
-    this.layers.ring.element.style.transform = `translate(${this.layers.ring.position}px)`;
-    this.layers.ceiling.element.style.transform = `translate(${this.layers.ceiling.position}px)`;
-    this.layers.crowd.element.style.backgroundPosition = `${this.layers.crowd.position}px 0`;
+    this.layers.ring.element.style.backgroundPositionX = this.layers.ring.position + 'px';
   }
 }
 
@@ -119,14 +105,13 @@ function initalize() {
   player.element.classList.add('player');
   player.element.style.height = player.height + 'px';
   player.element.style.width = player.width + 'px';
-  player.element.style.zIndex = player.y;
 
   gameField.appendChild(player.element);
   
   world.register({
     cssClass: 'box',
     x: 600,
-    y: 650,
+    y: 550,
     width: 218,
     height: 108
   });
