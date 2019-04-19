@@ -1,9 +1,10 @@
 class World {
   constructor(gameField) {
-    this.width = 960;
-    this.height = 640;
+    this.width = 1300;
+    this.height = 840;
 
-    this.playFieldObjects = [];
+    // the second number is the amount of walkable height from the bottom of the playArea
+    this.vTravelHeight = this.height - 500; 
 
     // Sets up gamefield 
     this.gameField = gameField;
@@ -14,26 +15,10 @@ class World {
   }
 
   update(speed) {
-    // TODO - handle wrapping 
-    // maybe make the `x` variable passed in a degree measurement for the circle?
     this.playFieldObjects.forEach(object => {
 
-      let objectLocation = parseInt(object.element.style.left)
+      let objectLocation = Number(object.element.style.left);
       object.x += speed * 50;
-
-      // Only adjust y axis if inside view 
-      if(objectLocation > -235 && objectLocation < 970){
-        if (objectLocation >= 360){
-          object.y += speed * 5;
-
-        } else {
-          object.y -= speed * 5;
-
-        }
-        object.element.style.zIndex = object.y;
-
-      }
-
     });
   }
 
@@ -64,14 +49,7 @@ const player = {
   y: 400,
   width: 200,
   height: 200,
-  velocity: 0,
-  mass: .4,
-  maxJump: 2,
   element: document.createElement('div'),
-  stats: {
-    jumpCount: 0,
-    jumpOffset: 0
-  }
 };
 
 const world = new World(gameField);
@@ -81,14 +59,14 @@ const background = {
     ring: {
       element: document.getElementById('ring'),
       position: 0,
-      speed: .2,
-      reset: 10.4,
+      speed: 1,
+      reset: 100.4,
     },
     ceiling: {
       element: document.getElementById('ceiling'),
       position: 0,
       speed: -.02,
-      reset: -19.25,
+      reset: -190.25,
     },
     crowd: {
       element: document.getElementById('crowd'),
@@ -108,8 +86,8 @@ const background = {
     });
   },
   draw: function() {
-    this.layers.ring.element.style.transform = `rotate(${this.layers.ring.position}deg)`;
-    this.layers.ceiling.element.style.transform = `rotate(${this.layers.ceiling.position}deg)`;
+    this.layers.ring.element.style.transform = `translate(${this.layers.ring.position}px)`;
+    this.layers.ceiling.element.style.transform = `translate(${this.layers.ceiling.position}px)`;
     this.layers.crowd.element.style.backgroundPosition = `${this.layers.crowd.position}px 0`;
   }
 }
@@ -118,8 +96,6 @@ let left = 0;
 let right = 0;
 let up = 0;
 let down = 0;
-let jump = 0;
-
 
 function initalize() {
   // sets up player
@@ -153,7 +129,6 @@ function initalize() {
       down = 1;
     }
     if (event.code === 'Space') {
-      jump = 1;
     }
   });
 
@@ -173,7 +148,6 @@ function initalize() {
       down = 0;
     }
     if (event.code === 'Space') {
-      jump = 0;
     }
   });
 }
@@ -203,7 +177,7 @@ function update() {
     }
   }
   if (up === 1) {
-    if (player.y > 350) {
+    if (player.y > world.vTravelHeight) {
       player.element.style.zIndex = player.y;
       player.y -= 9;
     }
@@ -214,40 +188,21 @@ function update() {
       player.y += 9;
     }
   }
-
-  if (jump === 1) {
-    jump = 0;
-    player.stats.jumpCount++;
-
-    // only jump if maxJump hasn't been reached
-    if (player.stats.jumpCount <= player.maxJump){
-       player.velocity -= 10; 
-    }
-  }
-
-   player.stats.jumpOffset += player.velocity;
-
-  // reset jumpCount, so you can jump again
-  if(player.stats.jumpOffset > 0) {
-    player.velocity = 0;
-    // player.stats.jumpOffset = 0;
-    player.stats.jumpCount = 0;
-  } else {
-    player.velocity += player.mass;
-  }
 }
 
 function draw() {
   player.element.style.left = player.x + 'px';
-  player.element.style.top = player.y + player.stats.jumpOffset + 'px';
+  player.element.style.top = player.y + 'px';
 
   background.draw();
-
   world.draw();
 }
 
-initalize();
-setInterval(() => {
+function tick(){
   update();
   draw();
-}, 10);
+  requestAnimationFrame(tick);
+}
+
+initalize();
+requestAnimationFrame(tick);
