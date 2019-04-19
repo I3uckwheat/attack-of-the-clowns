@@ -183,7 +183,7 @@ function update() {
   if (left === 1) {
     player.element.classList.add('walking', 'facing-left')
     // stop on right edge of world 
-    if (player.x + player.width < world.width - 150) {
+    if (player.x + player.width < world.width + 300) {
       player.x += 9;
     } else {
       world.update(-.1);
@@ -195,7 +195,7 @@ function update() {
     player.element.classList.remove('facing-left')
 
     // stop on left edge of world 
-    if (player.x > 0 + 150) {
+    if (player.x > 0) {
       player.x -= 9;
     } else {
       world.update(.1);
@@ -209,7 +209,7 @@ function update() {
     }
   }
   if (down === 1) {
-    if (player.y + player.height < world.height) {
+    if (player.y + player.height < world.height + 200) {
       player.element.style.zIndex = player.y;
       player.y += 9;
     }
