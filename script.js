@@ -29,7 +29,6 @@ class World {
       object.element.style.top = object.y + 'px';
       object.element.style.height = object.height + 'px';
       object.element.style.width = object.width + 'px';
-      object.element.style.zIndex = object.y;
     });
   }
 
@@ -40,6 +39,19 @@ class World {
     gameField.appendChild(object.element);
     this.playFieldObjects.push(object);
   }
+
+  anyCollisionsWith(entity) {
+    return this.playFieldObjects.some(playFieldObject => {
+      return this.isColliding(playFieldObject, entity);
+    });
+  }
+
+  isColliding(rect1, rect2) {
+    return rect1.x < rect2.x + rect2.width &&
+          rect1.x + rect1.width > rect2.x &&
+          rect1.y < rect2.y + rect2.height &&
+          rect1.y + rect1.height > rect2.y
+  }
 }
 
 const gameField = document.querySelector('#game');
@@ -47,7 +59,7 @@ const gameField = document.querySelector('#game');
 const player = {
   x: 100,
   y: 400,
-  width: 200,
+  width: 145,
   height: 200,
   element: document.createElement('div'),
 };
@@ -109,7 +121,7 @@ function initalize() {
   world.register({
     cssClass: 'box',
     x: 600,
-    y: 450,
+    y: 650,
     width: 218,
     height: 108
   });
@@ -155,13 +167,15 @@ function initalize() {
 function update() {
   // update player
   if (left === 1) {
-    player.element.classList.add('walking', 'facing-left')
-    // stop on right edge of world 
-    if (player.x + player.width < world.width - 150) {
-      player.x += 9;
-    } else {
-      world.update(-.1);
-      background.left();
+    if (!world.anyCollisionsWith(player)) {
+      player.element.classList.add('walking', 'facing-left')
+      // stop on right edge of world 
+      if (player.x + player.width < world.width - 150) {
+        player.x += 9;
+      } else {
+        world.update(-.1);
+        background.left();
+      }
     }
   }  
   if (right === 1) {
@@ -178,16 +192,15 @@ function update() {
   }
   if (up === 1) {
     if (player.y > world.vTravelHeight) {
-      player.element.style.zIndex = player.y;
       player.y -= 9;
     }
   }
   if (down === 1) {
     if (player.y + player.height < world.height) {
-      player.element.style.zIndex = player.y;
       player.y += 9;
     }
   }
+
 }
 
 function draw() {
