@@ -41,13 +41,18 @@ class World {
   }
 
   anyCollisionsWith(entity) {
+    const offset = {
+      x: 9,
+      y: 9
+    }
+
     return this.playFieldObjects.some(playFieldObject => {
-      return this.isColliding(playFieldObject, entity);
+      return this.willCollide(playFieldObject, entity, offset);
     });
   }
 
-  isColliding(rect1, rect2) {
-    return rect1.x < rect2.x + rect2.width &&
+  willCollide(rect1, rect2, offset) {
+    return rect1.x - offset.x < rect2.x + rect2.width &&
           rect1.x + rect1.width > rect2.x &&
           rect1.y < rect2.y + rect2.height &&
           rect1.y + rect1.height > rect2.y
@@ -179,25 +184,31 @@ function update() {
     }
   }  
   if (right === 1) {
-    player.element.classList.add('walking')
-    player.element.classList.remove('facing-left')
+    if (!world.anyCollisionsWith(player)) {
+      player.element.classList.add('walking')
+      player.element.classList.remove('facing-left')
 
-    // stop on left edge of world 
-    if (player.x > 0 + 150) {
-      player.x -= 9;
-    } else {
-      world.update(.1);
-      background.right();
+      // stop on left edge of world 
+      if (player.x > 0 + 150) {
+        player.x -= 9;
+      } else {
+        world.update(.1);
+        background.right();
+      }
     }
   }
   if (up === 1) {
-    if (player.y > world.vTravelHeight) {
-      player.y -= 9;
+    if (!world.anyCollisionsWith(player)) {
+      if (player.y > world.vTravelHeight) {
+        player.y -= 9;
+      }
     }
   }
   if (down === 1) {
-    if (player.y + player.height < world.height) {
-      player.y += 9;
+    if (!world.anyCollisionsWith(player)) {
+      if (player.y + player.height < world.height) {
+        player.y += 9;
+      }
     }
   }
 
