@@ -1,63 +1,9 @@
-class World {
-  constructor(gameField) {
-    this.width = 960;
-    this.height = 640;
-
-    this.playFieldObjects = [];
-
-    // Sets up gamefield 
-    this.gameField = gameField;
-    this.gameField.style.height = this.height + 'px';
-    this.gameField.style.width =  this.width + 'px';
-
-    this.playFieldObjects = [];
-  }
-
-  update(speed) {
-    // TODO - handle wrapping 
-    // maybe make the `x` variable passed in a degree measurement for the circle?
-    this.playFieldObjects.forEach(object => {
-
-      let objectLocation = parseInt(object.element.style.left)
-      object.x += speed * 50;
-
-      // Only adjust y axis if inside view 
-      if(objectLocation > -235 && objectLocation < 970){
-        if (objectLocation >= 360){
-          object.y += speed * 5;
-
-        } else {
-          object.y -= speed * 5;
-
-        }
-        object.element.style.zIndex = object.y;
-
-      }
-
-    });
-  }
-
-  draw() {
-    this.playFieldObjects.forEach(object => {
-      object.element.classList.add(object.cssClass);
-      object.element.style.left = object.x + 'px';
-      object.element.style.top = object.y + 'px';
-      object.element.style.height = object.height + 'px';
-      object.element.style.width = object.width + 'px';
-      object.element.style.zIndex = object.y;
-    });
-  }
-
-  // Register an object to be tracked by the world
-  register(object) {
-    object.element = document.createElement('div');
-    object.element.classList.add(object.element.cssClass);
-    gameField.appendChild(object.element);
-    this.playFieldObjects.push(object);
-  }
-}
-
 const gameField = document.querySelector('#game');
+
+const world = {
+  width: 1600,
+  height: 900
+}
 
 const player = {
   x: 100,
@@ -74,52 +20,12 @@ const player = {
   }
 };
 
-const world = new World(gameField);
-
-const background = {
-  layers: {
-    ring: {
-      element: document.getElementById('ring'),
-      position: 0,
-      speed: .2,
-      reset: 10.4,
-    },
-    ceiling: {
-      element: document.getElementById('ceiling'),
-      position: 0,
-      speed: -.02,
-      reset: -19.25,
-    },
-    crowd: {
-      element: document.getElementById('crowd'),
-      position: 0,
-      speed: .4,
-      reset: 2880,
-    },
-  }, 
-  right: function() {
-    Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position + layer.speed) % layer.reset;   
-    });
-  },
-  left: function() {
-    Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position - layer.speed) % layer.reset;   
-    });
-  },
-  draw: function() {
-    this.layers.ring.element.style.transform = `rotate(${this.layers.ring.position}deg)`;
-    this.layers.ceiling.element.style.transform = `rotate(${this.layers.ceiling.position}deg)`;
-    this.layers.crowd.element.style.backgroundPosition = `${this.layers.crowd.position}px 0`;
-  }
-}
-
+// Globals for movement keys
 let left = 0;
 let right = 0;
 let up = 0;
 let down = 0;
 let jump = 0;
-
 
 function initalize() {
   // sets up player
@@ -128,15 +34,12 @@ function initalize() {
   player.element.style.width = player.width + 'px';
   player.element.style.zIndex = player.y;
 
+  // set up world
+  gameField.style.height = world.height + 'px';
+  gameField.style.width = world.width + 'px';
+
+
   gameField.appendChild(player.element);
-  
-  world.register({
-    cssClass: 'box',
-    x: 600,
-    y: 450,
-    width: 218,
-    height: 108
-  });
   
   // sets up movement
   document.addEventListener('keydown', event => {
@@ -183,11 +86,8 @@ function update() {
   if (left === 1) {
     player.element.classList.add('walking', 'facing-left')
     // stop on right edge of world 
-    if (player.x + player.width < world.width - 150) {
+    if (player.x + player.width < world.width) {
       player.x += 9;
-    } else {
-      world.update(-.1);
-      background.left();
     }
   }  
   if (right === 1) {
@@ -197,9 +97,6 @@ function update() {
     // stop on left edge of world 
     if (player.x > 0 + 150) {
       player.x -= 9;
-    } else {
-      world.update(.1);
-      background.right();
     }
   }
   if (up === 1) {
@@ -240,14 +137,13 @@ function update() {
 function draw() {
   player.element.style.left = player.x + 'px';
   player.element.style.top = player.y + player.stats.jumpOffset + 'px';
+}
 
-  background.draw();
-
-  world.draw();
+function step() {
+  update();
+  draw();
+  requestAnimationFrame(step);
 }
 
 initalize();
-setInterval(() => {
-  update();
-  draw();
-}, 10);
+requestAnimationFrame(step);
