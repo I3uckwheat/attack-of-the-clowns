@@ -46,11 +46,6 @@ body {
   z-index: -2;
 }
 
-#pole {
-  z-index: 1000;
-  position: absolute;
-}
-
 .box {
   background-image: url("barrel.svg");
   position: absolute;
@@ -95,16 +90,4 @@ body {
   top: -260px;
   transform-origin: 50% 0%;
   background-image:url(https://svgshare.com/i/Bqd.svg);
-}
-
-#pole
-{
-  width: 30px;
-  height: 640px;
-  padding: 0px;
-  margin-right: 465px;
-  margin-left:465px;
-  z-index: 1000;
-  position:absolute;
-  background-image: url('https://svgshare.com/i/Bqo.svg')
 }

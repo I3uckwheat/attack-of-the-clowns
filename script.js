@@ -84,12 +84,6 @@ const background = {
       speed: .2,
       reset: 10.4,
     },
-    pole: {
-      element: document.getElementById('pole'),
-      position: 0,
-      speed: -.2,
-      reset: 230,
-    },
     ceiling: {
       element: document.getElementById('ceiling'),
       position: 0,
@@ -115,7 +109,6 @@ const background = {
   },
   draw: function() {
     this.layers.ring.element.style.transform = `rotate(${this.layers.ring.position}deg)`;
-    this.layers.pole.element.style.backgroundPosition = `${this.layers.pole.position}px 0`;
     this.layers.ceiling.element.style.transform = `rotate(${this.layers.ceiling.position}deg)`;
     this.layers.crowd.element.style.backgroundPosition = `${this.layers.crowd.position}px 0`;
   }
