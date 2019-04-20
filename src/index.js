@@ -1,8 +1,8 @@
-import World from "./World";
-import Controls from "./Controls";
-import Player from "./Player";
+import World from "./scripts/World";
+import Controls from "./scripts/Controls";
+import Player from "./scripts/Player";
 
-import background from "./Background";
+import background from "./scripts/Background";
 
 const gameField = document.querySelector('#game');
  
