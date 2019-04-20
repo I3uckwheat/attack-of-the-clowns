@@ -40,27 +40,32 @@ class World {
 
   anyCollisionsWith(entity) {
     return this.playFieldObjects.some(playFieldObject => {
-      return this.willCollide(playFieldObject, entity);
+      return this.isCollidingWithFeet(playFieldObject, entity);
     });
   }
 
-  willCollide(rect1, rect2) {
-    return rect1.x < rect2.x + rect2.width &&
-          rect1.x + rect1.width > rect2.x &&
-          rect1.y < rect2.y + rect2.height &&
-          rect1.y + rect1.height > rect2.y
+  isCollidingWithFeet(rect1, rect2) {
+    const feetPosition = {
+      x: rect2.x,
+      y: rect2.y + rect2.height - rect2.feet.height,
+      height: rect2.feet.height,
+      width: rect2.width,
+    }
+
+    return this.isColliding(rect1, feetPosition)
+  }
+
+  isColliding(rect1, rect2) {
+    return (
+      rect1.x > rect2.x &&                
+      rect1.x < rect2.x + rect2.width &&  
+      rect1.y + rect1.height > rect2.y &&                
+      rect1.y < rect2.y + rect2.height    
+    );
   }
 }
 
 const gameField = document.querySelector('#game');
-
-const player = {
-  x: 100,
-  y: 400,
-  width: 145,
-  height: 200,
-  element: document.createElement('div'),
-};
 
 const world = new World(gameField);
 
@@ -88,6 +93,15 @@ const background = {
   }
 }
 
+const player = {
+  x: 100,
+  y: 400,
+  width: 110,
+  height: 200,
+  feet: {height: 25, width: 90},
+  element: document.createElement('div'),
+};
+
 let left = 0;
 let right = 0;
 let up = 0;
@@ -102,7 +116,7 @@ function initalize() {
   world.register({
     cssClass: 'box',
     x: 600,
-    y: 550,
+    y: 450,
     width: 67,
     height: 50,
   });
