@@ -1,8 +1,10 @@
 import World from "./World";
+import Controls from "./Controls";
 
 const gameField = document.querySelector('#game');
 
 const world = new World(gameField);
+const controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
 
 const background = {
   layers: {
@@ -55,50 +57,11 @@ function initalize() {
     width: 67,
     height: 50,
   });
-  
-  // sets up movement
-  document.addEventListener('keydown', event => {
-    if (event.code === 'KeyD') {
-      left = 1;
-    }
-    if (event.code === 'KeyA') {
-      right = 1;
-    }
-    if (event.code === 'KeyW') {
-      up = 1;
-    }
-    if (event.code === 'KeyS') {
-      down = 1;
-    }
-    if (event.code === 'Space') {
-    }
-  });
-
-  document.addEventListener('keyup', event => {
-    if (event.code === 'KeyD') {
-      left = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'KeyA') {
-      right = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'KeyW') {
-      up = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'KeyS') {
-      down = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'Space') {
-    }
-  });
 }
 
 function update() {
   // update player
-  if (left === 1) {
+  if (controls.isPressed('right')) {
     player.element.classList.add('walking', 'facing-left')
     // stop on right edge of world 
     if (player.x + player.width < world.width - 150) {
@@ -112,7 +75,7 @@ function update() {
       player.x -=1;
     }
   }  
-  if (right === 1) {
+  if (controls.isPressed('left')) {
     player.element.classList.add('walking')
     player.element.classList.remove('facing-left')
 
@@ -128,7 +91,7 @@ function update() {
       player.x +=1;
     }
   }
-  if (up === 1) {
+  if (controls.isPressed('up')) {
     player.element.classList.add('walking')
 
     if (player.y > world.vTravelHeight) {
@@ -139,7 +102,7 @@ function update() {
       player.y += 1;
     }
   }
-  if (down === 1) {
+  if (controls.isPressed('down')) {
     player.element.classList.add('walking')
 
     if (player.y + player.height < world.height) {
