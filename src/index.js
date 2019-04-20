@@ -1,50 +1,20 @@
 import World from "./World";
 import Controls from "./Controls";
+import Player from "./Player";
+
+import background from "./Background";
 
 const gameField = document.querySelector('#game');
+ 
+// Globals
+let player;
+let world;
+let controls;
 
-const player = {
-  x: 100,
-  y: 400,
-  width: 110,
-  height: 200,
-  feet: {height: 25, width: 90},
-  element: document.createElement('div'),
-};
+function initialize() {
+  player = new Player(gameField);
 
-const world = new World(gameField);
-const controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
-
-const background = {
-  layers: {
-    ring: {
-      element: document.getElementById('ring'),
-      position: 0,
-      speed: 5,
-      reset: 520,
-    },
-  }, 
-  right: function() {
-    Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position + layer.speed) % layer.reset;   
-    });
-  },
-  left: function() {
-    Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position - layer.speed) % layer.reset;   
-    });
-  },
-  draw: function() {
-    this.layers.ring.element.style.backgroundPositionX = this.layers.ring.position + 'px';
-  }
-}
-
-function initalize() {
-  // sets up player
-  player.element.classList.add('player');
-
-  gameField.appendChild(player.element);
-  
+  world = new World(gameField);
   world.register({
     cssClass: 'box',
     x: 600,
@@ -53,6 +23,7 @@ function initalize() {
     height: 50,
   });
 
+  controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.element.classList.remove('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.element.classList.remove('walking'));
 }
@@ -126,5 +97,5 @@ function tick(){
   requestAnimationFrame(tick);
 }
 
-initalize();
+initialize();
 requestAnimationFrame(tick);
