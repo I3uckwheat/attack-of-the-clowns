@@ -86,6 +86,171 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/Background.js":
+/*!***************************!*\
+  !*** ./src/Background.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const background = {
+  layers: {
+    ring: {
+      element: document.getElementById('ring'),
+      position: 0,
+      speed: 5,
+      reset: 520,
+    },
+  }, 
+  right: function() {
+    Object.values(this.layers).forEach(layer => {
+      layer.position = (layer.position + layer.speed) % layer.reset;   
+    });
+  },
+  left: function() {
+    Object.values(this.layers).forEach(layer => {
+      layer.position = (layer.position - layer.speed) % layer.reset;   
+    });
+  },
+  draw: function() {
+    this.layers.ring.element.style.backgroundPositionX = this.layers.ring.position + 'px';
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (background);
+
+/***/ }),
+
+/***/ "./src/Controls.js":
+/*!*************************!*\
+  !*** ./src/Controls.js ***!
+  \*************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Controls {
+  constructor(controls) {
+    this.controls = controls;
+
+    this.controlState = Object.values(this.controls).reduce((acc, controlName) => {
+      acc[controlName] = 0;
+      return acc;
+    }, {undefined: 0});
+
+    this.controlEvents = {
+      keyup: {},
+      keydown: {}
+    }
+
+    // Add event listeners for keys
+    document.addEventListener('keydown', event => {
+      this.controlState[this.controls[event.code]] = 1;
+      if (this.controlEvents.keydown[event.code]) {
+        this.controlEvents.keydown[event.code].forEach(cb => cb());
+      }
+    });
+
+    document.addEventListener('keyup', event => {
+      this.controlState[this.controls[event.code]] = 0;
+      if (this.controlEvents.keyup[event.code]) {
+        this.controlEvents.keyup[event.code].forEach(cb => cb());
+      }
+    });
+  }
+
+  isPressed(control) {
+    return this.controlState[control];
+  }
+
+  addEvent(keyDirection, keyCode, cb) {
+    // Set up array of callbacks if it doesn't exist
+    if (!this.controlEvents[keyDirection][keyCode]) {
+      this.controlEvents[keyDirection][keyCode] = [cb];
+    } else {
+      this.controlEvents[keyDirection][keyCode].push(cb);
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Controls);
+
+
+/***/ }),
+
+/***/ "./src/Player.js":
+/*!***********************!*\
+  !*** ./src/Player.js ***!
+  \***********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Player {
+  constructor(gameField) {
+    this.element = document.createElement('div');
+    this.element.classList.add('player');
+    gameField.appendChild(this.element);
+
+    this.x = 100;
+    this.y = 400;
+    this.width = 110;
+    this.height = 200;
+    this.feet = { height: 25, width: 90 };
+    this.speed = 9;
+  }
+
+  draw() {
+    this.element.style.left = this.x + 'px';
+    this.element.style.top = this.y + 'px';
+  }
+
+  startAnimations(...classes) {
+    this.element.classList.add(...classes);
+  }
+
+  endAnimations(...classes) {
+    this.element.classList.remove(...classes);
+  }
+
+  move(direction) {
+    this.moveCharacter(direction, this.speed);
+  }
+
+  // move the character opposite the detected collision
+  unCollide(collisionDirection) {
+    this.moveCharacter(collisionDirection, -1);
+  }
+
+  moveCharacter(direction, speed) {
+    switch(direction) {
+      case "right":
+        this.x += speed;
+        break;
+      case "left":
+        this.x -= speed;
+        break;
+      case "up":
+        this.y -= speed;
+        break;
+      case "down":
+        this.y += speed;
+        break;
+      default:
+        throw "You must pass a direction";
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Player);
+
+
+/***/ }),
+
 /***/ "./src/World.js":
 /*!**********************!*\
   !*** ./src/World.js ***!
@@ -176,56 +341,26 @@ class World {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _World__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./World */ "./src/World.js");
+/* harmony import */ var _Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Controls */ "./src/Controls.js");
+/* harmony import */ var _Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Player */ "./src/Player.js");
+/* harmony import */ var _Background__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Background */ "./src/Background.js");
+
+
+
+
 
 
 const gameField = document.querySelector('#game');
+ 
+// Globals
+let player;
+let world;
+let controls;
 
-const world = new _World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField);
+function initialize() {
+  player = new _Player__WEBPACK_IMPORTED_MODULE_2__["default"](gameField);
 
-const background = {
-  layers: {
-    ring: {
-      element: document.getElementById('ring'),
-      position: 0,
-      speed: 5,
-      reset: 520,
-    },
-  }, 
-  right: function() {
-    Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position + layer.speed) % layer.reset;   
-    });
-  },
-  left: function() {
-    Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position - layer.speed) % layer.reset;   
-    });
-  },
-  draw: function() {
-    this.layers.ring.element.style.backgroundPositionX = this.layers.ring.position + 'px';
-  }
-}
-
-const player = {
-  x: 100,
-  y: 400,
-  width: 110,
-  height: 200,
-  feet: {height: 25, width: 90},
-  element: document.createElement('div'),
-};
-
-let left = 0;
-let right = 0;
-let up = 0;
-let down = 0;
-
-function initalize() {
-  // sets up player
-  player.element.classList.add('player');
-
-  gameField.appendChild(player.element);
-  
+  world = new _World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField);
   world.register({
     cssClass: 'box',
     x: 600,
@@ -233,107 +368,75 @@ function initalize() {
     width: 67,
     height: 50,
   });
-  
-  // sets up movement
-  document.addEventListener('keydown', event => {
-    if (event.code === 'KeyD') {
-      left = 1;
-    }
-    if (event.code === 'KeyA') {
-      right = 1;
-    }
-    if (event.code === 'KeyW') {
-      up = 1;
-    }
-    if (event.code === 'KeyS') {
-      down = 1;
-    }
-    if (event.code === 'Space') {
-    }
-  });
 
-  document.addEventListener('keyup', event => {
-    if (event.code === 'KeyD') {
-      left = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'KeyA') {
-      right = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'KeyW') {
-      up = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'KeyS') {
-      down = 0;
-      player.element.classList.remove('walking')
-    }
-    if (event.code === 'Space') {
-    }
-  });
+  controls = new _Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
+  controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
+  controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
+  controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
+  controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
+
+  requestAnimationFrame(tick);
 }
 
 function update() {
   // update player
-  if (left === 1) {
-    player.element.classList.add('walking', 'facing-left')
+  if (controls.isPressed('right')) {
+    // player.element.classList.add('walking', 'facing-left');
+    player.startAnimations('walking', 'facing-left');
     // stop on right edge of world 
     if (player.x + player.width < world.width - 150) {
-      player.x += 9;
+      player.move('right');
     } else {
       world.update(-.1);
-      background.left();
+      _Background__WEBPACK_IMPORTED_MODULE_3__["default"].left();
     }
 
     while (world.anyCollisionsWith(player)) {
-      player.x -=1;
+      player.unCollide('right');
     }
   }  
-  if (right === 1) {
-    player.element.classList.add('walking')
-    player.element.classList.remove('facing-left')
+  if (controls.isPressed('left')) {
+    player.startAnimations('walking');
+    player.endAnimations('facing-left');
 
     // stop on left edge of world 
     if (player.x > 0 + 150) {
-      player.x -= 9;
+      player.move('left');
     } else {
       world.update(.1);
-      background.right();
+      _Background__WEBPACK_IMPORTED_MODULE_3__["default"].right();
     }
 
     while (world.anyCollisionsWith(player)) {
-      player.x +=1;
+      player.unCollide('left');
     }
   }
-  if (up === 1) {
-    player.element.classList.add('walking')
+  if (controls.isPressed('up')) {
+    player.startAnimations('walking');
 
     if (player.y > world.vTravelHeight) {
-      player.y -= 9;
+      player.move('up');
     }
 
     while (world.anyCollisionsWith(player)) {
-      player.y += 1;
+      player.unCollide('up');
     }
   }
-  if (down === 1) {
-    player.element.classList.add('walking')
+  if (controls.isPressed('down')) {
+    player.startAnimations('walking');
 
     if (player.y + player.height < world.height) {
-      player.y += 9;
+      player.move('down');
     }
     while (world.anyCollisionsWith(player)) {
-      player.y -= 1;
+      player.unCollide('down');
     }
   }
 }
 
 function draw() {
-  player.element.style.left = player.x + 'px';
-  player.element.style.top = player.y + 'px';
-
-  background.draw();
+  player.draw();
+  _Background__WEBPACK_IMPORTED_MODULE_3__["default"].draw();
   world.draw();
 }
 
@@ -343,8 +446,7 @@ function tick(){
   requestAnimationFrame(tick);
 }
 
-initalize();
-requestAnimationFrame(tick);
+initialize();
 
 
 /***/ })
