@@ -3,6 +3,15 @@ import Controls from "./Controls";
 
 const gameField = document.querySelector('#game');
 
+const player = {
+  x: 100,
+  y: 400,
+  width: 110,
+  height: 200,
+  feet: {height: 25, width: 90},
+  element: document.createElement('div'),
+};
+
 const world = new World(gameField);
 const controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
 
@@ -30,15 +39,6 @@ const background = {
   }
 }
 
-const player = {
-  x: 100,
-  y: 400,
-  width: 110,
-  height: 200,
-  feet: {height: 25, width: 90},
-  element: document.createElement('div'),
-};
-
 let left = 0;
 let right = 0;
 let up = 0;
@@ -57,6 +57,9 @@ function initalize() {
     width: 67,
     height: 50,
   });
+
+  controls.addEvent('keyup', 'KeyA', () => player.element.classList.remove('walking'));
+  controls.addEvent('keyup', 'KeyD', () => player.element.classList.remove('walking'));
 }
 
 function update() {
