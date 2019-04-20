@@ -1,9 +1,10 @@
 class World {
   constructor(gameField) {
-    this.width = 960;
-    this.height = 640;
+    this.width = 1300;
+    this.height = 700;
 
-    this.playFieldObjects = [];
+    // the second number is the amount of walkable height from the bottom of the playArea
+    this.vTravelHeight = this.height - 500; 
 
     // Sets up gamefield 
     this.gameField = gameField;
@@ -14,26 +15,8 @@ class World {
   }
 
   update(speed) {
-    // TODO - handle wrapping 
-    // maybe make the `x` variable passed in a degree measurement for the circle?
     this.playFieldObjects.forEach(object => {
-
-      let objectLocation = parseInt(object.element.style.left)
       object.x += speed * 50;
-
-      // Only adjust y axis if inside view 
-      if(objectLocation > -235 && objectLocation < 970){
-        if (objectLocation >= 360){
-          object.y += speed * 5;
-
-        } else {
-          object.y -= speed * 5;
-
-        }
-        object.element.style.zIndex = object.y;
-
-      }
-
     });
   }
 
@@ -44,7 +27,6 @@ class World {
       object.element.style.top = object.y + 'px';
       object.element.style.height = object.height + 'px';
       object.element.style.width = object.width + 'px';
-      object.element.style.zIndex = object.y;
     });
   }
 
@@ -55,24 +37,35 @@ class World {
     gameField.appendChild(object.element);
     this.playFieldObjects.push(object);
   }
+
+  anyCollisionsWith(entity) {
+    return this.playFieldObjects.some(playFieldObject => {
+      return this.isCollidingWithFeet(playFieldObject, entity);
+    });
+  }
+
+  isCollidingWithFeet(rect1, rect2) {
+    const feetPosition = {
+      x: rect2.x,
+      y: rect2.y + rect2.height - rect2.feet.height,
+      height: rect2.feet.height,
+      width: rect2.width,
+    }
+
+    return this.isColliding(rect1, feetPosition)
+  }
+
+  isColliding(rect1, rect2) {
+    return (
+      rect1.x > rect2.x &&                
+      rect1.x < rect2.x + rect2.width &&  
+      rect1.y + rect1.height > rect2.y &&                
+      rect1.y < rect2.y + rect2.height    
+    );
+  }
 }
 
 const gameField = document.querySelector('#game');
-
-const player = {
-  x: 100,
-  y: 400,
-  width: 200,
-  height: 200,
-  velocity: 0,
-  mass: .4,
-  maxJump: 2,
-  element: document.createElement('div'),
-  stats: {
-    jumpCount: 0,
-    jumpOffset: 0
-  }
-};
 
 const world = new World(gameField);
 
@@ -81,20 +74,8 @@ const background = {
     ring: {
       element: document.getElementById('ring'),
       position: 0,
-      speed: .2,
-      reset: 10.4,
-    },
-    ceiling: {
-      element: document.getElementById('ceiling'),
-      position: 0,
-      speed: -.02,
-      reset: -19.25,
-    },
-    crowd: {
-      element: document.getElementById('crowd'),
-      position: 0,
-      speed: .4,
-      reset: 2880,
+      speed: 5,
+      reset: 520,
     },
   }, 
   right: function() {
@@ -108,25 +89,27 @@ const background = {
     });
   },
   draw: function() {
-    this.layers.ring.element.style.transform = `rotate(${this.layers.ring.position}deg)`;
-    this.layers.ceiling.element.style.transform = `rotate(${this.layers.ceiling.position}deg)`;
-    this.layers.crowd.element.style.backgroundPosition = `${this.layers.crowd.position}px 0`;
+    this.layers.ring.element.style.backgroundPositionX = this.layers.ring.position + 'px';
   }
 }
+
+const player = {
+  x: 100,
+  y: 400,
+  width: 110,
+  height: 200,
+  feet: {height: 25, width: 90},
+  element: document.createElement('div'),
+};
 
 let left = 0;
 let right = 0;
 let up = 0;
 let down = 0;
-let jump = 0;
-
 
 function initalize() {
   // sets up player
   player.element.classList.add('player');
-  player.element.style.height = player.height + 'px';
-  player.element.style.width = player.width + 'px';
-  player.element.style.zIndex = player.y;
 
   gameField.appendChild(player.element);
   
@@ -134,8 +117,8 @@ function initalize() {
     cssClass: 'box',
     x: 600,
     y: 450,
-    width: 218,
-    height: 108
+    width: 67,
+    height: 50,
   });
   
   // sets up movement
@@ -153,7 +136,6 @@ function initalize() {
       down = 1;
     }
     if (event.code === 'Space') {
-      jump = 1;
     }
   });
 
@@ -168,12 +150,13 @@ function initalize() {
     }
     if (event.code === 'KeyW') {
       up = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'KeyS') {
       down = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'Space') {
-      jump = 0;
     }
   });
 }
@@ -189,6 +172,10 @@ function update() {
       world.update(-.1);
       background.left();
     }
+
+    while (world.anyCollisionsWith(player)) {
+      player.x -=1;
+    }
   }  
   if (right === 1) {
     player.element.classList.add('walking')
@@ -201,53 +188,47 @@ function update() {
       world.update(.1);
       background.right();
     }
+
+    while (world.anyCollisionsWith(player)) {
+      player.x +=1;
+    }
   }
   if (up === 1) {
-    if (player.y > 350) {
-      player.element.style.zIndex = player.y;
+    player.element.classList.add('walking')
+
+    if (player.y > world.vTravelHeight) {
       player.y -= 9;
+    }
+
+    while (world.anyCollisionsWith(player)) {
+      player.y += 1;
     }
   }
   if (down === 1) {
+    player.element.classList.add('walking')
+
     if (player.y + player.height < world.height) {
-      player.element.style.zIndex = player.y;
       player.y += 9;
     }
-  }
-
-  if (jump === 1) {
-    jump = 0;
-    player.stats.jumpCount++;
-
-    // only jump if maxJump hasn't been reached
-    if (player.stats.jumpCount <= player.maxJump){
-       player.velocity -= 10; 
+    while (world.anyCollisionsWith(player)) {
+      player.y -= 1;
     }
-  }
-
-   player.stats.jumpOffset += player.velocity;
-
-  // reset jumpCount, so you can jump again
-  if(player.stats.jumpOffset > 0) {
-    player.velocity = 0;
-    // player.stats.jumpOffset = 0;
-    player.stats.jumpCount = 0;
-  } else {
-    player.velocity += player.mass;
   }
 }
 
 function draw() {
   player.element.style.left = player.x + 'px';
-  player.element.style.top = player.y + player.stats.jumpOffset + 'px';
+  player.element.style.top = player.y + 'px';
 
   background.draw();
-
   world.draw();
 }
 
-initalize();
-setInterval(() => {
+function tick(){
   update();
   draw();
-}, 10);
+  requestAnimationFrame(tick);
+}
+
+initalize();
+requestAnimationFrame(tick);

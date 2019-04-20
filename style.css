@@ -10,23 +10,43 @@ body {
 
 .player {
 	position: absolute;
-  background: url("clownWalk3.png") left center;
+  background: url("assets/clownSpriteSheet.png");
   z-index: 500;
   transform: scaleX(-1);
   background-position: 200px;
+  width: 200px;
+  height: 200px;
 }
 
 .walking {
-  animation: walk 0.8s steps(4, end) infinite;
+  animation: walk .8s steps(4, end) infinite;
+}
+
+@keyframes walk {
+  0% { background-position: -800px 0%; }
+  100% { background-position: 0px 0%; }
+}
+
+.hit {
+  animation: hit 0.8s steps(2, end) infinite;
+}
+
+@keyframes hit {
+  0% { background-position: -600px 50%; }
+  100% { background-position: -1000px 50%; }
+}
+
+.punched {
+  animation: punch 0.8s steps(2, end) infinite;
+}
+
+@keyframes punched {
+  0% { background-position: -600px 100%; }
+  100% { background-position: -1000px 100%; }
 }
 
 .facing-left {
   transform: scaleX(1);
-}
-
-@keyframes walk {
-  0% { background-position: -200px; }
-  100% { background-position: -1000px; }
 }
 
 .ground {
@@ -34,60 +54,16 @@ body {
 	background: black;
 }
 
-.ring {
-  position: absolute;
-  background-image: url("big_ring02.svg");
-  z-index: -1;
-}
-
-.tent {
-  position: absolute;
-  background-image: url("tent_top.svg");
-  z-index: -2;
-}
-
 .box {
-  background-image: url("barrel.svg");
+  background-image: url("assets/barrel.png");
   position: absolute;
   background-size: contain;
   background-repeat: no-repeat;
-}
-
-#curtian {
-  background: white;
-  height: 2000px;
-  width: 2000px;
-  z-index: 200;
 }
 
 #ring {
   height: 711px;
   width: 2595px;
   position:absolute;
-  left: -800px;
-  top: 260px;
-  transform: rotate(10.1deg);
-  transform-origin: 50% 2500px;
-  background-image:url(https://svgshare.com/i/Bp4.svg);
-}
-
-#crowd {
-  background-image:url("https://i.ibb.co/893FMDL/crows.png");
-  width: 4000px;
-  height: 4000px;
-  position: absolute;
-  top: 40px;
-  left: -1520px;
-  background-position: 0px 0px;
-  border-radius: 4000px;
-}
-
-#ceiling {
-  height: 604.79px;
-  width: 1209.58px;
-  position:absolute;
-  left: -120px;
-  top: -260px;
-  transform-origin: 50% 0%;
-  background-image:url(https://svgshare.com/i/Bqd.svg);
+  background-image:url("assets/ring.png");
 }
