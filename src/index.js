@@ -39,11 +39,6 @@ const background = {
   }
 }
 
-let left = 0;
-let right = 0;
-let up = 0;
-let down = 0;
-
 function initalize() {
   // sets up player
   player.element.classList.add('player');
