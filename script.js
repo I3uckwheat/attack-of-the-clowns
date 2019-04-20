@@ -157,46 +157,52 @@ function initalize() {
 function update() {
   // update player
   if (left === 1) {
-    if (!world.anyCollisionsWith(player)) {
-      player.element.classList.add('walking', 'facing-left')
-      // stop on right edge of world 
-      if (player.x + player.width < world.width - 150) {
-        player.x += 9;
-      } else {
-        world.update(-.1);
-        background.left();
-      }
+    player.element.classList.add('walking', 'facing-left')
+    // stop on right edge of world 
+    if (player.x + player.width < world.width - 150) {
+      player.x += 9;
+    } else {
+      world.update(-.1);
+      background.left();
+    }
+
+    while (world.anyCollisionsWith(player)) {
+      player.x -=1;
     }
   }  
   if (right === 1) {
-    if (!world.anyCollisionsWith(player)) {
-      player.element.classList.add('walking')
-      player.element.classList.remove('facing-left')
+    player.element.classList.add('walking')
+    player.element.classList.remove('facing-left')
 
-      // stop on left edge of world 
-      if (player.x > 0 + 150) {
-        player.x -= 9;
-      } else {
-        world.update(.1);
-        background.right();
-      }
+    // stop on left edge of world 
+    if (player.x > 0 + 150) {
+      player.x -= 9;
+    } else {
+      world.update(.1);
+      background.right();
+    }
+
+    while (world.anyCollisionsWith(player)) {
+      player.x +=1;
     }
   }
   if (up === 1) {
-    if (!world.anyCollisionsWith(player)) {
-      if (player.y > world.vTravelHeight) {
-        player.y -= 9;
-      }
+    if (player.y > world.vTravelHeight) {
+      player.y -= 9;
+    }
+
+    while (world.anyCollisionsWith(player)) {
+      player.y += 1;
     }
   }
   if (down === 1) {
-    if (!world.anyCollisionsWith(player)) {
-      if (player.y + player.height < world.height) {
-        player.y += 9;
-      }
+    if (player.y + player.height < world.height) {
+      player.y += 9;
+    }
+    while (world.anyCollisionsWith(player)) {
+      player.y -= 1;
     }
   }
-
 }
 
 function draw() {
