@@ -10,7 +10,7 @@ body {
 
 .player {
 	position: absolute;
-  background: url("assets/clownWalk3.png") left center;
+  background: url("assets/clownSpriteSheet.png");
   z-index: 500;
   transform: scaleX(-1);
   background-position: 200px;
@@ -19,16 +19,34 @@ body {
 }
 
 .walking {
-  animation: walk 0.8s steps(4, end) infinite;
+  animation: walk .8s steps(4, end) infinite;
+}
+
+@keyframes walk {
+  0% { background-position: -800px 0%; }
+  100% { background-position: 0px 0%; }
+}
+
+.hit {
+  animation: hit 0.8s steps(2, end) infinite;
+}
+
+@keyframes hit {
+  0% { background-position: -600px 50%; }
+  100% { background-position: -1000px 50%; }
+}
+
+.punched {
+  animation: punch 0.8s steps(2, end) infinite;
+}
+
+@keyframes punched {
+  0% { background-position: -600px 100%; }
+  100% { background-position: -1000px 100%; }
 }
 
 .facing-left {
   transform: scaleX(1);
-}
-
-@keyframes walk {
-  0% { background-position: -200px; }
-  100% { background-position: -1000px; }
 }
 
 .ground {
@@ -37,17 +55,10 @@ body {
 }
 
 .box {
-  background-image: url("assets/barrel.svg");
+  background-image: url("assets/barrel.png");
   position: absolute;
   background-size: contain;
   background-repeat: no-repeat;
-}
-
-#curtian {
-  background: white;
-  height: 2000px;
-  width: 2000px;
-  z-index: 200;
 }
 
 #ring {

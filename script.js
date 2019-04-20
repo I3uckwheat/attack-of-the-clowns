@@ -103,8 +103,8 @@ function initalize() {
     cssClass: 'box',
     x: 600,
     y: 550,
-    width: 218,
-    height: 108
+    width: 67,
+    height: 50,
   });
   
   // sets up movement
@@ -136,9 +136,11 @@ function initalize() {
     }
     if (event.code === 'KeyW') {
       up = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'KeyS') {
       down = 0;
+      player.element.classList.remove('walking')
     }
     if (event.code === 'Space') {
     }
@@ -178,6 +180,8 @@ function update() {
     }
   }
   if (up === 1) {
+    player.element.classList.add('walking')
+
     if (player.y > world.vTravelHeight) {
       player.y -= 9;
     }
@@ -187,6 +191,8 @@ function update() {
     }
   }
   if (down === 1) {
+    player.element.classList.add('walking')
+
     if (player.y + player.height < world.height) {
       player.y += 9;
     }
