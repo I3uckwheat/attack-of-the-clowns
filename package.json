@@ -1,0 +1,23 @@
+{
+  "name": "attack-of-the-clowns",
+  "version": "1.0.0",
+  "description": "Attack of the Clowns is an in-browser game written using vanilla JavaScript. This game was created as part of the [Roll the Dice Game Jam](https://itch.io/jam/roll-the-dice-game-jam). The rules for this game jam are as follows:",
+  "private": true,
+  "scripts": {
+    "start": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/I3uckwheat/attack-of-the-clowns.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/I3uckwheat/attack-of-the-clowns/issues"
+  },
+  "homepage": "https://github.com/I3uckwheat/attack-of-the-clowns#readme",
+  "devDependencies": {
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.0"
+  }
+}
