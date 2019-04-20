@@ -96,8 +96,6 @@ let down = 0;
 function initalize() {
   // sets up player
   player.element.classList.add('player');
-  player.element.style.height = player.height + 'px';
-  player.element.style.width = player.width + 'px';
 
   gameField.appendChild(player.element);
   
