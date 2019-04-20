@@ -28,6 +28,8 @@ function initialize() {
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
+
+  requestAnimationFrame(tick);
 }
 
 function update() {
@@ -99,4 +101,3 @@ function tick(){
 }
 
 initialize();
-requestAnimationFrame(tick);
