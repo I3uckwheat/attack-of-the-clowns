@@ -136,8 +136,8 @@ function initialize() {
 function update() {
   // update player
   if (controls.isPressed('right')) {
-    // player.element.classList.add('walking', 'facing-left');
     player.startAnimations('walking', 'facing-left');
+
     // stop on right edge of world 
     if (player.x + player.width < world.width - 150) {
       player.move('right');
