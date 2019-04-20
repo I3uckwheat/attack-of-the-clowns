@@ -19,3 +19,9 @@ Using a random game concept generator, our team got the following concept:
 ### Random aspects of game play
  - random clown NPCs
  - random items/obstacles
+
+## Developing
+1. Clone the repository
+1. run `npm i`
+1. run `npm start`
+1. open `./dist/index.html` in your browser
