@@ -16,8 +16,6 @@ class World {
 
   update(speed) {
     this.playFieldObjects.forEach(object => {
-
-      let objectLocation = Number(object.element.style.left);
       object.x += speed * 50;
     });
   }
@@ -41,17 +39,12 @@ class World {
   }
 
   anyCollisionsWith(entity) {
-    const offset = {
-      x: 9,
-      y: 9
-    }
-
     return this.playFieldObjects.some(playFieldObject => {
-      return this.willCollide(playFieldObject, entity, offset);
+      return this.willCollide(playFieldObject, entity);
     });
   }
 
-  willCollide(rect1, rect2, offset) {
+  willCollide(rect1, rect2) {
     return rect1.x < rect2.x + rect2.width &&
           rect1.x + rect1.width > rect2.x &&
           rect1.y < rect2.y + rect2.height &&
