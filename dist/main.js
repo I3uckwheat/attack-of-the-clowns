@@ -124,7 +124,7 @@ function initialize() {
     height: 50,
   });
 
-  controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
+  controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
@@ -136,8 +136,8 @@ function initialize() {
 function update() {
   // update player
   if (controls.isPressed('right')) {
-    // player.element.classList.add('walking', 'facing-left');
     player.startAnimations('walking', 'facing-left');
+
     // stop on right edge of world 
     if (player.x + player.width < world.width - 150) {
       player.move('right');
@@ -186,6 +186,10 @@ function update() {
     while (world.anyCollisionsWith(player)) {
       player.unCollide('down');
     }
+  }
+
+  if(controls.isPressed('attack')) {
+    player.attack();
   }
 }
 
@@ -322,11 +326,31 @@ class Player {
     this.height = 200;
     this.feet = { height: 25, width: 90 };
     this.speed = 9;
+    this.direction = 'right';
+
+    this.weapon = 'fist';
+    this.attackCoolingDown = false;
   }
 
   draw() {
     this.element.style.left = this.x + 'px';
     this.element.style.top = this.y + 'px';
+  }
+
+  move(direction) {
+    this.moveCharacter(direction, this.speed);
+  }
+
+  attack() {
+    if (!this.attackCoolingDown) {
+        this.startAnimations('punch');
+
+      this.attackCoolingDown = true;
+      setTimeout(() => {
+        this.attackCoolingDown = false
+        this.endAnimations('punch');
+      }, 800);
+    }
   }
 
   startAnimations(...classes) {
@@ -335,10 +359,6 @@ class Player {
 
   endAnimations(...classes) {
     this.element.classList.remove(...classes);
-  }
-
-  move(direction) {
-    this.moveCharacter(direction, this.speed);
   }
 
   // move the character opposite the detected collision
@@ -350,9 +370,11 @@ class Player {
     switch(direction) {
       case "right":
         this.x += speed;
+        this.direction = 'right';
         break;
       case "left":
         this.x -= speed;
+        this.direction = 'left';
         break;
       case "up":
         this.y -= speed;

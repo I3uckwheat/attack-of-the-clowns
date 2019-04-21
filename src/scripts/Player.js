@@ -10,11 +10,31 @@ class Player {
     this.height = 200;
     this.feet = { height: 25, width: 90 };
     this.speed = 9;
+    this.direction = 'right';
+
+    this.weapon = 'fist';
+    this.attackCoolingDown = false;
   }
 
   draw() {
     this.element.style.left = this.x + 'px';
     this.element.style.top = this.y + 'px';
+  }
+
+  move(direction) {
+    this.moveCharacter(direction, this.speed);
+  }
+
+  attack() {
+    if (!this.attackCoolingDown) {
+        this.startAnimations('punch');
+
+      this.attackCoolingDown = true;
+      setTimeout(() => {
+        this.attackCoolingDown = false
+        this.endAnimations('punch');
+      }, 800);
+    }
   }
 
   startAnimations(...classes) {
@@ -23,10 +43,6 @@ class Player {
 
   endAnimations(...classes) {
     this.element.classList.remove(...classes);
-  }
-
-  move(direction) {
-    this.moveCharacter(direction, this.speed);
   }
 
   // move the character opposite the detected collision
@@ -38,9 +54,11 @@ class Player {
     switch(direction) {
       case "right":
         this.x += speed;
+        this.direction = 'right';
         break;
       case "left":
         this.x -= speed;
+        this.direction = 'left';
         break;
       case "up":
         this.y -= speed;
