@@ -27,21 +27,21 @@ body {
   100% { background-position: 0px 0%; }
 }
 
-.hit {
-  animation: hit 0.8s steps(2, end) infinite;
+.punch {
+  animation: punch 0.8s steps(2, end) infinite;
 }
 
-@keyframes hit {
+@keyframes punch {
   0% { background-position: -600px 50%; }
   100% { background-position: -1000px 50%; }
 }
 
-.punched {
-  animation: punch 0.8s steps(2, end) infinite;
+.takeHit {
+  animation: takeHit 0.8s steps(2, end) infinite;
 }
 
-@keyframes punched {
-  0% { background-position: -600px 100%; }
+@keyframes takeHit {
+  0% { background-position: 600px 100%; }
   100% { background-position: -1000px 100%; }
 }
 

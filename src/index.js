@@ -23,7 +23,7 @@ function initialize() {
     height: 50,
   });
 
-  controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', space: 'attack'});
+  controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
@@ -85,6 +85,10 @@ function update() {
     while (world.anyCollisionsWith(player)) {
       player.unCollide('down');
     }
+  }
+
+  if(controls.isPressed('attack')) {
+    player.attack();
   }
 }
 
