@@ -31,10 +31,14 @@ class World {
   }
 
   // Register an object to be tracked by the world
-  register(object) {
+  registerStatic(object) {
     object.element = document.createElement('div');
     object.element.classList.add(object.element.cssClass);
     this.gameField.appendChild(object.element);
+    this.playFieldObjects.push(object);
+  }
+
+  registerDynamic(object) {
     this.playFieldObjects.push(object);
   }
 

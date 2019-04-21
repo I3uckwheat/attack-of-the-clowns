@@ -98,7 +98,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_World__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/World */ "./src/scripts/World.js");
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+/* harmony import */ var _scripts_EnemyController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/EnemyController */ "./src/scripts/EnemyController.js");
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+
 
 
 
@@ -111,18 +113,22 @@ const gameField = document.querySelector('#game');
 let player;
 let world;
 let controls;
+let enemyController;
 
 function initialize() {
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"](gameField);
 
   world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField);
-  world.register({
+  world.registerStatic({
     cssClass: 'box',
     x: 600,
     y: 450,
     width: 67,
     height: 50,
   });
+
+  enemyController = new _scripts_EnemyController__WEBPACK_IMPORTED_MODULE_3__["default"](gameField, world);
+  enemyController.spawnEnemy();
 
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -134,6 +140,8 @@ function initialize() {
 }
 
 function update() {
+  enemyController.update();
+
   // update player
   if (controls.isPressed('right')) {
     player.startAnimations('walking', 'facing-left');
@@ -143,7 +151,8 @@ function update() {
       player.move('right');
     } else {
       world.update(-.1);
-      _scripts_Background__WEBPACK_IMPORTED_MODULE_3__["default"].left();
+      
+      _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].left();
     }
 
     while (world.anyCollisionsWith(player)) {
@@ -159,7 +168,7 @@ function update() {
       player.move('left');
     } else {
       world.update(.1);
-      _scripts_Background__WEBPACK_IMPORTED_MODULE_3__["default"].right();
+      _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].right();
     }
 
     while (world.anyCollisionsWith(player)) {
@@ -195,8 +204,9 @@ function update() {
 
 function draw() {
   player.draw();
-  _scripts_Background__WEBPACK_IMPORTED_MODULE_3__["default"].draw();
+  _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].draw();
   world.draw();
+  enemyController.draw();
 }
 
 function tick(){
@@ -244,6 +254,95 @@ const background = {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (background);
+
+/***/ }),
+
+/***/ "./src/scripts/Character.js":
+/*!**********************************!*\
+  !*** ./src/scripts/Character.js ***!
+  \**********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class Player {
+  constructor(gameField, spriteClass) {
+    this.element = document.createElement('div');
+    this.element.classList.add(spriteClass);
+    gameField.appendChild(this.element);
+
+    this.x = 100;
+    this.y = 400;
+    this.width = 110;
+    this.height = 200;
+    this.feet = { height: 25, width: 90 };
+    this.speed = 9;
+    this.direction = 'right';
+
+    this.weapon = 'fist';
+    this.attackCoolingDown = false;
+  }
+
+  draw() {
+    this.element.style.left = this.x + 'px';
+    this.element.style.top = this.y + 'px';
+    this.element.style.zIndex = this.y;
+  }
+
+  move(direction) {
+    this.moveCharacter(direction, this.speed);
+  }
+
+  attack() {
+    if (!this.attackCoolingDown) {
+      this.startAnimations('punch');
+
+      this.attackCoolingDown = true;
+      setTimeout(() => {
+        this.attackCoolingDown = false
+        this.endAnimations('punch');
+      }, 800);
+    }
+  }
+
+  startAnimations(...classes) {
+    this.element.classList.add(...classes);
+  }
+
+  endAnimations(...classes) {
+    this.element.classList.remove(...classes);
+  }
+
+  // move the character opposite the detected collision
+  unCollide(collisionDirection) {
+    this.moveCharacter(collisionDirection, -1);
+  }
+
+  moveCharacter(direction, speed) {
+    switch(direction) {
+      case "right":
+        this.x += speed;
+        this.direction = 'right';
+        break;
+      case "left":
+        this.x -= speed;
+        this.direction = 'left';
+        break;
+      case "up":
+        this.y -= speed;
+        break;
+      case "down":
+        this.y += speed;
+        break;
+      default:
+        throw "You must pass a direction";
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Player);
+
 
 /***/ }),
 
@@ -305,6 +404,77 @@ class Controls {
 
 /***/ }),
 
+/***/ "./src/scripts/Enemy.js":
+/*!******************************!*\
+  !*** ./src/scripts/Enemy.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
+
+
+class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(gameField, position) {
+    super(gameField, 'player');
+
+    this.x = position.x;
+    this.y = position.y;
+    this.speed = 2.8;
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Enemy);
+
+
+/***/ }),
+
+/***/ "./src/scripts/EnemyController.js":
+/*!****************************************!*\
+  !*** ./src/scripts/EnemyController.js ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
+
+
+class EnemyController {
+  constructor(gameField, world) {
+    this.gameField = gameField;
+    this.world = world;
+
+    this.enemies = [];
+  }
+
+  update() {
+    this.enemies.forEach(enemy => {
+      enemy.move('left');
+    });
+  }
+
+  draw() {
+    this.enemies.forEach(enemy => {
+      enemy.draw();
+    });
+  }
+
+  spawnEnemy() {
+    const enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](this.gameField, {x: 900, y: 200});
+    this.enemies.push(enemy);
+    this.world.registerDynamic(enemy);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (EnemyController);
+
+
+/***/ }),
+
 /***/ "./src/scripts/Player.js":
 /*!*******************************!*\
   !*** ./src/scripts/Player.js ***!
@@ -314,77 +484,12 @@ class Controls {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-class Player {
+/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
+
+
+class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(gameField) {
-    this.element = document.createElement('div');
-    this.element.classList.add('player');
-    gameField.appendChild(this.element);
-
-    this.x = 100;
-    this.y = 400;
-    this.width = 110;
-    this.height = 200;
-    this.feet = { height: 25, width: 90 };
-    this.speed = 9;
-    this.direction = 'right';
-
-    this.weapon = 'fist';
-    this.attackCoolingDown = false;
-  }
-
-  draw() {
-    this.element.style.left = this.x + 'px';
-    this.element.style.top = this.y + 'px';
-  }
-
-  move(direction) {
-    this.moveCharacter(direction, this.speed);
-  }
-
-  attack() {
-    if (!this.attackCoolingDown) {
-        this.startAnimations('punch');
-
-      this.attackCoolingDown = true;
-      setTimeout(() => {
-        this.attackCoolingDown = false
-        this.endAnimations('punch');
-      }, 800);
-    }
-  }
-
-  startAnimations(...classes) {
-    this.element.classList.add(...classes);
-  }
-
-  endAnimations(...classes) {
-    this.element.classList.remove(...classes);
-  }
-
-  // move the character opposite the detected collision
-  unCollide(collisionDirection) {
-    this.moveCharacter(collisionDirection, -1);
-  }
-
-  moveCharacter(direction, speed) {
-    switch(direction) {
-      case "right":
-        this.x += speed;
-        this.direction = 'right';
-        break;
-      case "left":
-        this.x -= speed;
-        this.direction = 'left';
-        break;
-      case "up":
-        this.y -= speed;
-        break;
-      case "down":
-        this.y += speed;
-        break;
-      default:
-        throw "You must pass a direction";
-    }
+    super(gameField, 'player');
   }
 }
 
@@ -435,10 +540,14 @@ class World {
   }
 
   // Register an object to be tracked by the world
-  register(object) {
+  registerStatic(object) {
     object.element = document.createElement('div');
     object.element.classList.add(object.element.cssClass);
     this.gameField.appendChild(object.element);
+    this.playFieldObjects.push(object);
+  }
+
+  registerDynamic(object) {
     this.playFieldObjects.push(object);
   }
 
