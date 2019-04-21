@@ -453,6 +453,7 @@ class EnemyController {
 
   update() {
     this.enemies.forEach(enemy => {
+      enemy.startAnimations('walking', 'facing-right');
       enemy.move('left');
     });
   }
@@ -464,7 +465,7 @@ class EnemyController {
   }
 
   spawnEnemy() {
-    const enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](this.gameField, {x: 900, y: 200});
+    const enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](this.gameField, {x: 700, y: 200});
     this.enemies.push(enemy);
     this.world.registerDynamic(enemy);
   }
@@ -531,18 +532,15 @@ class World {
 
   draw() {
     this.playFieldObjects.forEach(object => {
-      object.element.classList.add(object.cssClass);
       object.element.style.left = object.x + 'px';
       object.element.style.top = object.y + 'px';
-      object.element.style.height = object.height + 'px';
-      object.element.style.width = object.width + 'px';
     });
   }
 
   // Register an object to be tracked by the world
   registerStatic(object) {
     object.element = document.createElement('div');
-    object.element.classList.add(object.element.cssClass);
+    object.element.classList.add(object.cssClass);
     this.gameField.appendChild(object.element);
     this.playFieldObjects.push(object);
   }

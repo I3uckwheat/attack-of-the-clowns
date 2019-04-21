@@ -55,6 +55,8 @@ body {
 }
 
 .box {
+  width: 67px;
+  height: 50px;
   background-image: url("assets/barrel.png");
   position: absolute;
   background-size: contain;

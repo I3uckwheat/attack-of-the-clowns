@@ -10,6 +10,7 @@ class EnemyController {
 
   update() {
     this.enemies.forEach(enemy => {
+      enemy.startAnimations('walking', 'facing-right');
       enemy.move('left');
     });
   }
@@ -21,7 +22,7 @@ class EnemyController {
   }
 
   spawnEnemy() {
-    const enemy = new Enemy(this.gameField, {x: 900, y: 200});
+    const enemy = new Enemy(this.gameField, {x: 700, y: 200});
     this.enemies.push(enemy);
     this.world.registerDynamic(enemy);
   }
