@@ -1,6 +1,7 @@
 import World from "./scripts/World";
 import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
+import EnemyController from "./scripts/EnemyController";
 
 import background from "./scripts/Background";
 
@@ -10,18 +11,22 @@ const gameField = document.querySelector('#game');
 let player;
 let world;
 let controls;
+let enemyController;
 
 function initialize() {
   player = new Player(gameField);
 
   world = new World(gameField);
-  world.register({
+  world.registerStatic({
     cssClass: 'box',
     x: 600,
     y: 450,
     width: 67,
     height: 50,
   });
+
+  enemyController = new EnemyController(gameField, world);
+  enemyController.spawnEnemy();
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -33,6 +38,8 @@ function initialize() {
 }
 
 function update() {
+  enemyController.update();
+
   // update player
   if (controls.isPressed('right')) {
     player.startAnimations('walking', 'facing-left');
@@ -42,6 +49,7 @@ function update() {
       player.move('right');
     } else {
       world.update(-.1);
+      
       background.left();
     }
 
@@ -96,6 +104,7 @@ function draw() {
   player.draw();
   background.draw();
   world.draw();
+  enemyController.draw();
 }
 
 function tick(){

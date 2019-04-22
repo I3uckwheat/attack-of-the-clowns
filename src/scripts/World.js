@@ -22,19 +22,20 @@ class World {
 
   draw() {
     this.playFieldObjects.forEach(object => {
-      object.element.classList.add(object.cssClass);
       object.element.style.left = object.x + 'px';
       object.element.style.top = object.y + 'px';
-      object.element.style.height = object.height + 'px';
-      object.element.style.width = object.width + 'px';
     });
   }
 
   // Register an object to be tracked by the world
-  register(object) {
+  registerStatic(object) {
     object.element = document.createElement('div');
-    object.element.classList.add(object.element.cssClass);
+    object.element.classList.add(object.cssClass);
     this.gameField.appendChild(object.element);
+    this.playFieldObjects.push(object);
+  }
+
+  registerDynamic(object) {
     this.playFieldObjects.push(object);
   }
 
