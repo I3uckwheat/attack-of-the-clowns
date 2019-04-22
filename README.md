@@ -14,7 +14,7 @@ Using a random game concept generator, our team got the following concept:
 ### Game functionality
  - Looping side-scroller game
  - Different clowns with different attacks
- - Ability to move, jump, attack
+ - Ability to move and attack
  
 ### Random aspects of game play
  - random clown NPCs
