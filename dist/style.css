@@ -13,7 +13,7 @@ body {
   background: url("assets/ringLeaderSpriteSheet.png");
   z-index: 500;
   transform: scaleX(-1);
-  background-position: 200px;
+  background-position: -800px;
   width: 200px;
   height: 200px;
 }
@@ -23,7 +23,7 @@ body {
   background: url("assets/clownSpriteSheet.png");
   z-index: 500;
   transform: scaleX(-1);
-  background-position: 200px;
+  background-position: -600px;
   width: 200px;
   height: 200px;
 }
@@ -33,12 +33,21 @@ body {
 }
 
 @keyframes walk {
-  0% { background-position: -800px 0%; }
-  100% { background-position: 0px 0%; }
+  0% { background-position: 0px 0%; }
+  100% { background-position: -800px 0%; }
+}
+
+.hammer {
+  animation: hammer .5s steps(3, end) infinite;
+}
+
+@keyframes hammer {
+  0% { background-position: 400px 50%; }
+  100% { background-position: 1000px 50%; }
 }
 
 .punch {
-  animation: punch 0.8s steps(2, end) infinite;
+  animation: punch 0.5s steps(2, end) infinite;
 }
 
 @keyframes punch {
@@ -47,11 +56,11 @@ body {
 }
 
 .takeHit {
-  animation: takeHit 0.8s steps(2, end) infinite;
+  animation: takeHit 0.8s steps(2, end) 1;
 }
 
 @keyframes takeHit {
-  0% { background-position: 600px 100%; }
+  0% { background-position: -600px 100%; }
   100% { background-position: -1000px 100%; }
 }
 
