@@ -10,6 +10,16 @@ body {
 
 .player {
 	position: absolute;
+  background: url("assets/ringLeaderSpriteSheet.png");
+  z-index: 500;
+  transform: scaleX(-1);
+  background-position: 200px;
+  width: 200px;
+  height: 200px;
+}
+
+.clown {
+	position: absolute;
   background: url("assets/clownSpriteSheet.png");
   z-index: 500;
   transform: scaleX(-1);

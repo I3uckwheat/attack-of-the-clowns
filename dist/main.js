@@ -418,7 +418,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(gameField, position) {
-    super(gameField, 'player');
+    super(gameField, 'clown');
 
     this.x = position.x;
     this.y = position.y;
