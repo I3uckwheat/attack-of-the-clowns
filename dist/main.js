@@ -86,6 +86,201 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/process/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -140,7 +335,7 @@ function initialize() {
 }
 
 function update() {
-  enemyController.update();
+  enemyController.update(player);
 
   // update player
   if (controls.isPressed('right')) {
@@ -155,7 +350,7 @@ function update() {
       _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].left();
     }
 
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('right');
     }
   }  
@@ -164,14 +359,14 @@ function update() {
     player.endAnimations('facing-left');
 
     // stop on left edge of world 
-    if (player.x > 0 + 150) {
+    if (player.x > 150) {
       player.move('left');
     } else {
       world.update(.1);
       _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].right();
     }
 
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('left');
     }
   }
@@ -182,17 +377,18 @@ function update() {
       player.move('up');
     }
 
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('up');
     }
   }
   if (controls.isPressed('down')) {
     player.startAnimations('walking');
 
-    if (player.y + player.height < world.height) {
+    // FIXME: Magic number to fix player from going below the border of the play area
+    if (player.y + player.height <= world.height - 5) {
       player.move('down');
     }
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('down');
     }
   }
@@ -235,26 +431,28 @@ const background = {
       element: document.getElementById('playableArea'),
       position: 0,
       speed: 5,
+      reset: 520,
     },
     crowd: {
       element: document.getElementById('background'),
       position: 0,
       speed: 4,
+      reset: 520,
     },
   }, 
   right: function() {
     Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position + layer.speed);   
+      layer.position = (layer.position + layer.speed) % layer.reset;   
     });
   },
   left: function() {
     Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position - layer.speed);   
+      layer.position = (layer.position - layer.speed) % layer.reset;   
     });
   },
   draw: function() {
     this.layers.ring.element.style.backgroundPositionX = this.layers.ring.position + 'px';
-    this.layers.crowd.element.style.backgroundPositionX = this.layers.crowd.position + 'px';
+    this.layers.crowd.element.style.backgroundPositionX = this.layers.ring.position + 'px';
   }
 }
 
@@ -271,28 +469,59 @@ const background = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-class Player {
+/* WEBPACK VAR INJECTION */(function(process) {class Player {
   constructor(gameField, spriteClass) {
     this.element = document.createElement('div');
     this.element.classList.add(spriteClass);
+    this.element.style.border = "1px solid black";
     gameField.appendChild(this.element);
 
-    this.x = 100;
+    this.x = 0;
     this.y = 400;
-    this.width = 110;
-    this.height = 200;
-    this.feet = { height: 25, width: 90 };
+    this.spriteOffsetX = 72;
+    this.spriteOffsetY = 64;
+
+    this.width = 55;
+    this.height = 136;
     this.speed = 9;
     this.direction = 'right';
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.footbox = document.createElement('div');
+      this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
+      gameField.appendChild(this.footbox);
+
+      this.hitbox = document.createElement('div');
+      this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
+      gameField.appendChild(this.hitbox);
+    }
+  }
+
+  get feet() {
+    return {
+      x: this.x,
+      y: this.y + this.height - 25,
+      height: 25, 
+      width: this.width 
+    };
+
   }
 
   draw() {
-    this.element.style.left = this.x + 'px';
-    this.element.style.top = this.y + 'px';
+    this.element.style.left = this.x - this.spriteOffsetX + 'px';
+    this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.footbox.style.left = this.feet.x + 'px';
+      this.footbox.style.top = this.feet.y + 'px';
+
+      this.hitbox.style.left = this.x + 'px';
+      this.hitbox.style.top = this.y + 'px';
+    }
   }
 
   move(direction) {
@@ -348,6 +577,7 @@ class Player {
 
 /* harmony default export */ __webpack_exports__["default"] = (Player);
 
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -456,10 +686,15 @@ class EnemyController {
     this.enemies = [];
   }
 
-  update() {
+  update(player) {
     this.enemies.forEach(enemy => {
-      enemy.startAnimations('walking', 'facing-right');
-      enemy.move('left');
+      const xDistance = player.x - enemy.x;
+      const yDistance = player.y - enemy.y;
+
+      if (xDistance < -3 && xDistance < 0) enemy.move('left');
+      if (xDistance > 3 && xDistance > 0) enemy.move('right');
+      if (yDistance < -3 && yDistance < 0) enemy.move('up');
+      if (yDistance > 3 && yDistance > 0) enemy.move('down');
     });
   }
 
@@ -470,7 +705,7 @@ class EnemyController {
   }
 
   spawnEnemy() {
-    const enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](this.gameField, {x: 700, y: 200});
+    const enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](this.gameField, {x: 700, y: 300});
     this.enemies.push(enemy);
     this.world.registerDynamic(enemy);
   }
@@ -519,7 +754,7 @@ class World {
     this.height = 700;
 
     // the second number is the amount of walkable height from the bottom of the playArea
-    this.vTravelHeight = this.height - 500; 
+    this.vTravelHeight = this.height - 470; 
 
     // Sets up gamefield 
     this.gameField = gameField;
@@ -527,6 +762,8 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
+
+    // console.log(this.isColliding({x: 100, y: 100, width: 100, height: 100}, {x: 100, y: 100, width: 99, height: 99}));
   }
 
   update(speed) {
@@ -556,16 +793,12 @@ class World {
 
   anyCollisionsWith(entity) {
     return this.playFieldObjects.some(playFieldObject => {
-      return this.isCollidingWithFeet(playFieldObject, entity);
+      return this.isColliding(playFieldObject, entity);
     });
   }
 
   isCollidingWithFeet(rect1, rect2) {
     const feetPosition = {
-      x: rect2.x,
-      y: rect2.y + rect2.height - rect2.feet.height,
-      height: rect2.feet.height,
-      width: rect2.width,
     }
 
     return this.isColliding(rect1, feetPosition)
@@ -573,10 +806,10 @@ class World {
 
   isColliding(rect1, rect2) {
     return (
-      rect1.x > rect2.x &&                
-      rect1.x < rect2.x + rect2.width &&  
-      rect1.y + rect1.height > rect2.y &&                
-      rect1.y < rect2.y + rect2.height    
+      rect1.x + rect1.width > rect2.x  &&
+      rect1.x < rect2.x + rect2.width  &&
+      rect1.y + rect1.height > rect2.y &&
+      rect1.y < rect2.y + rect2.height
     );
   }
 }
