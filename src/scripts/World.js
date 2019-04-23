@@ -12,6 +12,8 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
+
+    // console.log(this.isColliding({x: 100, y: 100, width: 100, height: 100}, {x: 100, y: 100, width: 99, height: 99}));
   }
 
   update(speed) {
@@ -41,16 +43,12 @@ class World {
 
   anyCollisionsWith(entity) {
     return this.playFieldObjects.some(playFieldObject => {
-      return this.isCollidingWithFeet(playFieldObject, entity);
+      return this.isColliding(playFieldObject, entity);
     });
   }
 
   isCollidingWithFeet(rect1, rect2) {
     const feetPosition = {
-      x: rect2.x,
-      y: rect2.y + rect2.height - rect2.feet.height,
-      height: rect2.feet.height,
-      width: rect2.width,
     }
 
     return this.isColliding(rect1, feetPosition)
@@ -58,10 +56,10 @@ class World {
 
   isColliding(rect1, rect2) {
     return (
-      rect1.x > rect2.x &&                
-      rect1.x < rect2.x + rect2.width &&  
-      rect1.y + rect1.height > rect2.y &&                
-      rect1.y < rect2.y + rect2.height    
+      rect1.x + rect1.width > rect2.x  &&
+      rect1.x < rect2.x + rect2.width  &&
+      rect1.y + rect1.height > rect2.y &&
+      rect1.y < rect2.y + rect2.height
     );
   }
 }

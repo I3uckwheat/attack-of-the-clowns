@@ -4,10 +4,13 @@ class Player {
     this.element.classList.add(spriteClass);
     gameField.appendChild(this.element);
 
-    this.x = 100;
+    this.x = 0;
     this.y = 400;
-    this.width = 110;
-    this.height = 200;
+    this.spriteOffsetX = 63;
+    this.spriteOffsetY = 63;
+
+    this.width = 62;
+    this.height = 130;
     this.feet = { height: 25, width: 90 };
     this.speed = 9;
     this.direction = 'right';
@@ -17,8 +20,8 @@ class Player {
   }
 
   draw() {
-    this.element.style.left = this.x + 'px';
-    this.element.style.top = this.y + 'px';
+    this.element.style.left = this.x - this.spriteOffsetX + 'px';
+    this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
   }
 
