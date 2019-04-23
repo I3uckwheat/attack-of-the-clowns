@@ -12,7 +12,6 @@ class Player {
 
     this.width = 55;
     this.height = 136;
-    this.feet = { height: 25, width: 90 };
     this.speed = 9;
     this.direction = 'right';
 
@@ -24,6 +23,16 @@ class Player {
       this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
       gameField.appendChild(this.hitbox);
     }
+  }
+
+  get feet() {
+    return {
+      x: this.x,
+      y: this.y + this.height - 20,
+      height: 25, 
+      width: this.width 
+    };
+
   }
 
   draw() {

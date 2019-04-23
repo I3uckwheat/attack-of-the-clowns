@@ -26,7 +26,7 @@ function initialize() {
   });
 
   enemyController = new EnemyController(gameField, world);
-  enemyController.spawnEnemy();
+  // enemyController.spawnEnemy();
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -53,7 +53,7 @@ function update() {
       background.left();
     }
 
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('right');
     }
   }  
@@ -62,14 +62,14 @@ function update() {
     player.endAnimations('facing-left');
 
     // stop on left edge of world 
-    if (player.x > 0 + 150) {
+    if (player.x > 150) {
       player.move('left');
     } else {
       world.update(.1);
       background.right();
     }
 
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('left');
     }
   }
@@ -80,7 +80,7 @@ function update() {
       player.move('up');
     }
 
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('up');
     }
   }
@@ -90,7 +90,7 @@ function update() {
     if (player.y + player.height < world.height) {
       player.move('down');
     }
-    while (world.anyCollisionsWith(player)) {
+    while (world.anyCollisionsWith(player.feet)) {
       player.unCollide('down');
     }
   }
