@@ -293,9 +293,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_World__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/World */ "./src/scripts/World.js");
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
-/* harmony import */ var _scripts_EnemyController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/EnemyController */ "./src/scripts/EnemyController.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
-
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
 
 
 
@@ -308,12 +306,17 @@ const gameField = document.querySelector('#game');
 let player;
 let world;
 let controls;
-let enemyController;
 
 function initialize() {
-  player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"](gameField);
+  controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
+  controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
+  controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
+  controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
+  controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField);
+  player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+
+  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_3__["default"]);
   world.registerStatic({
     cssClass: 'box',
     x: 600,
@@ -322,87 +325,29 @@ function initialize() {
     height: 50,
   });
 
-  enemyController = new _scripts_EnemyController__WEBPACK_IMPORTED_MODULE_3__["default"](gameField, world);
-  enemyController.spawnEnemy();
-
-  controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
-  controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
-  controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
-  controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
-  controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
-
   requestAnimationFrame(tick);
 }
 
 function update() {
-  enemyController.update(player);
-
-  // update player
-  if (controls.isPressed('right')) {
-    player.startAnimations('walking', 'facing-left');
-
-    // stop on right edge of world 
-    if (player.x + player.width < world.width - 150) {
-      player.move('right');
-    } else {
-      world.update(-.1);
-      
-      _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].left();
-    }
-
-    while (world.anyCollisionsWith(player.feet)) {
-      player.unCollide('right');
-    }
-  }  
-  if (controls.isPressed('left')) {
-    player.startAnimations('walking');
-    player.endAnimations('facing-left');
-
-    // stop on left edge of world 
-    if (player.x > 150) {
-      player.move('left');
-    } else {
-      world.update(.1);
-      _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].right();
-    }
-
-    while (world.anyCollisionsWith(player.feet)) {
-      player.unCollide('left');
-    }
-  }
   if (controls.isPressed('up')) {
-    player.startAnimations('walking');
-
-    if (player.y > world.vTravelHeight) {
-      player.move('up');
-    }
-
-    while (world.anyCollisionsWith(player.feet)) {
-      player.unCollide('up');
-    }
+    world.movePlayer('up');
   }
   if (controls.isPressed('down')) {
-    player.startAnimations('walking');
-
-    // FIXME: Magic number to fix player from going below the border of the play area
-    if (player.y + player.height <= world.height - 5) {
-      player.move('down');
-    }
-    while (world.anyCollisionsWith(player.feet)) {
-      player.unCollide('down');
-    }
+    world.movePlayer('down');
+  }
+  if (controls.isPressed('left')) {
+    world.movePlayer('left');
+  }
+  if (controls.isPressed('right')) {
+    world.movePlayer('right');
   }
 
-  if(controls.isPressed('attack')) {
-    player.attack();
-  }
+  world.update();
 }
 
 function draw() {
   player.draw();
-  _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"].draw();
   world.draw();
-  enemyController.draw();
 }
 
 function tick(){
@@ -469,12 +414,11 @@ const background = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {class Player {
-  constructor(gameField, spriteClass) {
+/* WEBPACK VAR INJECTION */(function(process) {class Character {
+  constructor(spriteClass) {
     this.element = document.createElement('div');
     this.element.classList.add(spriteClass);
     this.element.style.border = "1px solid black";
-    gameField.appendChild(this.element);
 
     this.x = 0;
     this.y = 400;
@@ -492,11 +436,9 @@ __webpack_require__.r(__webpack_exports__);
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
-      gameField.appendChild(this.footbox);
 
       this.hitbox = document.createElement('div');
       this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
-      gameField.appendChild(this.hitbox);
     }
   }
 
@@ -524,10 +466,6 @@ __webpack_require__.r(__webpack_exports__);
     }
   }
 
-  move(direction) {
-    this.moveCharacter(direction, this.speed);
-  }
-
   attack() {
     if (!this.attackCoolingDown) {
       this.startAnimations('punch');
@@ -547,35 +485,9 @@ __webpack_require__.r(__webpack_exports__);
   endAnimations(...classes) {
     this.element.classList.remove(...classes);
   }
-
-  // move the character opposite the detected collision
-  unCollide(collisionDirection) {
-    this.moveCharacter(collisionDirection, -1);
-  }
-
-  moveCharacter(direction, speed) {
-    switch(direction) {
-      case "right":
-        this.x += speed;
-        this.direction = 'right';
-        break;
-      case "left":
-        this.x -= speed;
-        this.direction = 'left';
-        break;
-      case "up":
-        this.y -= speed;
-        break;
-      case "down":
-        this.y += speed;
-        break;
-      default:
-        throw "You must pass a direction";
-    }
-  }
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (Player);
+/* harmony default export */ __webpack_exports__["default"] = (Character);
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
@@ -639,83 +551,6 @@ class Controls {
 
 /***/ }),
 
-/***/ "./src/scripts/Enemy.js":
-/*!******************************!*\
-  !*** ./src/scripts/Enemy.js ***!
-  \******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
-
-
-class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(gameField, position) {
-    super(gameField, 'clown');
-
-    this.x = position.x;
-    this.y = position.y;
-    this.speed = 2.8;
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Enemy);
-
-
-/***/ }),
-
-/***/ "./src/scripts/EnemyController.js":
-/*!****************************************!*\
-  !*** ./src/scripts/EnemyController.js ***!
-  \****************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
-
-
-class EnemyController {
-  constructor(gameField, world) {
-    this.gameField = gameField;
-    this.world = world;
-
-    this.enemies = [];
-  }
-
-  update(player) {
-    this.enemies.forEach(enemy => {
-      const xDistance = (player.x + (player.width / 2)) - (enemy.x + (enemy.width / 2));
-      const yDistance = (player.y + (player.height / 2)) - (enemy.y + (enemy.height / 2));
-
-      if (xDistance < -player.width) enemy.move('left');
-      if (xDistance > player.width) enemy.move('right');
-      if (yDistance < 0 && yDistance < -3) enemy.move('up');
-      if (yDistance > 0 && yDistance > 3) enemy.move('down');
-    });
-  }
-
-  draw() {
-    this.enemies.forEach(enemy => {
-      enemy.draw();
-    });
-  }
-
-  spawnEnemy() {
-    const enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](this.gameField, {x: 700, y: 300});
-    this.enemies.push(enemy);
-    this.world.registerDynamic(enemy);
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (EnemyController);
-
-
-/***/ }),
-
 /***/ "./src/scripts/Player.js":
 /*!*******************************!*\
   !*** ./src/scripts/Player.js ***!
@@ -729,8 +564,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(gameField) {
-    super(gameField, 'player');
+  constructor() {
+    super('player');
   }
 }
 
@@ -749,7 +584,15 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 class World {
-  constructor(gameField) {
+  constructor(gameField, player, background) {
+    this.background = background;
+
+    // Sets up player
+    this.player = player;
+    gameField.appendChild(player.element);
+    gameField.appendChild(player.footbox);
+    gameField.appendChild(player.hitbox);
+
     this.width = 1300;
     this.height = 700;
 
@@ -762,17 +605,55 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
-
-    // console.log(this.isColliding({x: 100, y: 100, width: 100, height: 100}, {x: 100, y: 100, width: 99, height: 99}));
+    this.dynamicPlayFieldObjects = [];
   }
 
-  update(speed) {
+  update() {}
+
+  movePlayer(direction) {
+    const player = this.player;
+    switch(direction) {
+      case "up":
+        player.startAnimations('walking');
+        player.y -= player.speed;
+        break;
+      case "down":
+        player.startAnimations('walking');
+        player.y += player.speed;
+        break;
+      case "left":
+        player.startAnimations('walking');
+        player.endAnimations('facing-left');
+        player.x -= player.speed;
+        break;
+      case "right":
+        player.startAnimations('walking');
+        player.startAnimations('facing-left');
+        player.x += player.speed;
+        break;
+    }
+
+    if (player.x < 150) {
+      player.x = 150;
+      this.background.right()
+      this.moveCamera(5);
+    } else if (player.x > this.width - 150) {
+      player.x = this.width - 150;
+      this.background.left()
+      this.moveCamera(-5);
+    }
+  }
+
+  moveCamera(amount) {
     this.playFieldObjects.forEach(object => {
-      object.x += speed * 50;
+      object.x += amount;
     });
   }
 
   draw() {
+    this.player.draw();
+    this.background.draw();
+
     this.playFieldObjects.forEach(object => {
       object.element.style.left = object.x + 'px';
       object.element.style.top = object.y + 'px';
@@ -784,10 +665,6 @@ class World {
     object.element = document.createElement('div');
     object.element.classList.add(object.cssClass);
     this.gameField.appendChild(object.element);
-    this.playFieldObjects.push(object);
-  }
-
-  registerDynamic(object) {
     this.playFieldObjects.push(object);
   }
 

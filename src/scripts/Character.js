@@ -1,9 +1,8 @@
-class Player {
-  constructor(gameField, spriteClass) {
+class Character {
+  constructor(spriteClass) {
     this.element = document.createElement('div');
     this.element.classList.add(spriteClass);
     this.element.style.border = "1px solid black";
-    gameField.appendChild(this.element);
 
     this.x = 0;
     this.y = 400;
@@ -21,11 +20,9 @@ class Player {
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
-      gameField.appendChild(this.footbox);
 
       this.hitbox = document.createElement('div');
       this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
-      gameField.appendChild(this.hitbox);
     }
   }
 
@@ -53,10 +50,6 @@ class Player {
     }
   }
 
-  move(direction) {
-    this.moveCharacter(direction, this.speed);
-  }
-
   attack() {
     if (!this.attackCoolingDown) {
       this.startAnimations('punch');
@@ -76,32 +69,6 @@ class Player {
   endAnimations(...classes) {
     this.element.classList.remove(...classes);
   }
-
-  // move the character opposite the detected collision
-  unCollide(collisionDirection) {
-    this.moveCharacter(collisionDirection, -1);
-  }
-
-  moveCharacter(direction, speed) {
-    switch(direction) {
-      case "right":
-        this.x += speed;
-        this.direction = 'right';
-        break;
-      case "left":
-        this.x -= speed;
-        this.direction = 'left';
-        break;
-      case "up":
-        this.y -= speed;
-        break;
-      case "down":
-        this.y += speed;
-        break;
-      default:
-        throw "You must pass a direction";
-    }
-  }
 }
 
-export default Player;
+export default Character;

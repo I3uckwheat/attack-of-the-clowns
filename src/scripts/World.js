@@ -1,5 +1,13 @@
 class World {
-  constructor(gameField) {
+  constructor(gameField, player, background) {
+    this.background = background;
+
+    // Sets up player
+    this.player = player;
+    gameField.appendChild(player.element);
+    gameField.appendChild(player.footbox);
+    gameField.appendChild(player.hitbox);
+
     this.width = 1300;
     this.height = 700;
 
@@ -12,17 +20,55 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
-
-    // console.log(this.isColliding({x: 100, y: 100, width: 100, height: 100}, {x: 100, y: 100, width: 99, height: 99}));
+    this.dynamicPlayFieldObjects = [];
   }
 
-  update(speed) {
+  update() {}
+
+  movePlayer(direction) {
+    const player = this.player;
+    switch(direction) {
+      case "up":
+        player.startAnimations('walking');
+        player.y -= player.speed;
+        break;
+      case "down":
+        player.startAnimations('walking');
+        player.y += player.speed;
+        break;
+      case "left":
+        player.startAnimations('walking');
+        player.endAnimations('facing-left');
+        player.x -= player.speed;
+        break;
+      case "right":
+        player.startAnimations('walking');
+        player.startAnimations('facing-left');
+        player.x += player.speed;
+        break;
+    }
+
+    if (player.x < 150) {
+      player.x = 150;
+      this.background.right()
+      this.moveCamera(5);
+    } else if (player.x > this.width - 150) {
+      player.x = this.width - 150;
+      this.background.left()
+      this.moveCamera(-5);
+    }
+  }
+
+  moveCamera(amount) {
     this.playFieldObjects.forEach(object => {
-      object.x += speed * 50;
+      object.x += amount;
     });
   }
 
   draw() {
+    this.player.draw();
+    this.background.draw();
+
     this.playFieldObjects.forEach(object => {
       object.element.style.left = object.x + 'px';
       object.element.style.top = object.y + 'px';
@@ -34,10 +80,6 @@ class World {
     object.element = document.createElement('div');
     object.element.classList.add(object.cssClass);
     this.gameField.appendChild(object.element);
-    this.playFieldObjects.push(object);
-  }
-
-  registerDynamic(object) {
     this.playFieldObjects.push(object);
   }
 
