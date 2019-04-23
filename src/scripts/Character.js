@@ -2,27 +2,39 @@ class Player {
   constructor(gameField, spriteClass) {
     this.element = document.createElement('div');
     this.element.classList.add(spriteClass);
+    this.element.style.border = "1px solid black";
     gameField.appendChild(this.element);
 
     this.x = 0;
     this.y = 400;
-    this.spriteOffsetX = 63;
-    this.spriteOffsetY = 63;
+    this.spriteOffsetX = 72;
+    this.spriteOffsetY = 64;
 
-    this.width = 62;
-    this.height = 130;
+    this.width = 55;
+    this.height = 136;
     this.feet = { height: 25, width: 90 };
     this.speed = 9;
     this.direction = 'right';
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.hitbox = document.createElement('div');
+      this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
+      gameField.appendChild(this.hitbox);
+    }
   }
 
   draw() {
     this.element.style.left = this.x - this.spriteOffsetX + 'px';
     this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.hitbox.style.left = this.x + 'px';
+      this.hitbox.style.top = this.y + 'px';
+    }
   }
 
   move(direction) {
