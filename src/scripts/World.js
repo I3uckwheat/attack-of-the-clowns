@@ -43,15 +43,11 @@ class World {
 
   anyCollisionsWith(entity) {
     return this.playFieldObjects.some(playFieldObject => {
+      if(playFieldObject.feet) {
+        return this.isColliding(playFieldObject.feet, entity);
+      }
       return this.isColliding(playFieldObject, entity);
     });
-  }
-
-  isCollidingWithFeet(rect1, rect2) {
-    const feetPosition = {
-    }
-
-    return this.isColliding(rect1, feetPosition)
   }
 
   isColliding(rect1, rect2) {

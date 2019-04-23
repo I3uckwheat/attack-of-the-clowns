@@ -10,13 +10,13 @@ class EnemyController {
 
   update(player) {
     this.enemies.forEach(enemy => {
-      const xDistance = player.x - enemy.x;
-      const yDistance = player.y - enemy.y;
+      const xDistance = (player.x + (player.width / 2)) - (enemy.x + (enemy.width / 2));
+      const yDistance = (player.y + (player.height / 2)) - (enemy.y + (enemy.height / 2));
 
-      if (xDistance < -3 && xDistance < 0) enemy.move('left');
-      if (xDistance > 3 && xDistance > 0) enemy.move('right');
-      if (yDistance < -3 && yDistance < 0) enemy.move('up');
-      if (yDistance > 3 && yDistance > 0) enemy.move('down');
+      if (xDistance < -player.width) enemy.move('left');
+      if (xDistance > player.width) enemy.move('right');
+      if (yDistance < 0 && yDistance < -3) enemy.move('up');
+      if (yDistance > 0 && yDistance > 3) enemy.move('down');
     });
   }
 
