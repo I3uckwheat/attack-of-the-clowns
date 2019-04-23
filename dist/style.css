@@ -6,6 +6,7 @@ body {
 
 #game {
   border: 1px solid black;
+  overflow: hidden;
 }
 
 .player {
@@ -82,9 +83,19 @@ body {
   background-repeat: no-repeat;
 }
 
-#ring {
-  height: 711px;
+#playableArea {
+  height: 533px;
   width: 2595px;
   position:absolute;
+  top: 287px;
   background-image:url("assets/ring.png");
+  z-index: -1;
+}
+
+#background {
+  height: 287px;
+  width: 2595px;
+  position:absolute;
+  background-image:url("assets/crowd.png");
+  z-index: -2;
 }
