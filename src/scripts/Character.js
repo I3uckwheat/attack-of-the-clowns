@@ -19,6 +19,10 @@ class Player {
     this.attackCoolingDown = false;
 
     if (process.env.DEVELOPMENT || true) {
+      this.footbox = document.createElement('div');
+      this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
+      gameField.appendChild(this.footbox);
+
       this.hitbox = document.createElement('div');
       this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
       gameField.appendChild(this.hitbox);
@@ -28,7 +32,7 @@ class Player {
   get feet() {
     return {
       x: this.x,
-      y: this.y + this.height - 20,
+      y: this.y + this.height - 25,
       height: 25, 
       width: this.width 
     };
@@ -41,6 +45,9 @@ class Player {
     this.element.style.zIndex = this.y;
 
     if (process.env.DEVELOPMENT || true) {
+      this.footbox.style.left = this.feet.x + 'px';
+      this.footbox.style.top = this.feet.y + 'px';
+
       this.hitbox.style.left = this.x + 'px';
       this.hitbox.style.top = this.y + 'px';
     }

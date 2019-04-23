@@ -4,7 +4,7 @@ class World {
     this.height = 700;
 
     // the second number is the amount of walkable height from the bottom of the playArea
-    this.vTravelHeight = this.height - 500; 
+    this.vTravelHeight = this.height - 470; 
 
     // Sets up gamefield 
     this.gameField = gameField;
