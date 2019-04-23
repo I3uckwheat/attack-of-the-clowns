@@ -87,7 +87,8 @@ function update() {
   if (controls.isPressed('down')) {
     player.startAnimations('walking');
 
-    if (player.y + player.height < world.height) {
+    // FIXME: Magic number to fix player from going below the border of the play area
+    if (player.y + player.height <= world.height - 5) {
       player.move('down');
     }
     while (world.anyCollisionsWith(player.feet)) {
