@@ -8,10 +8,15 @@ class EnemyController {
     this.enemies = [];
   }
 
-  update() {
+  update(player) {
     this.enemies.forEach(enemy => {
-      enemy.startAnimations('walking', 'facing-right');
-      enemy.move('left');
+      const xDistance = player.x - enemy.x;
+      const yDistance = player.y - enemy.y;
+
+      if (xDistance < -3 && xDistance < 0) enemy.move('left');
+      if (xDistance > 3 && xDistance > 0) enemy.move('right');
+      if (yDistance < -3 && yDistance < 0) enemy.move('up');
+      if (yDistance > 3 && yDistance > 0) enemy.move('down');
     });
   }
 
@@ -22,7 +27,7 @@ class EnemyController {
   }
 
   spawnEnemy() {
-    const enemy = new Enemy(this.gameField, {x: 700, y: 200});
+    const enemy = new Enemy(this.gameField, {x: 700, y: 300});
     this.enemies.push(enemy);
     this.world.registerDynamic(enemy);
   }

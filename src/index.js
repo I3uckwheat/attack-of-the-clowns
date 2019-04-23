@@ -26,7 +26,7 @@ function initialize() {
   });
 
   enemyController = new EnemyController(gameField, world);
-  // enemyController.spawnEnemy();
+  enemyController.spawnEnemy();
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -38,7 +38,7 @@ function initialize() {
 }
 
 function update() {
-  enemyController.update();
+  enemyController.update(player);
 
   // update player
   if (controls.isPressed('right')) {
