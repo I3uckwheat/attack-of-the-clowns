@@ -24,7 +24,7 @@ body {
   background: url("assets/clownSpriteSheet.png");
   z-index: 500;
   transform: scaleX(-1);
-  background-position: -800px;
+  background-position: -600px;
   width: 200px;
   height: 200px;
 }
@@ -63,15 +63,6 @@ body {
 @keyframes takeHit {
   0% { background-position: -600px 100%; }
   100% { background-position: -1000px 100%; }
-}
-
-.fall {
-  animation: fall 0.25s steps(3, end) 1 normal forwards;
-}
-
-@keyframes fall {
-  0% {background-position: -600px 100%;}
-  100% {background-position: 0px 100%;}
 }
 
 .facing-left {
