@@ -689,16 +689,12 @@ class World {
         break;
     }
 
-    if(this.hasCollisions(player.feet)) {
+    if(this.hasCollisions(player.feet) ||
+       player.y < this.playAreaTop || 
+       player.y > this.playAreaBottom)
+    {
       player.x = currentPosition.x;
       player.y = currentPosition.y;
-    }
-
-    // Top and bottom bounds
-    if (player.y < this.playAreaTop) {
-      this.player.y = this.playAreaTop;
-    } else if (player.y > this.playAreaBottom) {
-      this.player.y = this.playAreaBottom;
     }
 
     // Edge bounds
