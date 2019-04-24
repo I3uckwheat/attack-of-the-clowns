@@ -7,9 +7,13 @@ class Entity {
 
     this.element = document.createElement('div');
     this.element.classList.add(spriteSheetClass);
-    this.element.style.border = "1px solid black";
     this.element.style.left = this.x;
     this.element.style.top = this.y;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.hitbox = document.createElement('div');
+      this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
+    }
   }
 
   get midX() {
@@ -42,6 +46,16 @@ class Entity {
 
   get bottom() {
     return this.y + this.height;
+  }
+
+  draw() {
+    this.element.style.left = this.x + 'px';
+    this.element.style.top = this.y + 'px';
+
+    if (process.env.DEVELOPMENT || true) {
+      this.hitbox.style.left = this.x + 'px';
+      this.hitbox.style.top = this.y + 'px';
+    }
   }
 }
 

@@ -7,6 +7,8 @@ class Character extends Entity{
     this.spriteOffsetX = 72;
     this.spriteOffsetY = 64;
 
+    this.footHeight = 25;
+
     this.speed = 9;
 
     this.weapon = 'fist';
@@ -15,32 +17,28 @@ class Character extends Entity{
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
-
-      this.hitbox = document.createElement('div');
-      this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
     }
   }
 
   get feet() {
     return {
       x: this.x,
-      y: this.y + this.height - 25,
-      height: 25, 
+      y: this.y + this.height - this.footHeight,
+      height: this.footHeight, 
       width: this.width 
     };
   }
 
   draw() {
+    super.draw();
     this.element.style.left = this.x - this.spriteOffsetX + 'px';
     this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
 
     if (process.env.DEVELOPMENT || true) {
+      this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
       this.footbox.style.left = this.feet.x + 'px';
       this.footbox.style.top = this.feet.y + 'px';
-
-      this.hitbox.style.left = this.x + 'px';
-      this.hitbox.style.top = this.y + 'px';
     }
   }
 

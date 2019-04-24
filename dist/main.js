@@ -420,6 +420,8 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     this.spriteOffsetX = 72;
     this.spriteOffsetY = 64;
 
+    this.footHeight = 25;
+
     this.speed = 9;
 
     this.weapon = 'fist';
@@ -428,32 +430,28 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
-
-      this.hitbox = document.createElement('div');
-      this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
     }
   }
 
   get feet() {
     return {
       x: this.x,
-      y: this.y + this.height - 25,
-      height: 25, 
+      y: this.y + this.height - this.footHeight,
+      height: this.footHeight, 
       width: this.width 
     };
   }
 
   draw() {
+    super.draw();
     this.element.style.left = this.x - this.spriteOffsetX + 'px';
     this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
 
     if (process.env.DEVELOPMENT || true) {
+      this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
       this.footbox.style.left = this.feet.x + 'px';
       this.footbox.style.top = this.feet.y + 'px';
-
-      this.hitbox.style.left = this.x + 'px';
-      this.hitbox.style.top = this.y + 'px';
     }
   }
 
@@ -542,6 +540,34 @@ class Controls {
 
 /***/ }),
 
+/***/ "./src/scripts/Enemy.js":
+/*!******************************!*\
+  !*** ./src/scripts/Enemy.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
+
+
+class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(position) {
+    super('clown');
+
+    this.x = position.x;
+    this.y = position.y;
+    this.footHeight = 38;
+    this.speed = 2.8;
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Enemy);
+
+
+/***/ }),
+
 /***/ "./src/scripts/Entity.js":
 /*!*******************************!*\
   !*** ./src/scripts/Entity.js ***!
@@ -551,7 +577,7 @@ class Controls {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-class Entity {
+/* WEBPACK VAR INJECTION */(function(process) {class Entity {
   constructor(x, y, width, height, spriteSheetClass) {
     this.x = x;
     this.y = y;
@@ -560,9 +586,13 @@ class Entity {
 
     this.element = document.createElement('div');
     this.element.classList.add(spriteSheetClass);
-    this.element.style.border = "1px solid black";
     this.element.style.left = this.x;
     this.element.style.top = this.y;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.hitbox = document.createElement('div');
+      this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
+    }
   }
 
   get midX() {
@@ -596,9 +626,20 @@ class Entity {
   get bottom() {
     return this.y + this.height;
   }
+
+  draw() {
+    this.element.style.left = this.x + 'px';
+    this.element.style.top = this.y + 'px';
+
+    if (process.env.DEVELOPMENT || true) {
+      this.hitbox.style.left = this.x + 'px';
+      this.hitbox.style.top = this.y + 'px';
+    }
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Entity);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
@@ -634,6 +675,9 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
+
+
 class World {
   constructor(gameField, player, background) {
     this.background = background;
@@ -656,6 +700,9 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
+    this.enemies = [];
+
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 400, y: 400}))
   }
 
   update() {
@@ -711,7 +758,8 @@ class World {
 
   hasCollisions(entity1) {
     return this.playFieldObjects.some(entity2 => {
-      return this.isColliding(entity1, entity2);
+      if (entity2.feet) return this.isColliding(entity1, entity2.feet);
+      return this.isColliding(entity1, entity2)
     });
   };
 
@@ -734,6 +782,11 @@ class World {
   registerObject(object) {
     this.playFieldObjects.push(object);
     this.gameField.appendChild(object.element);
+
+    if(process.env.DEVELOPMENT || true) {
+      this.gameField.appendChild(object.hitbox);
+      if(object.footbox) this.gameField.appendChild(object.footbox);
+    }
   }
   
   draw() {
@@ -741,13 +794,13 @@ class World {
     this.background.draw();
 
     this.playFieldObjects.forEach(object => {
-      object.element.style.left = object.x + 'px';
-      object.element.style.top = object.y + 'px';
+      object.draw();
     });
   }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (World);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ })
 

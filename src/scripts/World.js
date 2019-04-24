@@ -1,3 +1,5 @@
+import Enemy from "./Enemy";
+
 class World {
   constructor(gameField, player, background) {
     this.background = background;
@@ -20,6 +22,9 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
+    this.enemies = [];
+
+    this.registerObject(new Enemy({x: 400, y: 400}))
   }
 
   update() {
@@ -75,7 +80,8 @@ class World {
 
   hasCollisions(entity1) {
     return this.playFieldObjects.some(entity2 => {
-      return this.isColliding(entity1, entity2);
+      if (entity2.feet) return this.isColliding(entity1, entity2.feet);
+      return this.isColliding(entity1, entity2)
     });
   };
 
@@ -98,6 +104,11 @@ class World {
   registerObject(object) {
     this.playFieldObjects.push(object);
     this.gameField.appendChild(object.element);
+
+    if(process.env.DEVELOPMENT || true) {
+      this.gameField.appendChild(object.hitbox);
+      if(object.footbox) this.gameField.appendChild(object.footbox);
+    }
   }
   
   draw() {
@@ -105,8 +116,7 @@ class World {
     this.background.draw();
 
     this.playFieldObjects.forEach(object => {
-      object.element.style.left = object.x + 'px';
-      object.element.style.top = object.y + 'px';
+      object.draw();
     });
   }
 }
