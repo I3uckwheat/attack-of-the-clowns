@@ -596,8 +596,8 @@ class World {
     this.width = 1300;
     this.height = 700;
 
-    // the second number is the amount of walkable height from the bottom of the playArea
-    this.vTravelHeight = this.height - 470; 
+    this.playAreaTop = this.height - 470;            // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 335;    // Bottom of walkable area
 
     // Sets up gamefield 
     this.gameField = gameField;
@@ -608,7 +608,9 @@ class World {
     this.dynamicPlayFieldObjects = [];
   }
 
-  update() {}
+  update() {
+    // Update enemies
+  }
 
   movePlayer(direction) {
     const player = this.player;
@@ -633,6 +635,13 @@ class World {
         break;
     }
 
+    if (player.y < this.playAreaTop) {
+      this.player.y = this.playAreaTop;
+    } else if (player.y > this.playAreaBottom) {
+      this.player.y = this.playAreaBottom;
+    }
+
+
     if (player.x < 150) {
       player.x = 150;
       this.background.right()
@@ -647,16 +656,6 @@ class World {
   moveCamera(amount) {
     this.playFieldObjects.forEach(object => {
       object.x += amount;
-    });
-  }
-
-  draw() {
-    this.player.draw();
-    this.background.draw();
-
-    this.playFieldObjects.forEach(object => {
-      object.element.style.left = object.x + 'px';
-      object.element.style.top = object.y + 'px';
     });
   }
 
@@ -684,6 +683,16 @@ class World {
       rect1.y + rect1.height > rect2.y &&
       rect1.y < rect2.y + rect2.height
     );
+  }
+  
+  draw() {
+    this.player.draw();
+    this.background.draw();
+
+    this.playFieldObjects.forEach(object => {
+      object.element.style.left = object.x + 'px';
+      object.element.style.top = object.y + 'px';
+    });
   }
 }
 
