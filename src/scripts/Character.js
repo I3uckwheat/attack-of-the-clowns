@@ -1,18 +1,13 @@
-class Character {
-  constructor(spriteClass) {
-    this.element = document.createElement('div');
-    this.element.classList.add(spriteClass);
-    this.element.style.border = "1px solid black";
+import Entity from "./Entity";
 
-    this.x = 0;
-    this.y = 400;
+class Character extends Entity{
+  constructor(spriteClass) {
+    super(300, 400, 55, 136, spriteClass);
+
     this.spriteOffsetX = 72;
     this.spriteOffsetY = 64;
 
-    this.width = 55;
-    this.height = 136;
     this.speed = 9;
-    this.direction = 'right';
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
@@ -33,7 +28,6 @@ class Character {
       height: 25, 
       width: this.width 
     };
-
   }
 
   draw() {

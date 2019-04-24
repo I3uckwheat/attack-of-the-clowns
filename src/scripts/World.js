@@ -20,15 +20,18 @@ class World {
     this.gameField.style.width =  this.width + 'px';
 
     this.playFieldObjects = [];
-    this.dynamicPlayFieldObjects = [];
   }
 
   update() {
-    // Update enemies
   }
 
   movePlayer(direction) {
     const player = this.player;
+    const currentPosition = {
+      x: player.x,
+      y: player.y
+    }
+
     switch(direction) {
       case "up":
         player.startAnimations('walking');
@@ -50,13 +53,19 @@ class World {
         break;
     }
 
+    if(this.hasCollisions(player.feet)) {
+      player.x = currentPosition.x;
+      player.y = currentPosition.y;
+    }
+
+    // Top and bottom bounds
     if (player.y < this.playAreaTop) {
       this.player.y = this.playAreaTop;
     } else if (player.y > this.playAreaBottom) {
       this.player.y = this.playAreaBottom;
     }
 
-
+    // Edge bounds
     if (player.x < 150) {
       player.x = 150;
       this.background.right()
@@ -68,28 +77,11 @@ class World {
     }
   }
 
-  moveCamera(amount) {
-    this.playFieldObjects.forEach(object => {
-      object.x += amount;
+  hasCollisions(entity1) {
+    return this.playFieldObjects.some(entity2 => {
+      return this.isColliding(entity1, entity2);
     });
-  }
-
-  // Register an object to be tracked by the world
-  registerStatic(object) {
-    object.element = document.createElement('div');
-    object.element.classList.add(object.cssClass);
-    this.gameField.appendChild(object.element);
-    this.playFieldObjects.push(object);
-  }
-
-  anyCollisionsWith(entity) {
-    return this.playFieldObjects.some(playFieldObject => {
-      if(playFieldObject.feet) {
-        return this.isColliding(playFieldObject.feet, entity);
-      }
-      return this.isColliding(playFieldObject, entity);
-    });
-  }
+  };
 
   isColliding(rect1, rect2) {
     return (
@@ -98,6 +90,18 @@ class World {
       rect1.y + rect1.height > rect2.y &&
       rect1.y < rect2.y + rect2.height
     );
+  }
+
+  moveCamera(amount) {
+    this.playFieldObjects.forEach(object => {
+      object.x += amount;
+    });
+  }
+
+  // Register an object to be tracked by the world
+  registerObject(object) {
+    this.playFieldObjects.push(object);
+    this.gameField.appendChild(object.element);
   }
   
   draw() {

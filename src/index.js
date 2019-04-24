@@ -1,6 +1,7 @@
 import World from "./scripts/World";
 import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
+import Entity from "./scripts/Entity";
 
 import background from "./scripts/Background";
 
@@ -21,13 +22,7 @@ function initialize() {
   player = new Player();
 
   world = new World(gameField, player, background);
-  world.registerStatic({
-    cssClass: 'box',
-    x: 600,
-    y: 450,
-    width: 67,
-    height: 50,
-  });
+  world.registerObject(new Entity(600, 450, 67, 50, 'box'));
 
   requestAnimationFrame(tick);
 }
