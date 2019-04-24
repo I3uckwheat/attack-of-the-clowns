@@ -1,29 +1,45 @@
-class Player {
-  constructor(gameField, spriteClass) {
-    this.element = document.createElement('div');
-    this.element.classList.add(spriteClass);
-    gameField.appendChild(this.element);
+import Entity from "./Entity";
 
-    this.x = 100;
-    this.y = 400;
-    this.width = 110;
-    this.height = 200;
-    this.feet = { height: 25, width: 90 };
+class Character extends Entity{
+  constructor(spriteClass) {
+    super(300, 400, 55, 136, spriteClass);
+
+    this.spriteOffsetX = 72;
+    this.spriteOffsetY = 64;
+
+    this.footHeight = 25;
+
     this.speed = 9;
-    this.direction = 'right';
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+
+    if (process.env.DEVELOPMENT || true) {
+      this.footbox = document.createElement('div');
+      this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
+    }
+  }
+
+  get feet() {
+    return {
+      x: this.x,
+      y: this.y + this.height - this.footHeight,
+      height: this.footHeight, 
+      width: this.width 
+    };
   }
 
   draw() {
-    this.element.style.left = this.x + 'px';
-    this.element.style.top = this.y + 'px';
+    super.draw();
+    this.element.style.left = this.x - this.spriteOffsetX + 'px';
+    this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
-  }
 
-  move(direction) {
-    this.moveCharacter(direction, this.speed);
+    if (process.env.DEVELOPMENT || true) {
+      this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
+      this.footbox.style.left = this.feet.x + 'px';
+      this.footbox.style.top = this.feet.y + 'px';
+    }
   }
 
   attack() {
@@ -45,32 +61,6 @@ class Player {
   endAnimations(...classes) {
     this.element.classList.remove(...classes);
   }
-
-  // move the character opposite the detected collision
-  unCollide(collisionDirection) {
-    this.moveCharacter(collisionDirection, -1);
-  }
-
-  moveCharacter(direction, speed) {
-    switch(direction) {
-      case "right":
-        this.x += speed;
-        this.direction = 'right';
-        break;
-      case "left":
-        this.x -= speed;
-        this.direction = 'left';
-        break;
-      case "up":
-        this.y -= speed;
-        break;
-      case "down":
-        this.y += speed;
-        break;
-      default:
-        throw "You must pass a direction";
-    }
-  }
 }
 
-export default Player;
+export default Character;
