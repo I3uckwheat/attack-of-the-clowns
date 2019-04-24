@@ -309,6 +309,9 @@ let player;
 let world;
 let controls;
 
+// Make your menu, and then when you want to the game, change this variable to `1` an the game will run  
+let gameState = 0;
+
 function initialize() {
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -326,20 +329,22 @@ function initialize() {
 }
 
 function update() {
-  if (controls.isPressed('up')) {
-    world.movePlayer('up');
-  }
-  if (controls.isPressed('down')) {
-    world.movePlayer('down');
-  }
-  if (controls.isPressed('left')) {
-    world.movePlayer('left');
-  }
-  if (controls.isPressed('right')) {
-    world.movePlayer('right');
-  }
+  if (gameState === 1) {
+    if (controls.isPressed('up')) {
+      world.movePlayer('up');
+    }
+    if (controls.isPressed('down')) {
+      world.movePlayer('down');
+    }
+    if (controls.isPressed('left')) {
+      world.movePlayer('left');
+    }
+    if (controls.isPressed('right')) {
+      world.movePlayer('right');
+    }
 
-  world.update();
+    world.update();
+  }
 }
 
 function draw() {
