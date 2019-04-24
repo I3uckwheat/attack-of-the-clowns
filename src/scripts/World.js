@@ -43,7 +43,7 @@ class World {
         enemy.x += enemy.speed;
       }
 
-      if(this.hasCollisions(enemy.feet, index))
+      if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
       {
         enemy.x = currentPosition.x;
       }
@@ -55,7 +55,7 @@ class World {
         enemy.y += enemy.speed;
       }
 
-      if(this.hasCollisions(enemy.feet, index))
+      if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
       {
         enemy.y = currentPosition.y;
       }
