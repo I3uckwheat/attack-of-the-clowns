@@ -23,6 +23,7 @@ function initialize() {
 
   world = new World(gameField, player, background);
   world.registerObject(new Entity(600, 450, 67, 50, 'box'));
+  world.registerObject(new Entity(200, 350, 67, 50, 'box'));
 
   requestAnimationFrame(tick);
 }

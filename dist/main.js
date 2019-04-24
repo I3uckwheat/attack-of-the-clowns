@@ -320,6 +320,7 @@ function initialize() {
 
   world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"]);
   world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
+  world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
 
   requestAnimationFrame(tick);
 }
@@ -703,6 +704,7 @@ class World {
     this.enemies = [];
 
     this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 400, y: 200}), "enemy")
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 800, y: 300}), "enemy")
   }
 
   update() {

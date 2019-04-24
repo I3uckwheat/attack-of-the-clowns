@@ -25,6 +25,7 @@ class World {
     this.enemies = [];
 
     this.registerObject(new Enemy({x: 400, y: 200}), "enemy")
+    this.registerObject(new Enemy({x: 800, y: 300}), "enemy")
   }
 
   update() {
