@@ -13,12 +13,12 @@ const background = {
   }, 
   right: function() {
     Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position + layer.speed) % layer.reset;   
+      layer.position = (layer.position + layer.speed);   
     });
   },
   left: function() {
     Object.values(this.layers).forEach(layer => {
-      layer.position = (layer.position - layer.speed) % layer.reset;   
+      layer.position = (layer.position - layer.speed);   
     });
   },
   draw: function() {
