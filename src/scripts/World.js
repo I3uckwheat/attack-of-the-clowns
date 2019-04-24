@@ -37,9 +37,9 @@ class World {
       }
 
       const dx = enemy.x - player.x;
-      if (dx > 4) {
+      if (dx > enemy.width - 15) {
         enemy.x -= enemy.speed;
-      } else if (dx < -4) {
+      } else if (dx < -enemy.width - 15) {
         enemy.x += enemy.speed;
       }
 
