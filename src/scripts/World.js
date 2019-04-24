@@ -24,10 +24,42 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new Enemy({x: 400, y: 400}))
+    this.registerObject(new Enemy({x: 400, y: 200}), "enemy")
   }
 
   update() {
+    const player = this.player;
+
+    this.enemies.forEach((enemy, index) => {
+      const currentPosition = {
+        x: enemy.x,
+        y: enemy.y
+      }
+
+      const dx = enemy.x - player.x;
+      if (dx > 4) {
+        enemy.x -= enemy.speed;
+      } else if (dx < -4) {
+        enemy.x += enemy.speed;
+      }
+
+      if(this.hasCollisions(enemy.feet, index))
+      {
+        enemy.x = currentPosition.x;
+      }
+
+      const dy = enemy.y - player.y;
+      if (dy > 4) {
+        enemy.y -= enemy.speed;
+      } else if (dy < -4) {
+        enemy.y += enemy.speed;
+      }
+
+      if(this.hasCollisions(enemy.feet, index))
+      {
+        enemy.y = currentPosition.y;
+      }
+    });
   }
 
   movePlayer(direction) {
@@ -78,11 +110,18 @@ class World {
     }
   }
 
-  hasCollisions(entity1) {
-    return this.playFieldObjects.some(entity2 => {
+  hasCollisions(entity1, enemySkipIndex) {
+    const staticCollisions = this.playFieldObjects.some(entity2 => {
+      return this.isColliding(entity1, entity2)
+    });
+
+    const enemyCollisions = this.enemies.some((entity2, index) => {
+      if(enemySkipIndex === index) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
+
+    return enemyCollisions || staticCollisions;
   };
 
   isColliding(rect1, rect2) {
@@ -98,11 +137,22 @@ class World {
     this.playFieldObjects.forEach(object => {
       object.x += amount;
     });
+
+    this.enemies.forEach(object => {
+      object.x += amount;
+    });
   }
 
   // Register an object to be tracked by the world
-  registerObject(object) {
-    this.playFieldObjects.push(object);
+  registerObject(object, type = "static") {
+    if (type === "static") {
+      this.playFieldObjects.push(object);
+    } else if (type === "enemy") {
+      this.enemies.push(object);
+    } else {
+      throw new Error('Must pass a valid type');
+    }
+
     this.gameField.appendChild(object.element);
 
     if(process.env.DEVELOPMENT || true) {
@@ -116,6 +166,9 @@ class World {
     this.background.draw();
 
     this.playFieldObjects.forEach(object => {
+      object.draw();
+    });
+    this.enemies.forEach(object => {
       object.draw();
     });
   }

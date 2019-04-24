@@ -7,7 +7,7 @@ class Enemy extends Character {
     this.x = position.x;
     this.y = position.y;
     this.footHeight = 38;
-    this.speed = 2.8;
+    this.speed = 2;
   }
 }
 
