@@ -309,8 +309,15 @@ let player;
 let world;
 let controls;
 
-// Make your menu, and then when you want to the game, change this variable to `1` an the game will run  
+// Make your menu, and then when you want to toggle the gamestate, change this variable to `1` an the 
+// game will run  
 let gameState = 0;
+
+const changeGameState = document.querySelector('#menu')
+
+changeGameState.addEventListener('click', () => {
+  gameState = 1
+});
 
 function initialize() {
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
