@@ -313,10 +313,11 @@ let controls;
 // game will run  
 let gameState = 0;
 
-const changeGameState = document.querySelector('#menu')
+const changeGameState = document.querySelector('#overlaybutton')
 
 changeGameState.addEventListener('click', () => {
   gameState = 1
+  document.getElementById("overlay").style.display = "none";
 });
 
 function initialize() {
