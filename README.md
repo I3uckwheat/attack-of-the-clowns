@@ -24,4 +24,4 @@ Using a random game concept generator, our team got the following concept:
 1. Clone the repository
 1. run `npm i`
 1. run `npm start`
-1. open `./dist/index.html` in your browser
+1. open `index.html` in your browser
