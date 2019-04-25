@@ -50,7 +50,6 @@ class World {
       if (dx > enemy.width) {
         enemy.x -= enemy.speed;
       } else if (dx < -enemy.width) {
-        enemy.startAnimations('facing-left');
         enemy.x += enemy.speed;
       }
 
@@ -73,6 +72,10 @@ class World {
 
       if (enemy.x === currentPosition.x && enemy.y === currentPosition.y) {
         enemy.endAnimations('walking');
+      }
+
+      if (Math.abs(dx) < 60 && Math.abs(dy) < 40) {
+        enemy.attack(player);
       }
     });
   }

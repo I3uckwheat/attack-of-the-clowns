@@ -14,6 +14,8 @@ class Character extends Entity{
     this.weapon = 'fist';
     this.attackCoolingDown = false;
 
+    this.healh = 100;
+
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
@@ -42,15 +44,40 @@ class Character extends Entity{
     }
   }
 
-  attack() {
+  attack(opponent) {
     if (!this.attackCoolingDown) {
-      this.startAnimations('punch');
 
+      opponent.takeHit(10);
+
+      // this.startAnimations('punch');
       this.attackCoolingDown = true;
+
+      this.runAnimation('punch', () => {
+        setTimeout(() => {
+          this.attackCoolingDown = false;
+        }, 700);
+      })
+    }
+  }
+
+  takeHit(damage) {
+    this.runAnimation('takeHit', null, {interrupt: true});
+  }
+
+  runAnimation(animation, callback, {interrupt = false} = {}) {
+    this.startAnimations(animation);
+    if(interrupt) {
+      this.element.style.animation = 'none';
       setTimeout(() => {
-        this.attackCoolingDown = false
-        this.endAnimations('punch');
-      }, 800);
+        this.element.style.animation = '';
+      }, 10)
+    } else {
+      this.element.addEventListener('animationend', event => {
+        if (event.animationName === animation) {
+          this.endAnimations(animation);
+          callback && callback();
+        }
+      }, {once: true})
     }
   }
 

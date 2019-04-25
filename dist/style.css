@@ -48,12 +48,12 @@ body {
 }
 
 .punch {
-  animation: punch 0.5s steps(2, end) infinite;
+  animation: punch 0.5s steps(2, end) 1;
 }
 
 @keyframes punch {
-  0% { background-position: -600px 50%; }
-  100% { background-position: -1000px 50%; }
+  0% { background-position: -580px 50%; }
+  100% { background-position: -1020px 50%; }
 }
 
 .takeHit {
