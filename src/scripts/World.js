@@ -40,9 +40,15 @@ class World {
       enemy.startAnimations('walking');
 
       const dx = enemy.x - player.x;
+
+      if (dx < 0) {
+        enemy.startAnimations('facing-left');
+      } else {
+        enemy.endAnimations('facing-left');
+      }
+
       if (dx > enemy.width) {
         enemy.x -= enemy.speed;
-        enemy.endAnimations('facing-left');
       } else if (dx < -enemy.width) {
         enemy.startAnimations('facing-left');
         enemy.x += enemy.speed;
