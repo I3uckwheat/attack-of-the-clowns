@@ -326,6 +326,9 @@ function initialize() {
 }
 
 function update() {
+  if (controls.isPressed('attack')) {
+    world.playerAttack();
+  }
   if (controls.isPressed('up')) {
     world.movePlayer('up');
   }
@@ -425,8 +428,9 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+    this.attacking = false;
 
-    this.healh = 100;
+    this.health = 100;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -457,14 +461,16 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   attack(opponent) {
-    if (!this.attackCoolingDown) {
+    if (!this.attackCoolingDown && !this.attacking) {
 
-      opponent.takeHit(10);
+      // check distances and determine hits
+      opponent && opponent.takeHit(10);
 
-      // this.startAnimations('punch');
       this.attackCoolingDown = true;
+      this.attacking = true;
 
       this.runAnimation('punch', () => {
+        this.attacking = false;
         setTimeout(() => {
           this.attackCoolingDown = false;
         }, 700);
@@ -473,6 +479,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   takeHit(damage) {
+    this.health -= damage;
     this.runAnimation('takeHit');
   }
 
@@ -568,26 +575,9 @@ class Controls {
   !*** ./src/scripts/Enemy.js ***!
   \******************************/
 /*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
-
-
-class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(position) {
-    super('clown');
-
-    this.x = position.x;
-    this.y = position.y;
-    this.footHeight = 38;
-    this.speed = 2;
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Enemy);
-
+throw new Error("Module parse failed: super() call outside constructor of a subclass (14:4)\nYou may need an appropriate loader to handle this file type.\n| \n|   attack(player) {\n>     super(player);\n|     if (!enemy.attackCoolingDown) {\n|       const randomAttackTime = Math.floor(Math.random() * Math.floor(10000));");
 
 /***/ }),
 
@@ -725,13 +715,14 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 400, y: 200}), "enemy")
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 800, y: 300}), "enemy")
+    // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 800, y: 300}), "enemy");
   }
 
   update() {
     const player = this.player;
 
+    // Update enemies
     this.enemies.forEach((enemy, index) => {
       const currentPosition = {
         x: enemy.x,
@@ -783,6 +774,8 @@ class World {
 
   movePlayer(direction) {
     const player = this.player;
+
+    if(player.attacking) return;
     const currentPosition = {
       x: player.x,
       y: player.y
@@ -826,6 +819,12 @@ class World {
       player.x = this.width - 150;
       this.background.left()
       this.moveCamera(-5);
+    }
+  }
+
+  playerAttack() {
+    if(!this.player.attacking && !this.player.attackCoolingDown) {
+      this.player.attack(this.enemies[0]);
     }
   }
 

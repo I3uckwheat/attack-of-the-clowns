@@ -24,13 +24,14 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new Enemy({x: 400, y: 200}), "enemy")
-    this.registerObject(new Enemy({x: 800, y: 300}), "enemy")
+    // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
+    this.registerObject(new Enemy({x: 800, y: 300}), "enemy");
   }
 
   update() {
     const player = this.player;
 
+    // Update enemies
     this.enemies.forEach((enemy, index) => {
       const currentPosition = {
         x: enemy.x,

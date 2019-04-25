@@ -15,7 +15,7 @@ class Character extends Entity{
     this.attackCoolingDown = false;
     this.attacking = false;
 
-    this.healh = 100;
+    this.health = 100;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -48,12 +48,14 @@ class Character extends Entity{
   attack(opponent) {
     if (!this.attackCoolingDown && !this.attacking) {
 
-      opponent.takeHit(10);
+      // check distances and determine hits
+      opponent && opponent.takeHit(10);
 
-      // this.startAnimations('punch');
       this.attackCoolingDown = true;
+      this.attacking = true;
 
       this.runAnimation('punch', () => {
+        this.attacking = false;
         setTimeout(() => {
           this.attackCoolingDown = false;
         }, 700);
@@ -62,6 +64,7 @@ class Character extends Entity{
   }
 
   takeHit(damage) {
+    this.health -= damage;
     this.runAnimation('takeHit');
   }
 
