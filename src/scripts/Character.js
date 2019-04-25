@@ -13,6 +13,7 @@ class Character extends Entity{
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+    this.attacking = false;
 
     this.healh = 100;
 
@@ -45,7 +46,7 @@ class Character extends Entity{
   }
 
   attack(opponent) {
-    if (!this.attackCoolingDown) {
+    if (!this.attackCoolingDown && !this.attacking) {
 
       opponent.takeHit(10);
 

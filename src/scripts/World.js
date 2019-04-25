@@ -82,6 +82,8 @@ class World {
 
   movePlayer(direction) {
     const player = this.player;
+
+    if(player.attacking) return;
     const currentPosition = {
       x: player.x,
       y: player.y
@@ -125,6 +127,12 @@ class World {
       player.x = this.width - 150;
       this.background.left()
       this.moveCamera(-5);
+    }
+  }
+
+  playerAttack() {
+    if(!this.player.attacking && !this.player.attackCoolingDown) {
+      this.player.attack(this.enemies[0]);
     }
   }
 
