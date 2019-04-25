@@ -473,24 +473,21 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   takeHit(damage) {
-    this.runAnimation('takeHit', null, {interrupt: true});
+    this.runAnimation('takeHit');
   }
 
-  runAnimation(animation, callback, {interrupt = false} = {}) {
+  runAnimation(animation, callback) {
     this.startAnimations(animation);
-    if(interrupt) {
-      this.element.style.animation = 'none';
-      setTimeout(() => {
-        this.element.style.animation = '';
-      }, 10)
-    } else {
-      this.element.addEventListener('animationend', event => {
-        if (event.animationName === animation) {
-          this.endAnimations(animation);
-          callback && callback();
-        }
-      }, {once: true})
+
+    const animationEndHandler = event => {
+      if (event.animationName === animation) {
+        callback && callback();
+        this.endAnimations(animation);
+        this.element.removeEventListener('animationend', animationEndHandler);
+      }
     }
+
+    this.element.addEventListener('animationend', animationEndHandler);
   }
 
   startAnimations(...classes) {
