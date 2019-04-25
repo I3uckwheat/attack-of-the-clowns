@@ -37,10 +37,19 @@ class World {
         y: enemy.y
       }
 
+      enemy.startAnimations('walking');
+
       const dx = enemy.x - player.x;
-      if (dx > enemy.width - 15) {
+
+      if (dx < 0) {
+        enemy.startAnimations('facing-left');
+      } else {
+        enemy.endAnimations('facing-left');
+      }
+
+      if (dx > enemy.width) {
         enemy.x -= enemy.speed;
-      } else if (dx < -enemy.width - 15) {
+      } else if (dx < -enemy.width) {
         enemy.x += enemy.speed;
       }
 
@@ -59,6 +68,14 @@ class World {
       if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
       {
         enemy.y = currentPosition.y;
+      }
+
+      if (enemy.x === currentPosition.x && enemy.y === currentPosition.y) {
+        enemy.endAnimations('walking');
+      }
+
+      if (Math.abs(dx) < 60 && Math.abs(dy) < 40) {
+        enemy.attack(player);
       }
     });
   }
