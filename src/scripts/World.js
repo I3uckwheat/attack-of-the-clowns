@@ -24,14 +24,18 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new Enemy({x: 400, y: 200}), "enemy")
-    this.registerObject(new Enemy({x: 800, y: 300}), "enemy")
+    // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
+    this.registerObject(new Enemy({x: 450, y: 300}), "enemy");
   }
 
   update() {
     const player = this.player;
+    if(player.dead) return;
 
+    // Update enemies
     this.enemies.forEach((enemy, index) => {
+      if (enemy.dead) return;
+
       const currentPosition = {
         x: enemy.x,
         y: enemy.y
@@ -43,8 +47,10 @@ class World {
 
       if (dx < 0) {
         enemy.startAnimations('facing-left');
+        enemy.direction = 'right';
       } else {
         enemy.endAnimations('facing-left');
+        enemy.direction = 'left';
       }
 
       if (dx > enemy.width) {
@@ -82,6 +88,9 @@ class World {
 
   movePlayer(direction) {
     const player = this.player;
+    if (player.dead) return;
+
+    if(player.attacking) return;
     const currentPosition = {
       x: player.x,
       y: player.y
@@ -99,11 +108,13 @@ class World {
       case "left":
         player.startAnimations('walking');
         player.endAnimations('facing-left');
+        player.direction = 'left';
         player.x -= player.speed;
         break;
       case "right":
         player.startAnimations('walking');
         player.startAnimations('facing-left');
+        player.direction = 'right';
         player.x += player.speed;
         break;
     }
@@ -128,13 +139,19 @@ class World {
     }
   }
 
+  playerAttack() {
+    if(!this.player.attacking && !this.player.attackCoolingDown) {
+      this.player.attack(this.enemies[0]);
+    }
+  }
+
   hasCollisions(entity1, enemySkipIndex) {
     const staticCollisions = this.playFieldObjects.some(entity2 => {
       return this.isColliding(entity1, entity2)
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if(enemySkipIndex === index) return false;
+      if(enemySkipIndex === index || entity2.dead) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });

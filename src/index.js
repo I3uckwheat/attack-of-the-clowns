@@ -29,6 +29,9 @@ function initialize() {
 }
 
 function update() {
+  if (controls.isPressed('attack')) {
+    world.playerAttack();
+  }
   if (controls.isPressed('up')) {
     world.movePlayer('up');
   }

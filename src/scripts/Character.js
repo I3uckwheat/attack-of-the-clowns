@@ -13,8 +13,12 @@ class Character extends Entity{
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+    this.attacking = false;
+    this.direction = 'right';
 
-    this.healh = 100;
+    this.health = 100;
+    this.strength = 90;
+    this.dead = false;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -45,14 +49,24 @@ class Character extends Entity{
   }
 
   attack(opponent) {
-    if (!this.attackCoolingDown) {
+    if (!this.attackCoolingDown && !this.attacking) {
 
-      opponent.takeHit(10);
+      // check distances and determine hits
+      if(opponent) {
+        const dx = this.x - opponent.x;
+        const dy = this.y - opponent.y;
 
-      // this.startAnimations('punch');
+        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
+          opponent.takeHit(this.strength);
+        }
+      }
+
       this.attackCoolingDown = true;
+      this.attacking = true;
 
       this.runAnimation('punch', () => {
+        this.attacking = false;
         setTimeout(() => {
           this.attackCoolingDown = false;
         }, 700);
@@ -61,24 +75,32 @@ class Character extends Entity{
   }
 
   takeHit(damage) {
-    this.runAnimation('takeHit', null, {interrupt: true});
+    this.health -= damage;
+    if (this.health < 0) {
+      this.die();
+    } else {
+      this.runAnimation('takeHit');
+    }
   }
 
-  runAnimation(animation, callback, {interrupt = false} = {}) {
+  die() {
+    this.dead = true;
+    this.endAnimations('takeHit', 'punch');
+    this.startAnimations('fall');
+  }
+
+  runAnimation(animation, callback) {
     this.startAnimations(animation);
-    if(interrupt) {
-      this.element.style.animation = 'none';
-      setTimeout(() => {
-        this.element.style.animation = '';
-      }, 10)
-    } else {
-      this.element.addEventListener('animationend', event => {
-        if (event.animationName === animation) {
-          this.endAnimations(animation);
-          callback && callback();
-        }
-      }, {once: true})
+
+    const animationEndHandler = event => {
+      if (event.animationName === animation) {
+        callback && callback();
+        this.endAnimations(animation);
+        this.element.removeEventListener('animationend', animationEndHandler);
+      }
     }
+
+    this.element.addEventListener('animationend', animationEndHandler);
   }
 
   startAnimations(...classes) {

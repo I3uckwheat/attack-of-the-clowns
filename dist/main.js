@@ -326,6 +326,9 @@ function initialize() {
 }
 
 function update() {
+  if (controls.isPressed('attack')) {
+    world.playerAttack();
+  }
   if (controls.isPressed('up')) {
     world.movePlayer('up');
   }
@@ -425,8 +428,12 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+    this.attacking = false;
+    this.direction = 'right';
 
-    this.healh = 100;
+    this.health = 100;
+    this.strength = 90;
+    this.dead = false;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -457,14 +464,24 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   attack(opponent) {
-    if (!this.attackCoolingDown) {
+    if (!this.attackCoolingDown && !this.attacking) {
 
-      opponent.takeHit(10);
+      // check distances and determine hits
+      if(opponent) {
+        const dx = this.x - opponent.x;
+        const dy = this.y - opponent.y;
 
-      // this.startAnimations('punch');
+        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
+          opponent.takeHit(this.strength);
+        }
+      }
+
       this.attackCoolingDown = true;
+      this.attacking = true;
 
       this.runAnimation('punch', () => {
+        this.attacking = false;
         setTimeout(() => {
           this.attackCoolingDown = false;
         }, 700);
@@ -473,24 +490,32 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   takeHit(damage) {
-    this.runAnimation('takeHit', null, {interrupt: true});
+    this.health -= damage;
+    if (this.health < 0) {
+      this.die();
+    } else {
+      this.runAnimation('takeHit');
+    }
   }
 
-  runAnimation(animation, callback, {interrupt = false} = {}) {
+  die() {
+    this.dead = true;
+    this.endAnimations('takeHit', 'punch');
+    this.startAnimations('fall');
+  }
+
+  runAnimation(animation, callback) {
     this.startAnimations(animation);
-    if(interrupt) {
-      this.element.style.animation = 'none';
-      setTimeout(() => {
-        this.element.style.animation = '';
-      }, 10)
-    } else {
-      this.element.addEventListener('animationend', event => {
-        if (event.animationName === animation) {
-          this.endAnimations(animation);
-          callback && callback();
-        }
-      }, {once: true})
+
+    const animationEndHandler = event => {
+      if (event.animationName === animation) {
+        callback && callback();
+        this.endAnimations(animation);
+        this.element.removeEventListener('animationend', animationEndHandler);
+      }
     }
+
+    this.element.addEventListener('animationend', animationEndHandler);
   }
 
   startAnimations(...classes) {
@@ -586,6 +611,45 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.y = position.y;
     this.footHeight = 38;
     this.speed = 2;
+
+    this.preparingToAttack = false;
+    this.preparingToAttackTimeout = null;
+
+    this.strength = 90;
+  }
+
+  attack(player) {
+    if (!this.preparingToAttack) {
+      this.preparingToAttack = true;
+      
+      // Time before attack
+      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+
+      this.preparingToAttackTimeout = setTimeout(() => {
+        this.preparingToAttack = false;
+        super.attack(player);
+      }, randomAttackTime);
+    }
+  }
+
+  resetAttack() {
+    clearTimeout(this.preparingToAttackTimeout);
+    this.preparingToAttackTimeout = null;
+    this.preparingToAttack = null;
+  }
+
+  takeHit(damage) {
+    // enemy can't attack or move while being hurt
+    this.resetAttack();
+
+    if(this.speed > 0) {
+      const oldSpeed = this.speed;
+      this.speed = 0;
+      setTimeout(() => {
+        this.speed = oldSpeed;
+      }, 800)
+    }
+    super.takeHit(damage);
   }
 }
 
@@ -728,14 +792,18 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 400, y: 200}), "enemy")
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 800, y: 300}), "enemy")
+    // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 450, y: 300}), "enemy");
   }
 
   update() {
     const player = this.player;
+    if(player.dead) return;
 
+    // Update enemies
     this.enemies.forEach((enemy, index) => {
+      if (enemy.dead) return;
+
       const currentPosition = {
         x: enemy.x,
         y: enemy.y
@@ -747,8 +815,10 @@ class World {
 
       if (dx < 0) {
         enemy.startAnimations('facing-left');
+        enemy.direction = 'right';
       } else {
         enemy.endAnimations('facing-left');
+        enemy.direction = 'left';
       }
 
       if (dx > enemy.width) {
@@ -786,6 +856,9 @@ class World {
 
   movePlayer(direction) {
     const player = this.player;
+    if (player.dead) return;
+
+    if(player.attacking) return;
     const currentPosition = {
       x: player.x,
       y: player.y
@@ -803,11 +876,13 @@ class World {
       case "left":
         player.startAnimations('walking');
         player.endAnimations('facing-left');
+        player.direction = 'left';
         player.x -= player.speed;
         break;
       case "right":
         player.startAnimations('walking');
         player.startAnimations('facing-left');
+        player.direction = 'right';
         player.x += player.speed;
         break;
     }
@@ -832,13 +907,19 @@ class World {
     }
   }
 
+  playerAttack() {
+    if(!this.player.attacking && !this.player.attackCoolingDown) {
+      this.player.attack(this.enemies[0]);
+    }
+  }
+
   hasCollisions(entity1, enemySkipIndex) {
     const staticCollisions = this.playFieldObjects.some(entity2 => {
       return this.isColliding(entity1, entity2)
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if(enemySkipIndex === index) return false;
+      if(enemySkipIndex === index || entity2.dead) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
