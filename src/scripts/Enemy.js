@@ -34,8 +34,16 @@ class Enemy extends Character {
   }
 
   takeHit(damage) {
-    // enemy can't attack while being hurt
+    // enemy can't attack or move while being hurt
     this.resetAttack();
+
+    if(this.speed > 0) {
+      const oldSpeed = this.speed;
+      this.speed = 0;
+      setTimeout(() => {
+        this.speed = oldSpeed;
+      }, 800)
+    }
     super.takeHit(damage);
   }
 }
