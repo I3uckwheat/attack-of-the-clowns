@@ -28,6 +28,7 @@ body {
   font-size: 75px;
   color: #939598;
   place-self: center;
+  font-family: 'Circus';
 }
 
 /* Text Animation */
@@ -72,7 +73,8 @@ body {
 }
 
 #startbutton{
-  font-size: 50px;
+  font-size: 30px;
+  font-family: 'Circus';
   color: #939598;
   background-color: #73150D;
   z-index: 502;
@@ -83,11 +85,12 @@ body {
   border-color: #73150D;
   border-radius: 25px;
   place-self: center;
+  text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
 }
 
 #controls {
   grid-area: controls;
-
+  font-family: 'Circus';
   align-self: start;
   justify-self: center;
 }
@@ -198,3 +201,10 @@ ul {
   background-image:url("assets/crowd.png");
   z-index: -2;
 }
+
+@font-face {
+  font-family: 'Circus';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Circus'), url('Circus.woff') format('woff');
+  }
