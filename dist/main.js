@@ -313,7 +313,8 @@ let controls;
 // game will run  
 let gameState = 0;
 
-const changeGameState = document.querySelector('#overlaybutton')
+// changes gamestate and removed overlay
+const changeGameState = document.querySelector('#startbutton')
 
 changeGameState.addEventListener('click', () => {
   gameState = 1
