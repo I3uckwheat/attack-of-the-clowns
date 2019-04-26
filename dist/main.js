@@ -798,10 +798,10 @@ class World {
 
       if (dx < 0) {
         enemy.startAnimations('facing-left');
-        enemy.direction = 'left';
+        enemy.direction = 'right';
       } else {
         enemy.endAnimations('facing-left');
-        enemy.direction = 'right';
+        enemy.direction = 'left';
       }
 
       if (dx > enemy.width) {
