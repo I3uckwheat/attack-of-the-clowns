@@ -25,7 +25,7 @@ class World {
     this.enemies = [];
 
     // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new Enemy({x: 800, y: 300}), "enemy");
+    this.registerObject(new Enemy({x: 450, y: 300}), "enemy");
   }
 
   update() {
@@ -44,8 +44,10 @@ class World {
 
       if (dx < 0) {
         enemy.startAnimations('facing-left');
+        enemy.direction = 'left';
       } else {
         enemy.endAnimations('facing-left');
+        enemy.direction = 'right';
       }
 
       if (dx > enemy.width) {
@@ -102,11 +104,13 @@ class World {
       case "left":
         player.startAnimations('walking');
         player.endAnimations('facing-left');
+        player.direction = 'left';
         player.x -= player.speed;
         break;
       case "right":
         player.startAnimations('walking');
         player.startAnimations('facing-left');
+        player.direction = 'right';
         player.x += player.speed;
         break;
     }

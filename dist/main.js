@@ -429,6 +429,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     this.weapon = 'fist';
     this.attackCoolingDown = false;
     this.attacking = false;
+    this.direction = 'right';
 
     this.health = 100;
 
@@ -464,7 +465,17 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     if (!this.attackCoolingDown && !this.attacking) {
 
       // check distances and determine hits
-      opponent && opponent.takeHit(10);
+      if(opponent) {
+        const dx = this.x - opponent.x;
+        const dy = this.y - opponent.y;
+
+        if (
+             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left') &&
+             (Math.abs(dx) < 120 && Math.abs(dy) < 40)
+           ) {
+          opponent.takeHit(10);
+        }
+      }
 
       this.attackCoolingDown = true;
       this.attacking = true;
@@ -575,9 +586,55 @@ class Controls {
   !*** ./src/scripts/Enemy.js ***!
   \******************************/
 /*! exports provided: default */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-throw new Error("Module parse failed: super() call outside constructor of a subclass (14:4)\nYou may need an appropriate loader to handle this file type.\n| \n|   attack(player) {\n>     super(player);\n|     if (!enemy.attackCoolingDown) {\n|       const randomAttackTime = Math.floor(Math.random() * Math.floor(10000));");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
+
+
+class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor(position) {
+    super('clown');
+
+    this.x = position.x;
+    this.y = position.y;
+    this.footHeight = 38;
+    this.speed = 2;
+
+    this.preparingToAttack = false;
+    this.preparingToAttackTimeout = null;
+  }
+
+  attack(player) {
+    if (!this.preparingToAttack) {
+      this.preparingToAttack = true;
+      
+      // Time before attack
+      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+
+      this.preparingToAttackTimeout = setTimeout(() => {
+        this.preparingToAttack = false;
+        super.attack(player);
+      }, randomAttackTime);
+    }
+  }
+
+  resetAttack() {
+    clearTimeout(this.preparingToAttackTimeout);
+    this.preparingToAttackTimeout = null;
+    this.preparingToAttack = null;
+  }
+
+  takeHit(damage) {
+    // enemy can't attack while being hurt
+    this.resetAttack();
+    super.takeHit(damage);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Enemy);
+
 
 /***/ }),
 
@@ -716,7 +773,7 @@ class World {
     this.enemies = [];
 
     // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 800, y: 300}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 450, y: 300}), "enemy");
   }
 
   update() {
@@ -735,8 +792,10 @@ class World {
 
       if (dx < 0) {
         enemy.startAnimations('facing-left');
+        enemy.direction = 'left';
       } else {
         enemy.endAnimations('facing-left');
+        enemy.direction = 'right';
       }
 
       if (dx > enemy.width) {
@@ -793,11 +852,13 @@ class World {
       case "left":
         player.startAnimations('walking');
         player.endAnimations('facing-left');
+        player.direction = 'left';
         player.x -= player.speed;
         break;
       case "right":
         player.startAnimations('walking');
         player.startAnimations('facing-left');
+        player.direction = 'right';
         player.x += player.speed;
         break;
     }

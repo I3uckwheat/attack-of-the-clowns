@@ -14,6 +14,7 @@ class Character extends Entity{
     this.weapon = 'fist';
     this.attackCoolingDown = false;
     this.attacking = false;
+    this.direction = 'right';
 
     this.health = 100;
 
@@ -49,7 +50,17 @@ class Character extends Entity{
     if (!this.attackCoolingDown && !this.attacking) {
 
       // check distances and determine hits
-      opponent && opponent.takeHit(10);
+      if(opponent) {
+        const dx = this.x - opponent.x;
+        const dy = this.y - opponent.y;
+
+        if (
+             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left') &&
+             (Math.abs(dx) < 120 && Math.abs(dy) < 40)
+           ) {
+          opponent.takeHit(10);
+        }
+      }
 
       this.attackCoolingDown = true;
       this.attacking = true;
