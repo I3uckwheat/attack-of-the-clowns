@@ -54,10 +54,8 @@ class Character extends Entity{
         const dx = this.x - opponent.x;
         const dy = this.y - opponent.y;
 
-        if (
-             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left') &&
-             (Math.abs(dx) < 120 && Math.abs(dy) < 40)
-           ) {
+        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
           opponent.takeHit(10);
         }
       }

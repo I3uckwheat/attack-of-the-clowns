@@ -469,10 +469,8 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
         const dx = this.x - opponent.x;
         const dy = this.y - opponent.y;
 
-        if (
-             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left') &&
-             (Math.abs(dx) < 120 && Math.abs(dy) < 40)
-           ) {
+        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
           opponent.takeHit(10);
         }
       }
@@ -627,8 +625,16 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   takeHit(damage) {
-    // enemy can't attack while being hurt
+    // enemy can't attack or move while being hurt
     this.resetAttack();
+
+    if(this.speed > 0) {
+      const oldSpeed = this.speed;
+      this.speed = 0;
+      setTimeout(() => {
+        this.speed = oldSpeed;
+      }, 800)
+    }
     super.takeHit(damage);
   }
 }
