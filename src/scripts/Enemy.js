@@ -11,6 +11,8 @@ class Enemy extends Character {
 
     this.preparingToAttack = false;
     this.preparingToAttackTimeout = null;
+
+    this.strength = 90;
   }
 
   attack(player) {

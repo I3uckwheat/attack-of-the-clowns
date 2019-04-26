@@ -17,6 +17,8 @@ class Character extends Entity{
     this.direction = 'right';
 
     this.health = 100;
+    this.strength = 90;
+    this.dead = false;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -56,7 +58,7 @@ class Character extends Entity{
 
         if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
           (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-          opponent.takeHit(10);
+          opponent.takeHit(this.strength);
         }
       }
 
@@ -74,7 +76,17 @@ class Character extends Entity{
 
   takeHit(damage) {
     this.health -= damage;
-    this.runAnimation('takeHit');
+    if (this.health < 0) {
+      this.die();
+    } else {
+      this.runAnimation('takeHit');
+    }
+  }
+
+  die() {
+    this.dead = true;
+    this.endAnimations('takeHit', 'punch');
+    this.startAnimations('fall');
   }
 
   runAnimation(animation, callback) {

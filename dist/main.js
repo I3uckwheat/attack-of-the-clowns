@@ -432,6 +432,8 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     this.direction = 'right';
 
     this.health = 100;
+    this.strength = 90;
+    this.dead = false;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -471,7 +473,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
         if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
           (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-          opponent.takeHit(10);
+          opponent.takeHit(this.strength);
         }
       }
 
@@ -489,7 +491,17 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
   takeHit(damage) {
     this.health -= damage;
-    this.runAnimation('takeHit');
+    if (this.health < 0) {
+      this.die();
+    } else {
+      this.runAnimation('takeHit');
+    }
+  }
+
+  die() {
+    this.dead = true;
+    this.endAnimations('takeHit', 'punch');
+    this.startAnimations('fall');
   }
 
   runAnimation(animation, callback) {
@@ -602,6 +614,8 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
     this.preparingToAttack = false;
     this.preparingToAttackTimeout = null;
+
+    this.strength = 90;
   }
 
   attack(player) {
@@ -784,9 +798,12 @@ class World {
 
   update() {
     const player = this.player;
+    if(player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
+      if (enemy.dead) return;
+
       const currentPosition = {
         x: enemy.x,
         y: enemy.y
@@ -839,6 +856,7 @@ class World {
 
   movePlayer(direction) {
     const player = this.player;
+    if (player.dead) return;
 
     if(player.attacking) return;
     const currentPosition = {
@@ -901,7 +919,7 @@ class World {
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if(enemySkipIndex === index) return false;
+      if(enemySkipIndex === index || entity2.dead) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });

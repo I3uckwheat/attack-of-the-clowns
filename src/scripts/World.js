@@ -30,9 +30,12 @@ class World {
 
   update() {
     const player = this.player;
+    if(player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
+      if (enemy.dead) return;
+
       const currentPosition = {
         x: enemy.x,
         y: enemy.y
@@ -85,6 +88,7 @@ class World {
 
   movePlayer(direction) {
     const player = this.player;
+    if (player.dead) return;
 
     if(player.attacking) return;
     const currentPosition = {
@@ -147,7 +151,7 @@ class World {
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if(enemySkipIndex === index) return false;
+      if(enemySkipIndex === index || entity2.dead) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
