@@ -1,4 +1,4 @@
-import World from "./scripts/World";
+import Game from "./scripts/Game";
 import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
 import Entity from "./scripts/Entity";
@@ -13,7 +13,7 @@ const score = document.querySelector('#score');
  
 // Globals
 let player;
-let world;
+let game;
 let controls;
 let scoreTracker;
 
@@ -34,7 +34,6 @@ function initialize() {
     healthBarText.innerText = health;
   });
 
-
   scoreTracker = new ScoreTracker();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
@@ -53,9 +52,9 @@ function initialize() {
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  world = new World(gameField, player, background, scoreTracker);
-  world.registerObject(new Entity(600, 450, 67, 50, 'box'));
-  world.registerObject(new Entity(200, 350, 67, 50, 'box'));
+  game = new Game(gameField, player, background, scoreTracker);
+  game.registerObject(new Entity(600, 450, 67, 50, 'box'));
+  game.registerObject(new Entity(200, 350, 67, 50, 'box'));
 
   requestAnimationFrame(tick);
 }
@@ -63,28 +62,28 @@ function initialize() {
 function update() {
   if (gameState === 1) {
     if (controls.isPressed('attack')) {
-      world.playerAttack();
+      game.playerAttack();
     }
     if (controls.isPressed('up')) {
-      world.movePlayer('up');
+      game.movePlayer('up');
     }
     if (controls.isPressed('down')) {
-      world.movePlayer('down');
+      game.movePlayer('down');
     }
     if (controls.isPressed('left')) {
-      world.movePlayer('left');
+      game.movePlayer('left');
     }
     if (controls.isPressed('right')) {
-      world.movePlayer('right');
+      game.movePlayer('right');
     }
     
-    world.update();
+    game.update();
   }
 }
 
 function draw() {
   player.draw();
-  world.draw();
+  game.draw();
 }
 
 function tick(){

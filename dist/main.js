@@ -290,7 +290,7 @@ process.umask = function() { return 0; };
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _scripts_World__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/World */ "./src/scripts/World.js");
+/* harmony import */ var _scripts_Game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/Game */ "./src/scripts/Game.js");
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
 /* harmony import */ var _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Entity */ "./src/scripts/Entity.js");
@@ -311,7 +311,7 @@ const score = document.querySelector('#score');
  
 // Globals
 let player;
-let world;
+let game;
 let controls;
 let scoreTracker;
 
@@ -332,7 +332,6 @@ function initialize() {
     healthBarText.innerText = health;
   });
 
-
   scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
@@ -351,9 +350,9 @@ function initialize() {
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
-  world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
-  world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
+  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
+  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
+  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
 
   requestAnimationFrame(tick);
 }
@@ -361,28 +360,28 @@ function initialize() {
 function update() {
   if (gameState === 1) {
     if (controls.isPressed('attack')) {
-      world.playerAttack();
+      game.playerAttack();
     }
     if (controls.isPressed('up')) {
-      world.movePlayer('up');
+      game.movePlayer('up');
     }
     if (controls.isPressed('down')) {
-      world.movePlayer('down');
+      game.movePlayer('down');
     }
     if (controls.isPressed('left')) {
-      world.movePlayer('left');
+      game.movePlayer('left');
     }
     if (controls.isPressed('right')) {
-      world.movePlayer('right');
+      game.movePlayer('right');
     }
     
-    world.update();
+    game.update();
   }
 }
 
 function draw() {
   player.draw();
-  world.draw();
+  game.draw();
 }
 
 function tick(){
@@ -774,126 +773,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/scripts/Player.js":
-/*!*******************************!*\
-  !*** ./src/scripts/Player.js ***!
-  \*******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
-
-
-class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor() {
-    super('player');
-    this.onDeathCallbacks = [];
-    this.onHitCallbacks = [];
-  }
-
-  die() {
-    super.die();
-    this.onDeathCallbacks.forEach(cb => cb());
-  }
-
-  onDeath(callback) {
-    this.onDeathCallbacks.push(callback);
-  }
-
-  takeHit(damage) {
-    super.takeHit(damage);
-    this.onHitCallbacks.forEach(cb => cb(this.health))
-  }
-
-  onTakeHit(callback) {
-    this.onHitCallbacks.push(callback);
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (Player);
-
-
-/***/ }),
-
-/***/ "./src/scripts/ScoreTracker.js":
-/*!*************************************!*\
-  !*** ./src/scripts/ScoreTracker.js ***!
-  \*************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-class ScoreTracker {
-  constructor() {
-    this.currentScore = 0;
-    this.enemiesKilled = 0;
-
-    this.savedScores = [];
-    if(localStorage.getItem('scores')) {
-      this.savedScores = JSON.parse(localStorage.getItem('scores'));
-    }
-
-    this.gainingScore = false;
-    this.onScoreUpdateCallbacks = [];
-    this.scoreIncrementInterval = setInterval(() => {
-      if(this.gainingScore) {
-        this.currentScore += Math.floor(Math.random() * 3 + 1);
-        this.scoreUpdated();
-      }
-    }, 1000);
-  }
-
-  killedEnemy() {
-    this.currentScore += Math.floor(Math.random() * 200 + 201);
-    this.enemiesKilled++;
-    this.scoreUpdated();
-  }
-
-  onScoreUpdate(callback) {
-    this.onScoreUpdateCallbacks.push(callback);
-  }
-
-  scoreUpdated() {
-    this.onScoreUpdateCallbacks.forEach(cb => cb(this.currentScore));
-  }
-
-  startTracking() {
-    this.gainingScore = true;
-  }
-
-  endTracking() {
-    this.gainingScore = false;
-    this.saveScore();
-  }
-
-  saveScore() {
-    this.savedScores.push({
-      score: this.currentScore,
-      enemiesKilled: this.enemiesKilled
-    });
-
-    this.savedScores.sort((firstEl, secondEl) => {
-      return firstEl.score < secondEl.score;
-    });
-
-    this.savedScores = this.savedScores.slice(0, 2);
-
-    localStorage.setItem('scores', JSON.stringify(this.savedScores));
-  }
-
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
-
-/***/ }),
-
-/***/ "./src/scripts/World.js":
-/*!******************************!*\
-  !*** ./src/scripts/World.js ***!
-  \******************************/
+/***/ "./src/scripts/Game.js":
+/*!*****************************!*\
+  !*** ./src/scripts/Game.js ***!
+  \*****************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1117,6 +1000,122 @@ class World {
 
 /* harmony default export */ __webpack_exports__["default"] = (World);
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
+/***/ "./src/scripts/Player.js":
+/*!*******************************!*\
+  !*** ./src/scripts/Player.js ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Character__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Character */ "./src/scripts/Character.js");
+
+
+class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor() {
+    super('player');
+    this.onDeathCallbacks = [];
+    this.onHitCallbacks = [];
+  }
+
+  die() {
+    super.die();
+    this.onDeathCallbacks.forEach(cb => cb());
+  }
+
+  onDeath(callback) {
+    this.onDeathCallbacks.push(callback);
+  }
+
+  takeHit(damage) {
+    super.takeHit(damage);
+    this.onHitCallbacks.forEach(cb => cb(this.health))
+  }
+
+  onTakeHit(callback) {
+    this.onHitCallbacks.push(callback);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (Player);
+
+
+/***/ }),
+
+/***/ "./src/scripts/ScoreTracker.js":
+/*!*************************************!*\
+  !*** ./src/scripts/ScoreTracker.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class ScoreTracker {
+  constructor() {
+    this.currentScore = 0;
+    this.enemiesKilled = 0;
+
+    this.savedScores = [];
+    if(localStorage.getItem('scores')) {
+      this.savedScores = JSON.parse(localStorage.getItem('scores'));
+    }
+
+    this.gainingScore = false;
+    this.onScoreUpdateCallbacks = [];
+    this.scoreIncrementInterval = setInterval(() => {
+      if(this.gainingScore) {
+        this.currentScore += Math.floor(Math.random() * 3 + 1);
+        this.scoreUpdated();
+      }
+    }, 1000);
+  }
+
+  killedEnemy() {
+    this.currentScore += Math.floor(Math.random() * 200 + 201);
+    this.enemiesKilled++;
+    this.scoreUpdated();
+  }
+
+  onScoreUpdate(callback) {
+    this.onScoreUpdateCallbacks.push(callback);
+  }
+
+  scoreUpdated() {
+    this.onScoreUpdateCallbacks.forEach(cb => cb(this.currentScore));
+  }
+
+  startTracking() {
+    this.gainingScore = true;
+  }
+
+  endTracking() {
+    this.gainingScore = false;
+    this.saveScore();
+  }
+
+  saveScore() {
+    this.savedScores.push({
+      score: this.currentScore,
+      enemiesKilled: this.enemiesKilled
+    });
+
+    this.savedScores.sort((firstEl, secondEl) => {
+      return firstEl.score < secondEl.score;
+    });
+
+    this.savedScores = this.savedScores.slice(0, 2);
+
+    localStorage.setItem('scores', JSON.stringify(this.savedScores));
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
 
 /***/ })
 
