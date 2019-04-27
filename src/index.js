@@ -41,22 +41,23 @@ function initialize() {
 }
 
 function update() {
-  if (gameState === 1) {
-    if (controls.isPressed('up')) {
-      world.movePlayer('up');
-    }
-    if (controls.isPressed('down')) {
-      world.movePlayer('down');
-    }
-    if (controls.isPressed('left')) {
-      world.movePlayer('left');
-    }
-    if (controls.isPressed('right')) {
-      world.movePlayer('right');
-    }
-
-    world.update();
+  if (controls.isPressed('attack')) {
+    world.playerAttack();
   }
+  if (controls.isPressed('up')) {
+    world.movePlayer('up');
+  }
+  if (controls.isPressed('down')) {
+    world.movePlayer('down');
+  }
+  if (controls.isPressed('left')) {
+    world.movePlayer('left');
+  }
+  if (controls.isPressed('right')) {
+    world.movePlayer('right');
+  }
+  
+  world.update();
 }
 
 function draw() {

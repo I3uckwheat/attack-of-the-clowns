@@ -13,6 +13,12 @@ class Character extends Entity{
 
     this.weapon = 'fist';
     this.attackCoolingDown = false;
+    this.attacking = false;
+    this.direction = 'right';
+
+    this.health = 100;
+    this.strength = 90;
+    this.dead = false;
 
     if (process.env.DEVELOPMENT || true) {
       this.footbox = document.createElement('div');
@@ -42,16 +48,59 @@ class Character extends Entity{
     }
   }
 
-  attack() {
-    if (!this.attackCoolingDown) {
-      this.startAnimations('punch');
+  attack(opponent) {
+    if (!this.attackCoolingDown && !this.attacking) {
+
+      // check distances and determine hits
+      if(opponent) {
+        const dx = this.x - opponent.x;
+        const dy = this.y - opponent.y;
+
+        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
+          opponent.takeHit(this.strength);
+        }
+      }
 
       this.attackCoolingDown = true;
-      setTimeout(() => {
-        this.attackCoolingDown = false
-        this.endAnimations('punch');
-      }, 800);
+      this.attacking = true;
+
+      this.runAnimation('punch', () => {
+        this.attacking = false;
+        setTimeout(() => {
+          this.attackCoolingDown = false;
+        }, 700);
+      })
     }
+  }
+
+  takeHit(damage) {
+    this.health -= damage;
+    if (this.health < 0) {
+      this.die();
+    } else {
+      this.runAnimation('takeHit');
+    }
+  }
+
+  die() {
+    this.dead = true;
+    this.endAnimations('takeHit', 'punch');
+    this.startAnimations('fall');
+  }
+
+  runAnimation(animation, callback) {
+    this.startAnimations(animation);
+
+    const animationEndHandler = event => {
+      if (event.animationName === animation) {
+        callback && callback();
+        this.endAnimations(animation);
+        this.element.removeEventListener('animationend', animationEndHandler);
+      }
+    }
+
+    this.element.addEventListener('animationend', animationEndHandler);
   }
 
   startAnimations(...classes) {
