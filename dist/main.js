@@ -317,6 +317,12 @@ let gameState = 0;
 
 function initialize() {
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  player.onDeath(() => {
+    // This can be used to change game state and such too. Also trigger game over screen
+    console.log('game over');
+  })
+
+
   scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
   scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
 
@@ -774,6 +780,16 @@ __webpack_require__.r(__webpack_exports__);
 class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super('player');
+    this.onDeathCallbacks = [];
+  }
+
+  die() {
+    super.die();
+    this.onDeathCallbacks.forEach(cb => cb());
+  }
+
+  onDeath(callback) {
+    this.onDeathCallbacks.push(callback);
   }
 }
 

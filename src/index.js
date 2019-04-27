@@ -19,6 +19,12 @@ let gameState = 0;
 
 function initialize() {
   player = new Player();
+  player.onDeath(() => {
+    // This can be used to change game state and such too. Also trigger game over screen
+    console.log('game over');
+  })
+
+
   scoreTracker = new ScoreTracker();
   scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
 
