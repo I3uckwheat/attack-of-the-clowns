@@ -5,6 +5,7 @@ body {
   max-width: 1366px;
   margin: auto;
   background-color: black;
+  position: relative;
 }
 
 #overlay {
@@ -113,6 +114,8 @@ ul {
   /* border: 1px solid black; */
   overflow: hidden;
   position: relative;
+  position: absolute;
+  margin-top: 65px;
 }
 
 .player {
@@ -205,6 +208,9 @@ ul {
   top: 287px;
   background-image:url("assets/ring.png");
   z-index: -1;
+  position: absolute;
+  margin-top: 65px;
+
 }
 
 #background {
@@ -213,6 +219,8 @@ ul {
   position:absolute;
   background-image:url("assets/crowd.png");
   z-index: -2;
+  position: absolute;
+  margin-top: 65px; 
 }
 
 @font-face {
