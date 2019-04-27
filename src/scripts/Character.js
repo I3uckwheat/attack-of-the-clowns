@@ -55,6 +55,7 @@ class Character extends Entity {
       kills: 0
     };
 
+
     opponents.forEach(opponent => {
       if (!this.attackCoolingDown && !this.attacking) {
 
