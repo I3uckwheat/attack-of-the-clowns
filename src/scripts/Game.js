@@ -2,6 +2,8 @@ import EnemySpawner from "./EnemySpawner";
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
+    this.gameStopped = true;
+
     this.background = background;
     this.scoreTracker = scoreTracker;
 
@@ -29,9 +31,20 @@ class World {
     this.enemySpawner = new EnemySpawner(this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
   }
 
+  start() {
+    this.enemySpawner.startSpawning();
+    this.scoreTracker.startTracking();
+    this.gameStopped = false;
+  }
+
+  stop() {
+    this.enemySpawner.stopSpawning();
+    this.scoreTracker.endTracking();
+    this.gameStopped = true;
+  }
+
   update() {
     const player = this.player;
-    if (player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
@@ -83,6 +96,8 @@ class World {
         enemy.attack(player)
       }
     });
+
+    if (this.gameStopped) return;
 
     this.enemySpawner.spawnQueue().forEach(enemy => {
       this.registerObject(enemy, 'enemy');

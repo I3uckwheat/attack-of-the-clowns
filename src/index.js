@@ -22,10 +22,12 @@ let gameState = 0;
 
 function initialize() {
   player = new Player();
+
+  // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
-    // This can be used to change game state and such too. Also trigger game over screen
+    game.stop();
+
     scoreTracker.saveScore();
-    scoreTracker.endTracking();
     console.log('game over');
   })
 
@@ -37,15 +39,6 @@ function initialize() {
   scoreTracker = new ScoreTracker();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
-  // changes gamestate and removed overlay
-  const startButton = document.querySelector('#startbutton')
-
-  startButton.addEventListener('click', () => {
-    gameState = 1
-    document.getElementById("overlay").style.display = "none";
-    scoreTracker.startTracking();
-  });
-
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
@@ -56,12 +49,15 @@ function initialize() {
   level.forEach(entity => {
     game.registerObject(entity);
   })
-  // game.registerObject(new Entity(600, 450, 67, 50, 'box'));
-  // game.registerObject(new Entity(200, 350, 67, 50, 'box'));
-  // game.registerObject(new Entity(-900, 287, 13, 600, 'barrier'));
-  // game.registerObject(new Entity(1900, 287, 13, 553, 'barrier'));
 
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
 
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    game.start();
+  });
 
   requestAnimationFrame(tick);
 }

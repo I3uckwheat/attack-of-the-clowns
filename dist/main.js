@@ -320,10 +320,12 @@ let gameState = 0;
 
 function initialize() {
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+
+  // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
-    // This can be used to change game state and such too. Also trigger game over screen
+    game.stop();
+
     scoreTracker.saveScore();
-    scoreTracker.endTracking();
     console.log('game over');
   })
 
@@ -335,15 +337,6 @@ function initialize() {
   scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__["default"]();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
-  // changes gamestate and removed overlay
-  const startButton = document.querySelector('#startbutton')
-
-  startButton.addEventListener('click', () => {
-    gameState = 1
-    document.getElementById("overlay").style.display = "none";
-    scoreTracker.startTracking();
-  });
-
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
@@ -354,12 +347,15 @@ function initialize() {
   _scripts_level__WEBPACK_IMPORTED_MODULE_4__["default"].forEach(entity => {
     game.registerObject(entity);
   })
-  // game.registerObject(new Entity(600, 450, 67, 50, 'box'));
-  // game.registerObject(new Entity(200, 350, 67, 50, 'box'));
-  // game.registerObject(new Entity(-900, 287, 13, 600, 'barrier'));
-  // game.registerObject(new Entity(1900, 287, 13, 553, 'barrier'));
 
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
 
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    game.start();
+  });
 
   requestAnimationFrame(tick);
 }
@@ -727,8 +723,6 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
-/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Game */ "./src/scripts/Game.js");
-
 
 
 class EnemySpawner {
@@ -880,6 +874,8 @@ __webpack_require__.r(__webpack_exports__);
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
+    this.gameStopped = true;
+
     this.background = background;
     this.scoreTracker = scoreTracker;
 
@@ -907,9 +903,20 @@ class World {
     this.enemySpawner = new _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__["default"](this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
   }
 
+  start() {
+    this.enemySpawner.startSpawning();
+    this.scoreTracker.startTracking();
+    this.gameStopped = false;
+  }
+
+  stop() {
+    this.enemySpawner.stopSpawning();
+    this.scoreTracker.endTracking();
+    this.gameStopped = true;
+  }
+
   update() {
     const player = this.player;
-    if (player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
@@ -961,6 +968,8 @@ class World {
         enemy.attack(player)
       }
     });
+
+    if (this.gameStopped) return;
 
     this.enemySpawner.spawnQueue().forEach(enemy => {
       this.registerObject(enemy, 'enemy');

@@ -1,5 +1,4 @@
 import Enemy from "./Enemy";
-import Game from "./Game";
 
 class EnemySpawner {
   constructor(world, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
