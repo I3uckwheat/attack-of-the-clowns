@@ -1,7 +1,11 @@
 body {
-  margin: 0;
+  /* margin: 0; */
   padding:0;
   overflow: hidden;
+  max-width: 1366px;
+  margin: auto;
+  background-color: black;
+  position: relative;
 }
 
 #overlay {
@@ -92,7 +96,7 @@ body {
   grid-area: controls;
   font-family: 'Circus';
   align-self: start;
-  justify-self: center;
+  justify-self: end;
 }
 
 #controls-title {
@@ -140,8 +144,11 @@ ul {
 }
 
 #game {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   overflow: hidden;
+  position: relative;
+  position: absolute;
+  margin-top: 65px;
 }
 
 .player {
@@ -229,19 +236,24 @@ ul {
 
 #playableArea {
   height: 533px;
-  width: 2595px;
+  width: 1366px;
   position:absolute;
   top: 287px;
   background-image:url("assets/ring.png");
   z-index: -1;
+  position: absolute;
+  margin-top: 65px;
+
 }
 
 #background {
   height: 287px;
-  width: 2595px;
+  width: 1366px;
   position:absolute;
   background-image:url("assets/crowd.png");
   z-index: -2;
+  position: absolute;
+  margin-top: 65px; 
 }
 
 @font-face {
