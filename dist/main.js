@@ -293,11 +293,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_Game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/Game */ "./src/scripts/Game.js");
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
-/* harmony import */ var _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Entity */ "./src/scripts/Entity.js");
-/* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
-/* harmony import */ var _scripts_level__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/level */ "./src/scripts/level.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
-
+/* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
+/* harmony import */ var _scripts_level__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/level */ "./src/scripts/level.js");
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
 
 
 
@@ -329,12 +327,12 @@ function initialize() {
     console.log('game over');
   })
 
-  player.onTakeHit(health => {
+  player.onHealthChange(health => {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
 
-  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__["default"]();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
   // changes gamestate and removed overlay
@@ -352,8 +350,8 @@ function initialize() {
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_6__["default"], scoreTracker);
-  _scripts_level__WEBPACK_IMPORTED_MODULE_5__["default"].forEach(entity => {
+  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
+  _scripts_level__WEBPACK_IMPORTED_MODULE_4__["default"].forEach(entity => {
     game.registerObject(entity);
   })
   // game.registerObject(new Entity(600, 450, 67, 50, 'box'));
@@ -1120,6 +1118,18 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     super('player');
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
+    this.damageCoolingDownIterations = 0;
+
+    setInterval(() => {
+      if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
+        this.health += 5;
+        this.healthChanged();
+      }
+
+      if(this.damageCoolingDownIterations > 0) {
+        this.damageCoolingDownIterations--;
+      }
+    }, 1000)
   }
 
   die() {
@@ -1133,10 +1143,15 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   takeHit(damage) {
     super.takeHit(damage);
+    this.damageCoolingDownIterations = 3;
+    this.healthChanged();
+  }
+
+  healthChanged() {
     this.onHitCallbacks.forEach(cb => cb(this.health))
   }
 
-  onTakeHit(callback) {
+  onHealthChange(callback) {
     this.onHitCallbacks.push(callback);
   }
 }

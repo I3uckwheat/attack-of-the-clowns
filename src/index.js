@@ -1,7 +1,6 @@
 import Game from "./scripts/Game";
 import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
-import Entity from "./scripts/Entity";
 import ScoreTracker from "./scripts/ScoreTracker";
 
 import level from "./scripts/level";
@@ -30,7 +29,7 @@ function initialize() {
     console.log('game over');
   })
 
-  player.onTakeHit(health => {
+  player.onHealthChange(health => {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
