@@ -800,7 +800,7 @@ class World {
     gameField.appendChild(player.footbox);
     gameField.appendChild(player.hitbox);
 
-    this.width = 1300;
+    this.width = 1366;
     this.height = 700;
 
     this.playAreaTop = this.height - 470; // Top of walkable area
