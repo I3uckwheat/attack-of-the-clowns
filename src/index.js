@@ -4,6 +4,7 @@ import Player from "./scripts/Player";
 import Entity from "./scripts/Entity";
 import ScoreTracker from "./scripts/ScoreTracker";
 
+import level from "./scripts/level";
 import background from "./scripts/Background";
 
 const gameField = document.querySelector('#game');
@@ -53,10 +54,13 @@ function initialize() {
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
   game = new Game(gameField, player, background, scoreTracker);
-  game.registerObject(new Entity(600, 450, 67, 50, 'box'));
-  game.registerObject(new Entity(200, 350, 67, 50, 'box'));
-  game.registerObject(new Entity(-200, 287, 13, 600, 'barrier'));
-  game.registerObject(new Entity(900, 287, 13, 553, 'barrier'));
+  level.forEach(entity => {
+    game.registerObject(entity);
+  })
+  // game.registerObject(new Entity(600, 450, 67, 50, 'box'));
+  // game.registerObject(new Entity(200, 350, 67, 50, 'box'));
+  // game.registerObject(new Entity(-900, 287, 13, 600, 'barrier'));
+  // game.registerObject(new Entity(1900, 287, 13, 553, 'barrier'));
 
 
 

@@ -295,7 +295,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
 /* harmony import */ var _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Entity */ "./src/scripts/Entity.js");
 /* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+/* harmony import */ var _scripts_level__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/level */ "./src/scripts/level.js");
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+
 
 
 
@@ -350,11 +352,14 @@ function initialize() {
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](-200, 287, 13, 600, 'barrier'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](900, 287, 13, 553, 'barrier'));
+  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_6__["default"], scoreTracker);
+  _scripts_level__WEBPACK_IMPORTED_MODULE_5__["default"].forEach(entity => {
+    game.registerObject(entity);
+  })
+  // game.registerObject(new Entity(600, 450, 67, 50, 'box'));
+  // game.registerObject(new Entity(200, 350, 67, 50, 'box'));
+  // game.registerObject(new Entity(-900, 287, 13, 600, 'barrier'));
+  // game.registerObject(new Entity(1900, 287, 13, 553, 'barrier'));
 
 
 
@@ -1145,6 +1150,29 @@ class ScoreTracker {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
+
+/***/ }),
+
+/***/ "./src/scripts/level.js":
+/*!******************************!*\
+  !*** ./src/scripts/level.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Entity */ "./src/scripts/Entity.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = ([
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](600, 450, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](200, 350, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](400, 350, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](230, 680, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](-900, 287, 13, 600, 'barrier'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](1900, 287, 13, 553, 'barrier')
+]);
 
 /***/ })
 
