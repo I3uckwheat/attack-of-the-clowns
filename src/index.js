@@ -7,6 +7,8 @@ import ScoreTracker from "./scripts/ScoreTracker";
 import background from "./scripts/Background";
 
 const gameField = document.querySelector('#game');
+const healthBar = document.querySelector('#player-health div');
+const healthBarText = document.querySelector('#health-points');
  
 // Globals
 let player;
@@ -23,11 +25,13 @@ function initialize() {
     // This can be used to change game state and such too. Also trigger game over screen
     scoreTracker.saveScore();
     scoreTracker.endTracking();
+    healthBar.style.width = 0;
     console.log('game over');
   })
 
   player.onTakeHit(health => {
-    console.log(health);
+    healthBar.style.width = health + '%';
+    healthBarText.innerText = health;
   });
 
 

@@ -106,6 +106,33 @@ ul {
   color: #939598;
 }
 
+#ui {
+  position: absolute;
+}
+
+#ui #player-health {
+  position: absolute;
+  width: 50vw;
+  height: 30px;
+  border: 1px solid red;
+  line-height: 0;
+  color: white;
+}
+
+#ui #player-health div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: red;
+}
+
+#ui #player-health p {
+  position: relative;
+  z-index: 100;
+}
+
 #game {
   border: 1px solid black;
   overflow: hidden;

@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>ClownCircusGame</title>
-    <link href="./dist/style.css" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <div id="overlay">
-      <div id="title" class="text-focus-in">Attack of the Clowns</div>
-      <button id="startbutton" class="text-focus-in">Start</button>
-      <div id="controls">
-        <h1 id="controls-title" class="text-focus-in">Controls</h1>
-        <ul class="text-focus-in">
-          <li>Up: W</li>
-          <li>Down: S</li>
-          <li>Left: A</li>
-          <li>Right: D</li>
-          <li>Punch: Spacebar</li>
-        </ul>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>ClownCircusGame</title>
+  <link href="./dist/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div id="overlay">
+    <div id="title" class="text-focus-in">Attack of the Clowns</div>
+    <button id="startbutton" class="text-focus-in">Start</button>
+    <div id="controls">
+      <h1 id="controls-title" class="text-focus-in">Controls</h1>
+      <ul class="text-focus-in">
+        <li>Up: W</li>
+        <li>Down: S</li>
+        <li>Left: A</li>
+        <li>Right: D</li>
+        <li>Punch: Spacebar</li>
+      </ul>
+    </div>
+  </div>
+  <div id="ui">
+    <div id="player-health">
+      <p><span id='health-points'>100</span>/100</p>
+      <div>
       </div>
     </div>
-    <div id="playableArea"></div>
-    <div id="background"></div>
-    <div id="game"></div>
-    <script src="./dist/main.js"></script>
-  </body>
+  </div>
+  <div id="playableArea"></div>
+  <div id="background"></div>
+  <div id="game"></div>
+  <script src="./dist/main.js"></script>
+</body>
+
 </html>
