@@ -13,7 +13,7 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.801);
-  z-index: 501;
+  z-index: 5000;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
@@ -77,7 +77,7 @@ body {
   font-family: 'Circus';
   color: #939598;
   background-color: #73150D;
-  z-index: 502;
+  z-index: 5001;
   cursor: pointer;
   grid-area: startbutton;
   width: 250px;

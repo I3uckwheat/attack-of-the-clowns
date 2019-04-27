@@ -338,22 +338,23 @@ function initialize() {
 }
 
 function update() {
-  if (controls.isPressed('attack')) {
-    world.playerAttack();
-  }
-  if (controls.isPressed('up')) {
-    world.movePlayer('up');
-  }
-  if (controls.isPressed('down')) {
-    world.movePlayer('down');
-  }
-  if (controls.isPressed('left')) {
-    world.movePlayer('left');
-  }
-  if (controls.isPressed('right')) {
-    world.movePlayer('right');
-  }
-
+  if (gameState === 1) {
+    if (controls.isPressed('attack')) {
+      world.playerAttack();
+    }
+    if (controls.isPressed('up')) {
+      world.movePlayer('up');
+    }
+    if (controls.isPressed('down')) {
+      world.movePlayer('down');
+    }
+    if (controls.isPressed('left')) {
+      world.movePlayer('left');
+    }
+    if (controls.isPressed('right')) {
+      world.movePlayer('right');
+    }
+    
     world.update();
   }
 }
@@ -806,7 +807,7 @@ class World {
     this.enemies = [];
 
     // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 450, y: 300}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 450, y: 600}), "enemy");
   }
 
   update() {
