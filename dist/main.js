@@ -353,8 +353,8 @@ function initialize() {
   game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
   game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
   game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](-2000, 287, 73, 553, 'barrier'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](2000, 287, 73, 553, 'barrier'));
+  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](-200, 287, 13, 600, 'barrier'));
+  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](900, 287, 13, 553, 'barrier'));
 
 
 
@@ -801,7 +801,7 @@ class World {
     gameField.appendChild(player.hitbox);
 
     this.width = 1366;
-    this.height = 700;
+    this.height = 820;
 
     this.playAreaTop = this.height - 470; // Top of walkable area
     this.playAreaBottom = this.playAreaTop + 335; // Bottom of walkable area
