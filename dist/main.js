@@ -353,6 +353,10 @@ function initialize() {
   game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
   game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
   game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
+  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](-2000, 287, 73, 553, 'barrier'));
+  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](2000, 287, 73, 553, 'barrier'));
+
+
 
   requestAnimationFrame(tick);
 }

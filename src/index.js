@@ -55,6 +55,10 @@ function initialize() {
   game = new Game(gameField, player, background, scoreTracker);
   game.registerObject(new Entity(600, 450, 67, 50, 'box'));
   game.registerObject(new Entity(200, 350, 67, 50, 'box'));
+  game.registerObject(new Entity(-2000, 287, 73, 553, 'barrier'));
+  game.registerObject(new Entity(2000, 287, 73, 553, 'barrier'));
+
+
 
   requestAnimationFrame(tick);
 }
