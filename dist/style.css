@@ -29,7 +29,7 @@ body {
 
 #title {
   grid-area: title;
-  font-size: 75px;
+  font-size: 90px;
   color: #939598;
   place-self: center;
   font-family: 'Circus';
@@ -96,7 +96,7 @@ body {
   grid-area: controls;
   font-family: 'Circus';
   align-self: start;
-  justify-self: center;
+  justify-self: end;
 }
 
 #controls-title {
