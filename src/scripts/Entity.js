@@ -10,7 +10,7 @@ class Entity {
     this.element.style.left = this.x;
     this.element.style.top = this.y;
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.hitbox = document.createElement('div');
       this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
     }
@@ -52,7 +52,7 @@ class Entity {
     this.element.style.left = this.x + 'px';
     this.element.style.top = this.y + 'px';
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.hitbox.style.left = this.x + 'px';
       this.hitbox.style.top = this.y + 'px';
     }

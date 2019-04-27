@@ -10,8 +10,10 @@ class World {
     // Sets up player
     this.player = player;
     gameField.appendChild(player.element);
-    gameField.appendChild(player.footbox);
-    gameField.appendChild(player.hitbox);
+    if (process.env.DEVELOPMENT) {
+      gameField.appendChild(player.footbox);
+      gameField.appendChild(player.hitbox);
+    }
 
     this.width = 1366;
     this.height = 820;
@@ -226,7 +228,7 @@ class World {
 
     this.gameField.appendChild(object.element);
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.gameField.appendChild(object.hitbox);
       if (object.footbox) this.gameField.appendChild(object.footbox);
     }
