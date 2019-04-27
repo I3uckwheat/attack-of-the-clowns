@@ -453,7 +453,7 @@ __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _Entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Entity */ "./src/scripts/Entity.js");
 
 
-class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
+class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(spriteClass) {
     super(300, 400, 55, 136, spriteClass);
 
@@ -483,8 +483,8 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     return {
       x: this.x,
       y: this.y + this.height - this.footHeight,
-      height: this.footHeight, 
-      width: this.width 
+      height: this.footHeight,
+      width: this.width
     };
   }
 
@@ -501,31 +501,44 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
     }
   }
 
-  attack(opponent) {
-    let result = 'miss';
-    if (!this.attackCoolingDown && !this.attacking) {
+  attack(opponents) {
+    let result = {
+      hits: 0,
+      misses: 0,
+      kills: 0
+    };
 
-      // check distances and determine hits
-      if(opponent) {
-        const dx = this.x - opponent.x;
-        const dy = this.y - opponent.y;
+    opponents.forEach(opponent => {
+      if (!this.attackCoolingDown && !this.attacking) {
 
-        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
-          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-            result = opponent.takeHit(this.strength);
+        // check distances and determine hits
+        if (opponent) {
+          const dx = this.x - opponent.x;
+          const dy = this.y - opponent.y;
+
+          if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+            (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
+            if(opponent.takeHit(this.strength) === 'killed') {
+              result.kills++;
+            } else {
+              result.hits++;
+            }
+          } else {
+            result.misses++;
+          }
         }
       }
+    });
 
-      this.attackCoolingDown = true;
-      this.attacking = true;
+    this.attackCoolingDown = true;
+    this.attacking = true;
 
-      this.runAnimation('punch', () => {
-        this.attacking = false;
-        setTimeout(() => {
-          this.attackCoolingDown = false;
-        }, 700);
-      })
-    }
+    this.runAnimation('punch', () => {
+      this.attacking = false;
+      setTimeout(() => {
+        this.attackCoolingDown = false;
+      }, 700);
+    });
 
     return result;
   }
@@ -544,7 +557,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
   die() {
     this.dead = true;
-    this.health = 0;  // Prevents negative health values
+    this.health = 0; // Prevents negative health values
     this.endAnimations('takeHit', 'punch');
     this.startAnimations('fall');
   }
@@ -573,7 +586,6 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Character);
-
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
@@ -672,7 +684,7 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
       this.preparingToAttackTimeout = setTimeout(() => {
         this.preparingToAttack = false;
-        super.attack(player);
+        super.attack([player]);
       }, randomAttackTime);
     }
   }
@@ -803,8 +815,8 @@ class World {
     this.width = 1366;
     this.height = 820;
 
-    this.playAreaTop = this.height - 470; // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 335; // Bottom of walkable area
+    this.playAreaTop = 230; // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
 
     // Sets up gamefield 
     this.gameField = gameField;
@@ -814,11 +826,8 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({
-      x: 450,
-      y: 600
-    }), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 700, y: 200}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({ x: 600, y: 600 }), "enemy");
   }
 
   update() {
@@ -931,20 +940,36 @@ class World {
 
   playerAttack() {
     if (!this.player.attacking && !this.player.attackCoolingDown) {
-      const result = this.player.attack(this.enemies[0]);
-      if (result === 'killed') {
-        this.scoreTracker.killedEnemy();
+      const result = this.player.attack(this.enemies);
+      if (result.kills > 0) {
+        this.cleanUpDead();
+        this.scoreTracker.killedEnemy(result.kills);
       }
     }
+
+  }
+
+  cleanUpDead() {
+    this.enemies = this.enemies.filter(enemy => {
+      // Add dead enemy to static objects to prevent showing up as a kill on every hit
+      if(enemy.dead) this.registerObject(enemy, 'static');
+
+      // Filter out the dead enemies from the enemies array
+      return !enemy.dead
+    });
   }
 
   hasCollisions(entity1, enemySkipIndex) {
     const staticCollisions = this.playFieldObjects.some(entity2 => {
+      if (entity2.dead) return false;
       return this.isColliding(entity1, entity2)
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if (enemySkipIndex === index || entity2.dead) return false;
+
+      // Prevent enemy from colliding with self
+      if (enemySkipIndex === index) return false;
+
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
@@ -1079,9 +1104,9 @@ class ScoreTracker {
     }, 1000);
   }
 
-  killedEnemy() {
-    this.currentScore += Math.floor(Math.random() * 200 + 201);
-    this.enemiesKilled++;
+  killedEnemy(amount) {
+    this.currentScore += (Math.floor(Math.random() * 200 + 201)) * amount;
+    this.enemiesKilled += amount;
     this.scoreUpdated();
   }
 
