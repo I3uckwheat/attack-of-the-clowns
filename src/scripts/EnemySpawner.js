@@ -6,14 +6,15 @@ class EnemySpawner {
     this.world = world;
     this.player = player;
     this.viewWidth = viewWidth;
-    this.leftBoundary = leftBoundary + 50;
-    this.rightBoundary = rightBoundary - 50;
+    this.leftBoundary = leftBoundary;
+    this.rightBoundary = rightBoundary;
     this.topBoundary = topBoundary;
     this.bottomBoundary = bottomBoundary;
 
     this.queue = [];
     this.nextSpawn = 3000;
     this.enemyAddTimeout;
+    this.shouldSpawn = false;
 
     this.startSpawnTimeout();
   }
@@ -25,23 +26,34 @@ class EnemySpawner {
   }
 
   addEnemyToQueue() {
-    let x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
-    let y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
-    let enemy = new Enemy(x, y)
-    while (this.world.hasCollisions(enemy)) {
+    let x;
+    let y;
+    let enemy;
+
+    do {
       x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
       y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
       enemy = new Enemy(x, y)
-    }
+    } while (this.world.hasCollisions(enemy.feet) || this.world.isColliding(this.player.feet, enemy.feet));
 
     this.queue.push(enemy);
   }
 
   startSpawnTimeout() {
     return setTimeout(() => {
-      this.addEnemyToQueue();
-      this.startSpawnTimeout();
+      if (this.shouldSpawn)  {
+        this.addEnemyToQueue();
+        this.startSpawnTimeout();
+      }
     }, this.nextSpawn);
+  }
+
+  startSpawning() {
+    this.shouldSpawn = true;
+  }
+
+  stopSpawning() {
+    this.shouldSpawn = false;
   }
 }
 
