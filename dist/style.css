@@ -234,6 +234,15 @@ ul {
   background-repeat: no-repeat;
 }
 
+.barrier {
+  width: 73px;
+  height: 553px;
+  background-image: url("assets/barrier.png");
+  position:absolute;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 #playableArea {
   height: 533px;
   width: 1366px;
