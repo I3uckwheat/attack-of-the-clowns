@@ -26,6 +26,10 @@ function initialize() {
     console.log('game over');
   })
 
+  player.onTakeHit(health => {
+    console.log(health);
+  });
+
 
   scoreTracker = new ScoreTracker();
   scoreTracker.onScoreUpdate(score => {console.log('updated', score)})

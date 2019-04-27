@@ -324,6 +324,10 @@ function initialize() {
     console.log('game over');
   })
 
+  player.onTakeHit(health => {
+    console.log(health);
+  });
+
 
   scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
   scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
@@ -781,6 +785,7 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super('player');
     this.onDeathCallbacks = [];
+    this.onHitCallbacks = [];
   }
 
   die() {
@@ -790,6 +795,15 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   onDeath(callback) {
     this.onDeathCallbacks.push(callback);
+  }
+
+  takeHit(damage) {
+    super.takeHit(damage);
+    this.onHitCallbacks.forEach(cb => cb(this.health))
+  }
+
+  onTakeHit(callback) {
+    this.onHitCallbacks.push(callback);
   }
 }
 

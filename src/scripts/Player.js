@@ -4,6 +4,7 @@ class Player extends Character {
   constructor() {
     super('player');
     this.onDeathCallbacks = [];
+    this.onHitCallbacks = [];
   }
 
   die() {
@@ -13,6 +14,15 @@ class Player extends Character {
 
   onDeath(callback) {
     this.onDeathCallbacks.push(callback);
+  }
+
+  takeHit(damage) {
+    super.takeHit(damage);
+    this.onHitCallbacks.forEach(cb => cb(this.health))
+  }
+
+  onTakeHit(callback) {
+    this.onHitCallbacks.push(callback);
   }
 }
 
