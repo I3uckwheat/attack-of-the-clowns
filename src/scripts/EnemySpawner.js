@@ -16,32 +16,39 @@ class EnemySpawner {
     this.shouldSpawn = false;
 
     this.startSpawnTimeout();
+    this.spawnedEnemies = 0;
+    this.spawnAmount = 1;
   }
 
   spawnQueue() {
-    const enemyQueue = this.queue;
+    const enemiesToSpawn = this.queue;
+    this.spawnedEnemies += this.queue.length;
     this.queue = [];
-    return enemyQueue;
+
+    return enemiesToSpawn;
   }
 
-  addEnemyToQueue() {
-    let x;
-    let y;
-    let enemy;
+  addEnemiesToQueue(amount) {
+    for(let i = 0; i < amount; i++) {
+      let x;
+      let y;
+      let enemy;
 
-    do {
-      x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
-      y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
-      enemy = new Enemy(x, y)
-    } while (this.world.hasCollisions(enemy.feet) || this.world.isColliding(this.player.feet, enemy.feet));
+      do {
+        x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
+        y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
+        enemy = new Enemy(x, y)
+      } while (this.world.hasCollisions(enemy.feet) || this.world.isColliding(this.player.feet, enemy.feet));
 
-    this.queue.push(enemy);
+      this.queue.push(enemy);
+    }
   }
 
-  startSpawnTimeout() {
+  startSpawnTimeout(amount) {
     return setTimeout(() => {
       if (this.shouldSpawn)  {
-        this.addEnemyToQueue();
+        this.spawnAmount += .08;
+        this.addEnemiesToQueue(Math.floor(this.spawnAmount));
         this.startSpawnTimeout();
       }
     }, this.nextSpawn);
