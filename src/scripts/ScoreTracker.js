@@ -12,7 +12,7 @@ class ScoreTracker {
     this.onScoreUpdateCallbacks = [];
     this.scoreIncrementInterval = setInterval(() => {
       if(this.gainingScore) {
-        this.currentScore += Math.floor(Math.random() * 50 + 1);
+        this.currentScore += Math.floor(Math.random() * 3 + 1);
         this.scoreUpdated();
       }
     }, 1000);
