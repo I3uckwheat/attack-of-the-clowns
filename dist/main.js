@@ -666,11 +666,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(position) {
+  constructor(x, y) {
     super('clown');
 
-    this.x = position.x;
-    this.y = position.y;
+    this.x = x;
+    this.y = y;
     this.footHeight = 38;
     this.speed = 2;
 
@@ -716,6 +716,68 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Enemy);
+
+/***/ }),
+
+/***/ "./src/scripts/EnemySpawner.js":
+/*!*************************************!*\
+  !*** ./src/scripts/EnemySpawner.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
+/* harmony import */ var _Game__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Game */ "./src/scripts/Game.js");
+
+
+
+class EnemySpawner {
+  constructor(world, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
+    this.world = world;
+    this.player = player;
+    this.viewWidth = viewWidth;
+    this.leftBoundary = leftBoundary + 50;
+    this.rightBoundary = rightBoundary - 50;
+    this.topBoundary = topBoundary;
+    this.bottomBoundary = bottomBoundary;
+
+    this.queue = [];
+    this.nextSpawn = 3000;
+    this.enemyAddTimeout;
+
+    this.startSpawnTimeout();
+  }
+
+  spawnQueue() {
+    const enemyQueue = this.queue;
+    this.queue = [];
+    return enemyQueue;
+  }
+
+  addEnemyToQueue() {
+    let x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
+    let y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
+    let enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](x, y)
+    while (this.world.hasCollisions(enemy)) {
+      x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
+      y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
+      enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](x, y)
+    }
+
+    this.queue.push(enemy);
+  }
+
+  startSpawnTimeout() {
+    return setTimeout(() => {
+      this.addEnemyToQueue();
+      this.startSpawnTimeout();
+    }, this.nextSpawn);
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (EnemySpawner);
 
 /***/ }),
 
@@ -803,7 +865,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EnemySpawner */ "./src/scripts/EnemySpawner.js");
 
 
 class World {
@@ -831,8 +893,8 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 700, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({ x: 600, y: 600 }), "enemy");
+    // left and right are in level.js, on the walls
+    this.enemySpawner = new _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__["default"](this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
   }
 
   update() {
@@ -889,6 +951,10 @@ class World {
         enemy.attack(player)
       }
     });
+
+    this.enemySpawner.spawnQueue().forEach(enemy => {
+      this.registerObject(enemy, 'enemy');
+    })
   }
 
   movePlayer(direction) {
@@ -957,7 +1023,7 @@ class World {
   cleanUpDead() {
     this.enemies = this.enemies.filter(enemy => {
       // Add dead enemy to static objects to prevent showing up as a kill on every hit
-      if(enemy.dead) this.registerObject(enemy, 'static');
+      if (enemy.dead) this.registerObject(enemy, 'static');
 
       // Filter out the dead enemies from the enemies array
       return !enemy.dead

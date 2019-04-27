@@ -1,11 +1,11 @@
 import Character from "./Character";
 
 class Enemy extends Character {
-  constructor(position) {
+  constructor(x, y) {
     super('clown');
 
-    this.x = position.x;
-    this.y = position.y;
+    this.x = x;
+    this.y = y;
     this.footHeight = 38;
     this.speed = 2;
 
