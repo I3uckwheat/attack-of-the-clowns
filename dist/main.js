@@ -319,6 +319,8 @@ function initialize() {
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
   player.onDeath(() => {
     // This can be used to change game state and such too. Also trigger game over screen
+    scoreTracker.saveScore();
+    scoreTracker.endTracking();
     console.log('game over');
   })
 
@@ -650,19 +652,17 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   attack(player) {
-    return new Promise((resolve, reject) => {
-      if (!this.preparingToAttack) {
-        this.preparingToAttack = true;
+    if (!this.preparingToAttack) {
+      this.preparingToAttack = true;
 
-        // Time before attack
-        const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+      // Time before attack
+      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
 
-        this.preparingToAttackTimeout = setTimeout(() => {
-          this.preparingToAttack = false;
-          resolve(super.attack(player));
-        }, randomAttackTime);
-      }
-    });
+      this.preparingToAttackTimeout = setTimeout(() => {
+        this.preparingToAttack = false;
+        super.attack(player);
+      }, randomAttackTime);
+    }
   }
 
   resetAttack() {
@@ -966,12 +966,7 @@ class World {
       }
 
       if (Math.abs(dx) < 60 && Math.abs(dy) < 40) {
-        enemy.attack(player).then(result => {
-            if (result === 'killed') {
-              this.scoreTracker.endTracking();
-            }
-          }
-        );
+        enemy.attack(player)
       }
     });
   }

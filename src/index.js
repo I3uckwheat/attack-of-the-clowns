@@ -21,6 +21,8 @@ function initialize() {
   player = new Player();
   player.onDeath(() => {
     // This can be used to change game state and such too. Also trigger game over screen
+    scoreTracker.saveScore();
+    scoreTracker.endTracking();
     console.log('game over');
   })
 

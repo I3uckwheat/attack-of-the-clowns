@@ -16,19 +16,17 @@ class Enemy extends Character {
   }
 
   attack(player) {
-    return new Promise((resolve, reject) => {
-      if (!this.preparingToAttack) {
-        this.preparingToAttack = true;
+    if (!this.preparingToAttack) {
+      this.preparingToAttack = true;
 
-        // Time before attack
-        const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+      // Time before attack
+      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
 
-        this.preparingToAttackTimeout = setTimeout(() => {
-          this.preparingToAttack = false;
-          resolve(super.attack(player));
-        }, randomAttackTime);
-      }
-    });
+      this.preparingToAttackTimeout = setTimeout(() => {
+        this.preparingToAttack = false;
+        super.attack(player);
+      }, randomAttackTime);
+    }
   }
 
   resetAttack() {

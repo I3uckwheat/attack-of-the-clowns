@@ -83,12 +83,7 @@ class World {
       }
 
       if (Math.abs(dx) < 60 && Math.abs(dy) < 40) {
-        enemy.attack(player).then(result => {
-            if (result === 'killed') {
-              this.scoreTracker.endTracking();
-            }
-          }
-        );
+        enemy.attack(player)
       }
     });
   }
