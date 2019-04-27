@@ -1,7 +1,10 @@
 body {
-  margin: 0;
+  /* margin: 0; */
   padding:0;
   overflow: hidden;
+  max-width: 1366px;
+  margin: auto;
+  background-color: black;
 }
 
 #overlay {
@@ -107,8 +110,9 @@ ul {
 }
 
 #game {
-  border: 1px solid black;
+  /* border: 1px solid black; */
   overflow: hidden;
+  position: relative;
 }
 
 .player {
@@ -196,7 +200,7 @@ ul {
 
 #playableArea {
   height: 533px;
-  width: 2595px;
+  width: 1366px;
   position:absolute;
   top: 287px;
   background-image:url("assets/ring.png");
@@ -205,7 +209,7 @@ ul {
 
 #background {
   height: 287px;
-  width: 2595px;
+  width: 1366px;
   position:absolute;
   background-image:url("assets/crowd.png");
   z-index: -2;
