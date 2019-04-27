@@ -294,7 +294,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
 /* harmony import */ var _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Entity */ "./src/scripts/Entity.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+/* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+
 
 
 
@@ -308,29 +310,32 @@ const gameField = document.querySelector('#game');
 let player;
 let world;
 let controls;
+let scoreTracker;
 
-// Make your menu, and then when you want to toggle the gamestate, change this variable to `1` an the 
 // game will run  
 let gameState = 0;
 
-// changes gamestate and removed overlay
-const startButton = document.querySelector('#startbutton')
-
-startButton.addEventListener('click', () => {
-  gameState = 1
-  document.getElementById("overlay").style.display = "none";
-});
-
 function initialize() {
+  player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
+
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
+
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    scoreTracker.startTracking();
+  });
+
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
-
-  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"]);
+  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
   world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
   world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
 
@@ -478,6 +483,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   attack(opponent) {
+    let result = 'miss';
     if (!this.attackCoolingDown && !this.attacking) {
 
       // check distances and determine hits
@@ -487,7 +493,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
         if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
           (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-          opponent.takeHit(this.strength);
+            result = opponent.takeHit(this.strength);
         }
       }
 
@@ -501,14 +507,19 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
         }, 700);
       })
     }
+
+    return result;
   }
 
   takeHit(damage) {
+    const oldHealth = this.health;
     this.health -= damage;
-    if (this.health < 0) {
+    if (oldHealth > 0 && this.health <= 0) {
       this.die();
+      return 'killed';
     } else {
       this.runAnimation('takeHit');
+      return 'hit';
     }
   }
 
@@ -633,17 +644,19 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   attack(player) {
-    if (!this.preparingToAttack) {
-      this.preparingToAttack = true;
-      
-      // Time before attack
-      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+    return new Promise((resolve, reject) => {
+      if (!this.preparingToAttack) {
+        this.preparingToAttack = true;
 
-      this.preparingToAttackTimeout = setTimeout(() => {
-        this.preparingToAttack = false;
-        super.attack(player);
-      }, randomAttackTime);
-    }
+        // Time before attack
+        const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+
+        this.preparingToAttackTimeout = setTimeout(() => {
+          this.preparingToAttack = false;
+          resolve(super.attack(player));
+        }, randomAttackTime);
+      }
+    });
   }
 
   resetAttack() {
@@ -656,19 +669,18 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     // enemy can't attack or move while being hurt
     this.resetAttack();
 
-    if(this.speed > 0) {
+    if (this.speed > 0) {
       const oldSpeed = this.speed;
       this.speed = 0;
       setTimeout(() => {
         this.speed = oldSpeed;
       }, 800)
     }
-    super.takeHit(damage);
+    return super.takeHit(damage);
   }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Enemy);
-
 
 /***/ }),
 
@@ -770,6 +782,79 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
+/***/ "./src/scripts/ScoreTracker.js":
+/*!*************************************!*\
+  !*** ./src/scripts/ScoreTracker.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class ScoreTracker {
+  constructor() {
+    this.currentScore = 0;
+    this.enemiesKilled = 0;
+
+    this.savedScores = [];
+    if(localStorage.getItem('scores')) {
+      this.savedScores = JSON.parse(localStorage.getItem('scores'));
+    }
+
+    this.gainingScore = false;
+    this.onScoreUpdateCallbacks = [];
+    this.scoreIncrementInterval = setInterval(() => {
+      if(this.gainingScore) {
+        this.currentScore += Math.floor(Math.random() * 50 + 1);
+        this.scoreUpdated();
+      }
+    }, 1000);
+  }
+
+  killedEnemy() {
+    this.currentScore += Math.floor(Math.random() * 200 + 201);
+    this.enemiesKilled++;
+    this.scoreUpdated();
+  }
+
+  onScoreUpdate(callback) {
+    this.onScoreUpdateCallbacks.push(callback);
+  }
+
+  scoreUpdated() {
+    this.onScoreUpdateCallbacks.forEach(cb => cb(this.currentScore));
+  }
+
+  startTracking() {
+    this.gainingScore = true;
+  }
+
+  endTracking() {
+    this.gainingScore = false;
+    this.saveScore();
+  }
+
+  saveScore() {
+    this.savedScores.push({
+      score: this.currentScore,
+      enemiesKilled: this.enemiesKilled
+    });
+
+    this.savedScores.sort((firstEl, secondEl) => {
+      return firstEl.score < secondEl.score;
+    });
+
+    this.savedScores = this.savedScores.slice(0, 2);
+
+    localStorage.setItem('scores', JSON.stringify(this.savedScores));
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
+
+/***/ }),
+
 /***/ "./src/scripts/World.js":
 /*!******************************!*\
   !*** ./src/scripts/World.js ***!
@@ -783,8 +868,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class World {
-  constructor(gameField, player, background) {
+  constructor(gameField, player, background, scoreTracker) {
     this.background = background;
+    this.scoreTracker = scoreTracker;
 
     // Sets up player
     this.player = player;
@@ -795,24 +881,27 @@ class World {
     this.width = 1300;
     this.height = 700;
 
-    this.playAreaTop = this.height - 470;            // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 335;    // Bottom of walkable area
+    this.playAreaTop = this.height - 470; // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 335; // Bottom of walkable area
 
     // Sets up gamefield 
     this.gameField = gameField;
     this.gameField.style.height = this.height + 'px';
-    this.gameField.style.width =  this.width + 'px';
+    this.gameField.style.width = this.width + 'px';
 
     this.playFieldObjects = [];
     this.enemies = [];
 
     // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 450, y: 600}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({
+      x: 450,
+      y: 600
+    }), "enemy");
   }
 
   update() {
     const player = this.player;
-    if(player.dead) return;
+    if (player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
@@ -841,8 +930,7 @@ class World {
         enemy.x += enemy.speed;
       }
 
-      if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
-      {
+      if (this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet)) {
         enemy.x = currentPosition.x;
       }
 
@@ -853,8 +941,7 @@ class World {
         enemy.y += enemy.speed;
       }
 
-      if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
-      {
+      if (this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet)) {
         enemy.y = currentPosition.y;
       }
 
@@ -863,7 +950,12 @@ class World {
       }
 
       if (Math.abs(dx) < 60 && Math.abs(dy) < 40) {
-        enemy.attack(player);
+        enemy.attack(player).then(result => {
+            if (result === 'killed') {
+              this.scoreTracker.endTracking();
+            }
+          }
+        );
       }
     });
   }
@@ -872,13 +964,13 @@ class World {
     const player = this.player;
     if (player.dead) return;
 
-    if(player.attacking) return;
+    if (player.attacking) return;
     const currentPosition = {
       x: player.x,
       y: player.y
     }
 
-    switch(direction) {
+    switch (direction) {
       case "up":
         player.startAnimations('walking');
         player.y -= player.speed;
@@ -901,10 +993,9 @@ class World {
         break;
     }
 
-    if(this.hasCollisions(player.feet) ||
-       player.y < this.playAreaTop || 
-       player.y > this.playAreaBottom)
-    {
+    if (this.hasCollisions(player.feet) ||
+      player.y < this.playAreaTop ||
+      player.y > this.playAreaBottom) {
       player.x = currentPosition.x;
       player.y = currentPosition.y;
     }
@@ -922,8 +1013,11 @@ class World {
   }
 
   playerAttack() {
-    if(!this.player.attacking && !this.player.attackCoolingDown) {
-      this.player.attack(this.enemies[0]);
+    if (!this.player.attacking && !this.player.attackCoolingDown) {
+      const result = this.player.attack(this.enemies[0]);
+      if (result === 'killed') {
+        this.scoreTracker.killedEnemy();
+      }
     }
   }
 
@@ -933,7 +1027,7 @@ class World {
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if(enemySkipIndex === index || entity2.dead) return false;
+      if (enemySkipIndex === index || entity2.dead) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
@@ -943,8 +1037,8 @@ class World {
 
   isColliding(rect1, rect2) {
     return (
-      rect1.x + rect1.width > rect2.x  &&
-      rect1.x < rect2.x + rect2.width  &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.x < rect2.x + rect2.width &&
       rect1.y + rect1.height > rect2.y &&
       rect1.y < rect2.y + rect2.height
     );
@@ -972,12 +1066,12 @@ class World {
 
     this.gameField.appendChild(object.element);
 
-    if(process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT || true) {
       this.gameField.appendChild(object.hitbox);
-      if(object.footbox) this.gameField.appendChild(object.footbox);
+      if (object.footbox) this.gameField.appendChild(object.footbox);
     }
   }
-  
+
   draw() {
     this.player.draw();
     this.background.draw();

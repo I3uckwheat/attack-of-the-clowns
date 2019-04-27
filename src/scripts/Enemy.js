@@ -16,17 +16,19 @@ class Enemy extends Character {
   }
 
   attack(player) {
-    if (!this.preparingToAttack) {
-      this.preparingToAttack = true;
-      
-      // Time before attack
-      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+    return new Promise((resolve, reject) => {
+      if (!this.preparingToAttack) {
+        this.preparingToAttack = true;
 
-      this.preparingToAttackTimeout = setTimeout(() => {
-        this.preparingToAttack = false;
-        super.attack(player);
-      }, randomAttackTime);
-    }
+        // Time before attack
+        const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+
+        this.preparingToAttackTimeout = setTimeout(() => {
+          this.preparingToAttack = false;
+          resolve(super.attack(player));
+        }, randomAttackTime);
+      }
+    });
   }
 
   resetAttack() {
@@ -39,14 +41,14 @@ class Enemy extends Character {
     // enemy can't attack or move while being hurt
     this.resetAttack();
 
-    if(this.speed > 0) {
+    if (this.speed > 0) {
       const oldSpeed = this.speed;
       this.speed = 0;
       setTimeout(() => {
         this.speed = oldSpeed;
       }, 800)
     }
-    super.takeHit(damage);
+    return super.takeHit(damage);
   }
 }
 

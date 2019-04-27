@@ -2,6 +2,7 @@ import World from "./scripts/World";
 import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
 import Entity from "./scripts/Entity";
+import ScoreTracker from "./scripts/ScoreTracker";
 
 import background from "./scripts/Background";
 
@@ -11,29 +12,32 @@ const gameField = document.querySelector('#game');
 let player;
 let world;
 let controls;
+let scoreTracker;
 
-// Make your menu, and then when you want to toggle the gamestate, change this variable to `1` an the 
 // game will run  
 let gameState = 0;
 
-// changes gamestate and removed overlay
-const startButton = document.querySelector('#startbutton')
-
-startButton.addEventListener('click', () => {
-  gameState = 1
-  document.getElementById("overlay").style.display = "none";
-});
-
 function initialize() {
+  player = new Player();
+  scoreTracker = new ScoreTracker();
+  scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
+
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
+
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    scoreTracker.startTracking();
+  });
+
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  player = new Player();
-
-  world = new World(gameField, player, background);
+  world = new World(gameField, player, background, scoreTracker);
   world.registerObject(new Entity(600, 450, 67, 50, 'box'));
   world.registerObject(new Entity(200, 350, 67, 50, 'box'));
 
