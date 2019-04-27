@@ -644,17 +644,19 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   attack(player) {
-    if (!this.preparingToAttack) {
-      this.preparingToAttack = true;
-      
-      // Time before attack
-      const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+    return new Promise((resolve, reject) => {
+      if (!this.preparingToAttack) {
+        this.preparingToAttack = true;
 
-      this.preparingToAttackTimeout = setTimeout(() => {
-        this.preparingToAttack = false;
-        super.attack(player);
-      }, randomAttackTime);
-    }
+        // Time before attack
+        const randomAttackTime = Math.floor(Math.random() * Math.floor(900)) + 200;
+
+        this.preparingToAttackTimeout = setTimeout(() => {
+          this.preparingToAttack = false;
+          resolve(super.attack(player));
+        }, randomAttackTime);
+      }
+    });
   }
 
   resetAttack() {
@@ -667,7 +669,7 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     // enemy can't attack or move while being hurt
     this.resetAttack();
 
-    if(this.speed > 0) {
+    if (this.speed > 0) {
       const oldSpeed = this.speed;
       this.speed = 0;
       setTimeout(() => {
@@ -679,7 +681,6 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Enemy);
-
 
 /***/ }),
 
@@ -795,6 +796,11 @@ class ScoreTracker {
     this.currentScore = 0;
     this.enemiesKilled = 0;
 
+    this.savedScores = [];
+    if(localStorage.getItem('scores')) {
+      this.savedScores = JSON.parse(localStorage.getItem('scores'));
+    }
+
     this.gainingScore = false;
     this.onScoreUpdateCallbacks = [];
     this.scoreIncrementInterval = setInterval(() => {
@@ -825,7 +831,24 @@ class ScoreTracker {
 
   endTracking() {
     this.gainingScore = false;
+    this.saveScore();
   }
+
+  saveScore() {
+    this.savedScores.push({
+      score: this.currentScore,
+      enemiesKilled: this.enemiesKilled
+    });
+
+    this.savedScores.sort((firstEl, secondEl) => {
+      return firstEl.score < secondEl.score;
+    });
+
+    this.savedScores = this.savedScores.slice(0, 2);
+
+    localStorage.setItem('scores', JSON.stringify(this.savedScores));
+  }
+
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
@@ -858,24 +881,27 @@ class World {
     this.width = 1300;
     this.height = 700;
 
-    this.playAreaTop = this.height - 470;            // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 335;    // Bottom of walkable area
+    this.playAreaTop = this.height - 470; // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 335; // Bottom of walkable area
 
     // Sets up gamefield 
     this.gameField = gameField;
     this.gameField.style.height = this.height + 'px';
-    this.gameField.style.width =  this.width + 'px';
+    this.gameField.style.width = this.width + 'px';
 
     this.playFieldObjects = [];
     this.enemies = [];
 
     // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 450, y: 600}), "enemy");
+    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({
+      x: 450,
+      y: 600
+    }), "enemy");
   }
 
   update() {
     const player = this.player;
-    if(player.dead) return;
+    if (player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
@@ -904,8 +930,7 @@ class World {
         enemy.x += enemy.speed;
       }
 
-      if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
-      {
+      if (this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet)) {
         enemy.x = currentPosition.x;
       }
 
@@ -916,8 +941,7 @@ class World {
         enemy.y += enemy.speed;
       }
 
-      if(this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet))
-      {
+      if (this.hasCollisions(enemy.feet, index) || this.isColliding(enemy.feet, player.feet)) {
         enemy.y = currentPosition.y;
       }
 
@@ -926,7 +950,12 @@ class World {
       }
 
       if (Math.abs(dx) < 60 && Math.abs(dy) < 40) {
-        enemy.attack(player);
+        enemy.attack(player).then(result => {
+            if (result === 'killed') {
+              this.scoreTracker.endTracking();
+            }
+          }
+        );
       }
     });
   }
@@ -935,13 +964,13 @@ class World {
     const player = this.player;
     if (player.dead) return;
 
-    if(player.attacking) return;
+    if (player.attacking) return;
     const currentPosition = {
       x: player.x,
       y: player.y
     }
 
-    switch(direction) {
+    switch (direction) {
       case "up":
         player.startAnimations('walking');
         player.y -= player.speed;
@@ -964,10 +993,9 @@ class World {
         break;
     }
 
-    if(this.hasCollisions(player.feet) ||
-       player.y < this.playAreaTop || 
-       player.y > this.playAreaBottom)
-    {
+    if (this.hasCollisions(player.feet) ||
+      player.y < this.playAreaTop ||
+      player.y > this.playAreaBottom) {
       player.x = currentPosition.x;
       player.y = currentPosition.y;
     }
@@ -985,9 +1013,9 @@ class World {
   }
 
   playerAttack() {
-    if(!this.player.attacking && !this.player.attackCoolingDown) {
+    if (!this.player.attacking && !this.player.attackCoolingDown) {
       const result = this.player.attack(this.enemies[0]);
-      if(result === 'killed') {
+      if (result === 'killed') {
         this.scoreTracker.killedEnemy();
       }
     }
@@ -999,7 +1027,7 @@ class World {
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if(enemySkipIndex === index || entity2.dead) return false;
+      if (enemySkipIndex === index || entity2.dead) return false;
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
@@ -1009,8 +1037,8 @@ class World {
 
   isColliding(rect1, rect2) {
     return (
-      rect1.x + rect1.width > rect2.x  &&
-      rect1.x < rect2.x + rect2.width  &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.x < rect2.x + rect2.width &&
       rect1.y + rect1.height > rect2.y &&
       rect1.y < rect2.y + rect2.height
     );
@@ -1038,12 +1066,12 @@ class World {
 
     this.gameField.appendChild(object.element);
 
-    if(process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT || true) {
       this.gameField.appendChild(object.hitbox);
-      if(object.footbox) this.gameField.appendChild(object.footbox);
+      if (object.footbox) this.gameField.appendChild(object.footbox);
     }
   }
-  
+
   draw() {
     this.player.draw();
     this.background.draw();
