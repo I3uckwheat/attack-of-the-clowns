@@ -9,6 +9,7 @@ import background from "./scripts/Background";
 const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
+const score = document.querySelector('#score');
  
 // Globals
 let player;
@@ -35,7 +36,7 @@ function initialize() {
 
 
   scoreTracker = new ScoreTracker();
-  scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
+  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
   // changes gamestate and removed overlay
   const startButton = document.querySelector('#startbutton')

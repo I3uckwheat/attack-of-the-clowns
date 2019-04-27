@@ -107,12 +107,12 @@ ul {
 }
 
 #ui {
-  position: absolute;
+  /* position: absolute; */
 }
 
 #ui #player-health {
   position: absolute;
-  width: 50vw;
+  width: 30vw;
   height: 30px;
   border: 1px solid red;
   line-height: 0;
@@ -131,6 +131,12 @@ ul {
 #ui #player-health p {
   position: relative;
   z-index: 100;
+}
+
+#ui #score-container {
+  position: absolute;
+  right: 20px;
+  color: white;
 }
 
 #game {

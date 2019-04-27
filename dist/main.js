@@ -307,6 +307,7 @@ __webpack_require__.r(__webpack_exports__);
 const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
+const score = document.querySelector('#score');
  
 // Globals
 let player;
@@ -333,7 +334,7 @@ function initialize() {
 
 
   scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
-  scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
+  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
   // changes gamestate and removed overlay
   const startButton = document.querySelector('#startbutton')
@@ -839,7 +840,7 @@ class ScoreTracker {
     this.onScoreUpdateCallbacks = [];
     this.scoreIncrementInterval = setInterval(() => {
       if(this.gainingScore) {
-        this.currentScore += Math.floor(Math.random() * 50 + 1);
+        this.currentScore += Math.floor(Math.random() * 3 + 1);
         this.scoreUpdated();
       }
     }, 1000);
