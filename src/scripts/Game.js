@@ -14,8 +14,8 @@ class World {
     this.width = 1366;
     this.height = 820;
 
-    this.playAreaTop = this.height - 470; // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 335; // Bottom of walkable area
+    this.playAreaTop = 230; // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
 
     // Sets up gamefield 
     this.gameField = gameField;
@@ -25,11 +25,8 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    // this.registerObject(new Enemy({x: 400, y: 200}), "enemy");
-    this.registerObject(new Enemy({
-      x: 450,
-      y: 600
-    }), "enemy");
+    this.registerObject(new Enemy({x: 700, y: 200}), "enemy");
+    this.registerObject(new Enemy({ x: 600, y: 600 }), "enemy");
   }
 
   update() {
@@ -142,11 +139,23 @@ class World {
 
   playerAttack() {
     if (!this.player.attacking && !this.player.attackCoolingDown) {
-      const result = this.player.attack(this.enemies[0]);
-      if (result === 'killed') {
-        this.scoreTracker.killedEnemy();
+      const result = this.player.attack(this.enemies);
+      if (result.kills > 0) {
+        this.cleanUpDead();
+        this.scoreTracker.killedEnemy(result.kills);
       }
     }
+
+  }
+
+  cleanUpDead() {
+    this.enemies = this.enemies.filter(enemy => {
+      // Add dead enemy to static objects to prevent showing up as a kill on every hit
+      if(enemy.dead) this.registerObject(enemy, 'static');
+
+      // Filter out the dead enemies from the enemies array
+      return !enemy.dead
+    });
   }
 
   hasCollisions(entity1, enemySkipIndex) {

@@ -18,9 +18,9 @@ class ScoreTracker {
     }, 1000);
   }
 
-  killedEnemy() {
-    this.currentScore += Math.floor(Math.random() * 200 + 201);
-    this.enemiesKilled++;
+  killedEnemy(amount) {
+    this.currentScore += (Math.floor(Math.random() * 200 + 201)) * amount;
+    this.enemiesKilled += amount;
     this.scoreUpdated();
   }
 

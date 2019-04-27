@@ -24,7 +24,7 @@ class Enemy extends Character {
 
       this.preparingToAttackTimeout = setTimeout(() => {
         this.preparingToAttack = false;
-        super.attack(player);
+        super.attack([player]);
       }, randomAttackTime);
     }
   }

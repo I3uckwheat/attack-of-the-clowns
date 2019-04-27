@@ -1,6 +1,6 @@
 import Entity from "./Entity";
 
-class Character extends Entity{
+class Character extends Entity {
   constructor(spriteClass) {
     super(300, 400, 55, 136, spriteClass);
 
@@ -30,8 +30,8 @@ class Character extends Entity{
     return {
       x: this.x,
       y: this.y + this.height - this.footHeight,
-      height: this.footHeight, 
-      width: this.width 
+      height: this.footHeight,
+      width: this.width
     };
   }
 
@@ -48,31 +48,44 @@ class Character extends Entity{
     }
   }
 
-  attack(opponent) {
-    let result = 'miss';
-    if (!this.attackCoolingDown && !this.attacking) {
+  attack(opponents) {
+    let result = {
+      hits: 0,
+      misses: 0,
+      kills: 0
+    };
 
-      // check distances and determine hits
-      if(opponent) {
-        const dx = this.x - opponent.x;
-        const dy = this.y - opponent.y;
+    opponents.forEach(opponent => {
+      if (!this.attackCoolingDown && !this.attacking) {
 
-        if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
-          (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-            result = opponent.takeHit(this.strength);
+        // check distances and determine hits
+        if (opponent) {
+          const dx = this.x - opponent.x;
+          const dy = this.y - opponent.y;
+
+          if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+            (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
+            if(opponent.takeHit(this.strength) === 'killed') {
+              result.kills++;
+            } else {
+              result.hits++;
+            }
+          } else {
+            result.misses++;
+          }
         }
       }
+    });
 
-      this.attackCoolingDown = true;
-      this.attacking = true;
+    this.attackCoolingDown = true;
+    this.attacking = true;
 
-      this.runAnimation('punch', () => {
-        this.attacking = false;
-        setTimeout(() => {
-          this.attackCoolingDown = false;
-        }, 700);
-      })
-    }
+    this.runAnimation('punch', () => {
+      this.attacking = false;
+      setTimeout(() => {
+        this.attackCoolingDown = false;
+      }, 700);
+    });
 
     return result;
   }
@@ -91,7 +104,7 @@ class Character extends Entity{
 
   die() {
     this.dead = true;
-    this.health = 0;  // Prevents negative health values
+    this.health = 0; // Prevents negative health values
     this.endAnimations('takeHit', 'punch');
     this.startAnimations('fall');
   }
