@@ -323,7 +323,6 @@ function initialize() {
     // This can be used to change game state and such too. Also trigger game over screen
     scoreTracker.saveScore();
     scoreTracker.endTracking();
-    healthBar.style.width = 0;
     console.log('game over');
   })
 
@@ -541,6 +540,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
   die() {
     this.dead = true;
+    this.health = 0;  // Prevents negative health values
     this.endAnimations('takeHit', 'punch');
     this.startAnimations('fall');
   }

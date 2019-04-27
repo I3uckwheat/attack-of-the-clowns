@@ -91,6 +91,7 @@ class Character extends Entity{
 
   die() {
     this.dead = true;
+    this.health = 0;  // Prevents negative health values
     this.endAnimations('takeHit', 'punch');
     this.startAnimations('fall');
   }
