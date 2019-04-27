@@ -294,7 +294,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
 /* harmony import */ var _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Entity */ "./src/scripts/Entity.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+/* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
+
 
 
 
@@ -308,20 +310,21 @@ const gameField = document.querySelector('#game');
 let player;
 let world;
 let controls;
+let scoreTracker;
 
-// Make your menu, and then when you want to toggle the gamestate, change this variable to `1` an the 
 // game will run  
 let gameState = 0;
 
-// changes gamestate and removed overlay
-const startButton = document.querySelector('#startbutton')
-
-startButton.addEventListener('click', () => {
-  gameState = 1
-  document.getElementById("overlay").style.display = "none";
-});
-
 function initialize() {
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
+
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    scoreTracker.gainingScore = true;
+  });
+
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
@@ -329,8 +332,9 @@ function initialize() {
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
 
-  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"]);
+  world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
   world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
   world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
 
@@ -357,6 +361,8 @@ function update() {
     
     world.update();
   }
+
+  console.log(scoreTracker.currentScore);
 }
 
 function draw() {
@@ -770,6 +776,40 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
 /***/ }),
 
+/***/ "./src/scripts/ScoreTracker.js":
+/*!*************************************!*\
+  !*** ./src/scripts/ScoreTracker.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class ScoreTracker {
+  constructor() {
+    this.currentScore = 0;
+
+    this.gainingScore = false;
+    this.scoreIncrementInterval = setInterval(() => {
+      if(this.gainingScore) this.currentScore += Math.floor(Math.random() * 200);
+    }, 1000);
+  }
+
+  gainPoints(type) {
+    switch(type) {
+      case 'enemy-killed':
+        this.currentScore += 1000;
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
+
+/***/ }),
+
 /***/ "./src/scripts/World.js":
 /*!******************************!*\
   !*** ./src/scripts/World.js ***!
@@ -783,7 +823,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class World {
-  constructor(gameField, player, background) {
+  constructor(gameField, player, background, scoreTracker) {
     this.background = background;
 
     // Sets up player

@@ -1,7 +1,7 @@
 import Enemy from "./Enemy";
 
 class World {
-  constructor(gameField, player, background) {
+  constructor(gameField, player, background, scoreTracker) {
     this.background = background;
 
     // Sets up player
