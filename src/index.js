@@ -16,6 +16,7 @@ let controls;
 // game will run  
 let gameState = 0;
 
+function initialize() {
 // changes gamestate and removed overlay
 const startButton = document.querySelector('#startbutton')
 
