@@ -271,3 +271,50 @@ ul {
   font-weight: normal;
   src: local('Circus'), url('Circus.woff') format('woff');
   }
+
+  #end-overlay {
+  position: fixed; 
+  width: 100%;
+  height:100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.801);
+  z-index: 5000;
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-areas: 
+    "game-over game-over game-over"
+    "play-again play-again play-again";
+  }
+
+  #game-over {
+    grid-area: game-over;
+    font-size: 90px;
+    color: #939598;
+    place-self: center;
+    font-family: 'Circus';
+  }
+
+  #play-again {
+    grid-area: play-again;
+    font-size: 30px;
+    font-family: 'Circus';
+    color: #939598;
+    background-color: #73150D;
+    z-index: 5001;
+    cursor: pointer;
+    width: 250px;
+    height: 100px;
+    border-color: #73150D;
+    border-radius: 25px;
+    place-self: center;
+    text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
+  }
+
+  #button-link {
+    color: white;
+    text-decoration: none;
+  }

@@ -327,6 +327,7 @@ function initialize() {
 
     scoreTracker.saveScore();
     console.log('game over');
+    document.getElementById("end-overlay").style.display = "grid";
   })
 
   player.onHealthChange(health => {
