@@ -29,6 +29,7 @@ function initialize() {
 
     scoreTracker.saveScore();
     console.log('game over');
+    document.getElementById("end-overlay").style.display = "grid";
   })
 
   player.onHealthChange(health => {
@@ -55,7 +56,7 @@ function initialize() {
 
   startButton.addEventListener('click', () => {
     gameState = 1
-    document.getElementById("overlay").style.display = "none";
+    document.getElementById("start-overlay").style.display = "none";
     game.start();
   });
 
