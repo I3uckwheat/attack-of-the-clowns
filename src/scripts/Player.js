@@ -5,6 +5,18 @@ class Player extends Character {
     super('player');
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
+    this.healDelayIterations = 0;
+
+    setInterval(() => {
+      if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
+        this.health += 5;
+        this.healthChanged();
+      }
+
+      if(this.damageCoolingDownIterations > 0) {
+        this.damageCoolingDownIterations--;
+      }
+    }, 1000)
   }
 
   die() {
@@ -18,10 +30,15 @@ class Player extends Character {
 
   takeHit(damage) {
     super.takeHit(damage);
+    this.healDelayIterations = 3;
+    this.healthChanged();
+  }
+
+  healthChanged() {
     this.onHitCallbacks.forEach(cb => cb(this.health))
   }
 
-  onTakeHit(callback) {
+  onHealthChange(callback) {
     this.onHitCallbacks.push(callback);
   }
 }

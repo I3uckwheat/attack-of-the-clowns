@@ -1,7 +1,9 @@
-import Enemy from "./Enemy";
+import EnemySpawner from "./EnemySpawner";
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
+    this.gameStopped = true;
+
     this.background = background;
     this.scoreTracker = scoreTracker;
 
@@ -25,13 +27,24 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new Enemy({x: 700, y: 200}), "enemy");
-    this.registerObject(new Enemy({ x: 600, y: 600 }), "enemy");
+    // left and right are in level.js, on the walls
+    this.enemySpawner = new EnemySpawner(this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
+  }
+
+  start() {
+    this.enemySpawner.startSpawning();
+    this.scoreTracker.startTracking();
+    this.gameStopped = false;
+  }
+
+  stop() {
+    this.enemySpawner.stopSpawning();
+    this.scoreTracker.endTracking();
+    this.gameStopped = true;
   }
 
   update() {
     const player = this.player;
-    if (player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
@@ -83,6 +96,12 @@ class World {
         enemy.attack(player)
       }
     });
+
+    if (this.gameStopped) return;
+
+    this.enemySpawner.spawnQueue().forEach(enemy => {
+      this.registerObject(enemy, 'enemy');
+    })
   }
 
   movePlayer(direction) {
@@ -151,7 +170,7 @@ class World {
   cleanUpDead() {
     this.enemies = this.enemies.filter(enemy => {
       // Add dead enemy to static objects to prevent showing up as a kill on every hit
-      if(enemy.dead) this.registerObject(enemy, 'static');
+      if (enemy.dead) this.registerObject(enemy, 'static');
 
       // Filter out the dead enemies from the enemies array
       return !enemy.dead

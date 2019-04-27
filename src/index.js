@@ -1,9 +1,9 @@
 import Game from "./scripts/Game";
 import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
-import Entity from "./scripts/Entity";
 import ScoreTracker from "./scripts/ScoreTracker";
 
+import level from "./scripts/level";
 import background from "./scripts/Background";
 
 const gameField = document.querySelector('#game');
@@ -22,29 +22,22 @@ let gameState = 0;
 
 function initialize() {
   player = new Player();
+
+  // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
-    // This can be used to change game state and such too. Also trigger game over screen
+    game.stop();
+
     scoreTracker.saveScore();
-    scoreTracker.endTracking();
     console.log('game over');
   })
 
-  player.onTakeHit(health => {
+  player.onHealthChange(health => {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
 
   scoreTracker = new ScoreTracker();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
-
-  // changes gamestate and removed overlay
-  const startButton = document.querySelector('#startbutton')
-
-  startButton.addEventListener('click', () => {
-    gameState = 1
-    document.getElementById("overlay").style.display = "none";
-    scoreTracker.startTracking();
-  });
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -53,12 +46,18 @@ function initialize() {
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
   game = new Game(gameField, player, background, scoreTracker);
-  game.registerObject(new Entity(600, 450, 67, 50, 'box'));
-  game.registerObject(new Entity(200, 350, 67, 50, 'box'));
-  game.registerObject(new Entity(-200, 287, 13, 600, 'barrier'));
-  game.registerObject(new Entity(900, 287, 13, 553, 'barrier'));
+  level.forEach(entity => {
+    game.registerObject(entity);
+  })
 
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
 
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    game.start();
+  });
 
   requestAnimationFrame(tick);
 }

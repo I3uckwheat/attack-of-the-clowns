@@ -293,8 +293,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_Game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/Game */ "./src/scripts/Game.js");
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
-/* harmony import */ var _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/Entity */ "./src/scripts/Entity.js");
-/* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
+/* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
+/* harmony import */ var _scripts_level__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/level */ "./src/scripts/level.js");
 /* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
 
 
@@ -320,29 +320,22 @@ let gameState = 0;
 
 function initialize() {
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+
+  // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
-    // This can be used to change game state and such too. Also trigger game over screen
+    game.stop();
+
     scoreTracker.saveScore();
-    scoreTracker.endTracking();
     console.log('game over');
   })
 
-  player.onTakeHit(health => {
+  player.onHealthChange(health => {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
 
-  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__["default"]();
   scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
-
-  // changes gamestate and removed overlay
-  const startButton = document.querySelector('#startbutton')
-
-  startButton.addEventListener('click', () => {
-    gameState = 1
-    document.getElementById("overlay").style.display = "none";
-    scoreTracker.startTracking();
-  });
 
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -351,12 +344,18 @@ function initialize() {
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
   game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](200, 350, 67, 50, 'box'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](-200, 287, 13, 600, 'barrier'));
-  game.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](900, 287, 13, 553, 'barrier'));
+  _scripts_level__WEBPACK_IMPORTED_MODULE_4__["default"].forEach(entity => {
+    game.registerObject(entity);
+  })
 
+  // changes gamestate and removed overlay
+  const startButton = document.querySelector('#startbutton')
 
+  startButton.addEventListener('click', () => {
+    gameState = 1
+    document.getElementById("overlay").style.display = "none";
+    game.start();
+  });
 
   requestAnimationFrame(tick);
 }
@@ -546,6 +545,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
   takeHit(damage) {
     const oldHealth = this.health;
     this.health -= damage;
+    if(this.health < 0) this.health = 0;
     if (oldHealth > 0 && this.health <= 0) {
       this.die();
       return 'killed';
@@ -661,11 +661,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
-  constructor(position) {
+  constructor(x, y) {
     super('clown');
 
-    this.x = position.x;
-    this.y = position.y;
+    this.x = x;
+    this.y = y;
     this.footHeight = 38;
     this.speed = 2;
 
@@ -711,6 +711,78 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Enemy);
+
+/***/ }),
+
+/***/ "./src/scripts/EnemySpawner.js":
+/*!*************************************!*\
+  !*** ./src/scripts/EnemySpawner.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
+
+
+class EnemySpawner {
+  constructor(world, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
+    this.world = world;
+    this.player = player;
+    this.viewWidth = viewWidth;
+    this.leftBoundary = leftBoundary;
+    this.rightBoundary = rightBoundary;
+    this.topBoundary = topBoundary;
+    this.bottomBoundary = bottomBoundary;
+
+    this.queue = [];
+    this.nextSpawn = 3000;
+    this.enemyAddTimeout;
+    this.shouldSpawn = false;
+
+    this.startSpawnTimeout();
+  }
+
+  spawnQueue() {
+    const enemyQueue = this.queue;
+    this.queue = [];
+    return enemyQueue;
+  }
+
+  addEnemyToQueue() {
+    let x;
+    let y;
+    let enemy;
+
+    do {
+      x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
+      y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
+      enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](x, y)
+    } while (this.world.hasCollisions(enemy.feet) || this.world.isColliding(this.player.feet, enemy.feet));
+
+    this.queue.push(enemy);
+  }
+
+  startSpawnTimeout() {
+    return setTimeout(() => {
+      if (this.shouldSpawn)  {
+        this.addEnemyToQueue();
+        this.startSpawnTimeout();
+      }
+    }, this.nextSpawn);
+  }
+
+  startSpawning() {
+    this.shouldSpawn = true;
+  }
+
+  stopSpawning() {
+    this.shouldSpawn = false;
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (EnemySpawner);
 
 /***/ }),
 
@@ -798,11 +870,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _Enemy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Enemy */ "./src/scripts/Enemy.js");
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EnemySpawner */ "./src/scripts/EnemySpawner.js");
 
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
+    this.gameStopped = true;
+
     this.background = background;
     this.scoreTracker = scoreTracker;
 
@@ -826,13 +900,24 @@ class World {
     this.playFieldObjects = [];
     this.enemies = [];
 
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({x: 700, y: 200}), "enemy");
-    this.registerObject(new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"]({ x: 600, y: 600 }), "enemy");
+    // left and right are in level.js, on the walls
+    this.enemySpawner = new _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__["default"](this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
+  }
+
+  start() {
+    this.enemySpawner.startSpawning();
+    this.scoreTracker.startTracking();
+    this.gameStopped = false;
+  }
+
+  stop() {
+    this.enemySpawner.stopSpawning();
+    this.scoreTracker.endTracking();
+    this.gameStopped = true;
   }
 
   update() {
     const player = this.player;
-    if (player.dead) return;
 
     // Update enemies
     this.enemies.forEach((enemy, index) => {
@@ -884,6 +969,12 @@ class World {
         enemy.attack(player)
       }
     });
+
+    if (this.gameStopped) return;
+
+    this.enemySpawner.spawnQueue().forEach(enemy => {
+      this.registerObject(enemy, 'enemy');
+    })
   }
 
   movePlayer(direction) {
@@ -952,7 +1043,7 @@ class World {
   cleanUpDead() {
     this.enemies = this.enemies.filter(enemy => {
       // Add dead enemy to static objects to prevent showing up as a kill on every hit
-      if(enemy.dead) this.registerObject(enemy, 'static');
+      if (enemy.dead) this.registerObject(enemy, 'static');
 
       // Filter out the dead enemies from the enemies array
       return !enemy.dead
@@ -1049,6 +1140,18 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     super('player');
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
+    this.healDelayIterations = 0;
+
+    setInterval(() => {
+      if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
+        this.health += 5;
+        this.healthChanged();
+      }
+
+      if(this.damageCoolingDownIterations > 0) {
+        this.damageCoolingDownIterations--;
+      }
+    }, 1000)
   }
 
   die() {
@@ -1062,10 +1165,15 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   takeHit(damage) {
     super.takeHit(damage);
+    this.healDelayIterations = 3;
+    this.healthChanged();
+  }
+
+  healthChanged() {
     this.onHitCallbacks.forEach(cb => cb(this.health))
   }
 
-  onTakeHit(callback) {
+  onHealthChange(callback) {
     this.onHitCallbacks.push(callback);
   }
 }
@@ -1145,6 +1253,29 @@ class ScoreTracker {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (ScoreTracker);
+
+/***/ }),
+
+/***/ "./src/scripts/level.js":
+/*!******************************!*\
+  !*** ./src/scripts/level.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Entity */ "./src/scripts/Entity.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = ([
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](600, 450, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](200, 350, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](400, 350, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](230, 680, 67, 50, 'box'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](-900, 287, 13, 600, 'barrier'),
+  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](1900, 287, 13, 553, 'barrier')
+]);
 
 /***/ })
 
