@@ -42,6 +42,9 @@ function initialize() {
 
 function update() {
   if (gameState === 1) {
+    if (controls.isPressed('attack')) {
+      world.playerAttack();
+    }
     if (controls.isPressed('up')) {
       world.movePlayer('up');
     }
@@ -54,7 +57,7 @@ function update() {
     if (controls.isPressed('right')) {
       world.movePlayer('right');
     }
-
+    
     world.update();
   }
 }
