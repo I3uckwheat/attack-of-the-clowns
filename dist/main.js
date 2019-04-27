@@ -961,11 +961,15 @@ class World {
 
   hasCollisions(entity1, enemySkipIndex) {
     const staticCollisions = this.playFieldObjects.some(entity2 => {
+      if (entity2.dead) return false;
       return this.isColliding(entity1, entity2)
     });
 
     const enemyCollisions = this.enemies.some((entity2, index) => {
-      if (enemySkipIndex === index || entity2.dead) return false;
+
+      // Prevent enemy from colliding with self
+      if (enemySkipIndex === index) return false;
+
       if (entity2.feet) return this.isColliding(entity1, entity2.feet);
       return this.isColliding(entity1, entity2)
     });
