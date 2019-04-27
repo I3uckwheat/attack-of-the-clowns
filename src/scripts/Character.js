@@ -93,6 +93,7 @@ class Character extends Entity {
   takeHit(damage) {
     const oldHealth = this.health;
     this.health -= damage;
+    if(this.health < 0) this.health = 0;
     if (oldHealth > 0 && this.health <= 0) {
       this.die();
       return 'killed';

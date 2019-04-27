@@ -5,7 +5,7 @@ class Player extends Character {
     super('player');
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
-    this.damageCoolingDownIterations = 0;
+    this.healDelayIterations = 0;
 
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
@@ -30,7 +30,7 @@ class Player extends Character {
 
   takeHit(damage) {
     super.takeHit(damage);
-    this.damageCoolingDownIterations = 3;
+    this.healDelayIterations = 3;
     this.healthChanged();
   }
 

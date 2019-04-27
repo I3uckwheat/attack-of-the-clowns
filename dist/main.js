@@ -545,6 +545,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
   takeHit(damage) {
     const oldHealth = this.health;
     this.health -= damage;
+    if(this.health < 0) this.health = 0;
     if (oldHealth > 0 && this.health <= 0) {
       this.die();
       return 'killed';
@@ -1139,7 +1140,7 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     super('player');
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
-    this.damageCoolingDownIterations = 0;
+    this.healDelayIterations = 0;
 
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
@@ -1164,7 +1165,7 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   takeHit(damage) {
     super.takeHit(damage);
-    this.damageCoolingDownIterations = 3;
+    this.healDelayIterations = 3;
     this.healthChanged();
   }
 
