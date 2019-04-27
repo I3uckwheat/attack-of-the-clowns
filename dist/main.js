@@ -309,6 +309,18 @@ let player;
 let world;
 let controls;
 
+// Make your menu, and then when you want to toggle the gamestate, change this variable to `1` an the 
+// game will run  
+let gameState = 0;
+
+// changes gamestate and removed overlay
+const startButton = document.querySelector('#startbutton')
+
+startButton.addEventListener('click', () => {
+  gameState = 1
+  document.getElementById("overlay").style.display = "none";
+});
+
 function initialize() {
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -342,7 +354,8 @@ function update() {
     world.movePlayer('right');
   }
 
-  world.update();
+    world.update();
+  }
 }
 
 function draw() {
