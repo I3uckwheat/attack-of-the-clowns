@@ -55,7 +55,7 @@ function initialize() {
 
   startButton.addEventListener('click', () => {
     gameState = 1
-    document.getElementById("overlay").style.display = "none";
+    document.getElementById("start-overlay").style.display = "none";
     game.start();
   });
 

@@ -8,7 +8,7 @@ body {
   position: relative;
 }
 
-#overlay {
+#start-overlay {
   position: fixed; 
   width: 100%;
   height:100%;
