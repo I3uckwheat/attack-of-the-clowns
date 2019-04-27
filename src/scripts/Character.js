@@ -49,6 +49,7 @@ class Character extends Entity{
   }
 
   attack(opponent) {
+    let result = 'miss';
     if (!this.attackCoolingDown && !this.attacking) {
 
       // check distances and determine hits
@@ -58,7 +59,7 @@ class Character extends Entity{
 
         if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
           (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-          opponent.takeHit(this.strength);
+            result = opponent.takeHit(this.strength);
         }
       }
 
@@ -72,14 +73,19 @@ class Character extends Entity{
         }, 700);
       })
     }
+
+    return result;
   }
 
   takeHit(damage) {
+    const oldHealth = this.health;
     this.health -= damage;
-    if (this.health < 0) {
+    if (oldHealth > 0 && this.health <= 0) {
       this.die();
+      return 'killed';
     } else {
       this.runAnimation('takeHit');
+      return 'hit';
     }
   }
 

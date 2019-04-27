@@ -316,13 +316,17 @@ let scoreTracker;
 let gameState = 0;
 
 function initialize() {
+  player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
+  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
+  scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
+
   // changes gamestate and removed overlay
   const startButton = document.querySelector('#startbutton')
 
   startButton.addEventListener('click', () => {
     gameState = 1
     document.getElementById("overlay").style.display = "none";
-    scoreTracker.gainingScore = true;
+    scoreTracker.startTracking();
   });
 
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
@@ -330,9 +334,6 @@ function initialize() {
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
-
-  player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
-  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_4__["default"]();
 
   world = new _scripts_World__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
   world.registerObject(new _scripts_Entity__WEBPACK_IMPORTED_MODULE_3__["default"](600, 450, 67, 50, 'box'));
@@ -361,8 +362,6 @@ function update() {
     
     world.update();
   }
-
-  console.log(scoreTracker.currentScore);
 }
 
 function draw() {
@@ -484,6 +483,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
   }
 
   attack(opponent) {
+    let result = 'miss';
     if (!this.attackCoolingDown && !this.attacking) {
 
       // check distances and determine hits
@@ -493,7 +493,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
 
         if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
           (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
-          opponent.takeHit(this.strength);
+            result = opponent.takeHit(this.strength);
         }
       }
 
@@ -507,14 +507,19 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"]{
         }, 700);
       })
     }
+
+    return result;
   }
 
   takeHit(damage) {
+    const oldHealth = this.health;
     this.health -= damage;
-    if (this.health < 0) {
+    if (oldHealth > 0 && this.health <= 0) {
       this.die();
+      return 'killed';
     } else {
       this.runAnimation('takeHit');
+      return 'hit';
     }
   }
 
@@ -669,7 +674,7 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
         this.speed = oldSpeed;
       }, 800)
     }
-    super.takeHit(damage);
+    return super.takeHit(damage);
   }
 }
 
@@ -788,21 +793,38 @@ __webpack_require__.r(__webpack_exports__);
 class ScoreTracker {
   constructor() {
     this.currentScore = 0;
+    this.enemiesKilled = 0;
 
     this.gainingScore = false;
+    this.onScoreUpdateCallbacks = [];
     this.scoreIncrementInterval = setInterval(() => {
-      if(this.gainingScore) this.currentScore += Math.floor(Math.random() * 200);
+      if(this.gainingScore) {
+        this.currentScore += Math.floor(Math.random() * 50 + 1);
+        this.scoreUpdated();
+      }
     }, 1000);
   }
 
-  gainPoints(type) {
-    switch(type) {
-      case 'enemy-killed':
-        this.currentScore += 1000;
-        break;
-      default:
-        break;
-    }
+  killedEnemy() {
+    this.currentScore += Math.floor(Math.random() * 200 + 201);
+    this.enemiesKilled++;
+    this.scoreUpdated();
+  }
+
+  onScoreUpdate(callback) {
+    this.onScoreUpdateCallbacks.push(callback);
+  }
+
+  scoreUpdated() {
+    this.onScoreUpdateCallbacks.forEach(cb => cb(this.currentScore));
+  }
+
+  startTracking() {
+    this.gainingScore = true;
+  }
+
+  endTracking() {
+    this.gainingScore = false;
   }
 }
 
@@ -825,6 +847,7 @@ __webpack_require__.r(__webpack_exports__);
 class World {
   constructor(gameField, player, background, scoreTracker) {
     this.background = background;
+    this.scoreTracker = scoreTracker;
 
     // Sets up player
     this.player = player;
@@ -963,7 +986,10 @@ class World {
 
   playerAttack() {
     if(!this.player.attacking && !this.player.attackCoolingDown) {
-      this.player.attack(this.enemies[0]);
+      const result = this.player.attack(this.enemies[0]);
+      if(result === 'killed') {
+        this.scoreTracker.killedEnemy();
+      }
     }
   }
 

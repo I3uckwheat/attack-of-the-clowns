@@ -3,6 +3,7 @@ import Enemy from "./Enemy";
 class World {
   constructor(gameField, player, background, scoreTracker) {
     this.background = background;
+    this.scoreTracker = scoreTracker;
 
     // Sets up player
     this.player = player;
@@ -141,7 +142,10 @@ class World {
 
   playerAttack() {
     if(!this.player.attacking && !this.player.attackCoolingDown) {
-      this.player.attack(this.enemies[0]);
+      const result = this.player.attack(this.enemies[0]);
+      if(result === 'killed') {
+        this.scoreTracker.killedEnemy();
+      }
     }
   }
 

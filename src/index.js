@@ -18,13 +18,17 @@ let scoreTracker;
 let gameState = 0;
 
 function initialize() {
+  player = new Player();
+  scoreTracker = new ScoreTracker();
+  scoreTracker.onScoreUpdate(score => {console.log('updated', score)})
+
   // changes gamestate and removed overlay
   const startButton = document.querySelector('#startbutton')
 
   startButton.addEventListener('click', () => {
     gameState = 1
     document.getElementById("overlay").style.display = "none";
-    scoreTracker.gainingScore = true;
+    scoreTracker.startTracking();
   });
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
@@ -32,9 +36,6 @@ function initialize() {
   controls.addEvent('keyup', 'KeyD', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
-
-  player = new Player();
-  scoreTracker = new ScoreTracker();
 
   world = new World(gameField, player, background, scoreTracker);
   world.registerObject(new Entity(600, 450, 67, 50, 'box'));
@@ -63,8 +64,6 @@ function update() {
     
     world.update();
   }
-
-  console.log(scoreTracker.currentScore);
 }
 
 function draw() {

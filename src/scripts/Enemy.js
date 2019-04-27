@@ -46,7 +46,7 @@ class Enemy extends Character {
         this.speed = oldSpeed;
       }, 800)
     }
-    super.takeHit(damage);
+    return super.takeHit(damage);
   }
 }
 
