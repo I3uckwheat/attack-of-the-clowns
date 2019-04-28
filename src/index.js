@@ -8,6 +8,8 @@ import background from "./scripts/Background";
 const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
+const strengthBar = document.querySelector('#player-strength div');
+const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
 
@@ -82,7 +84,10 @@ function update() {
     if (controls.isPressed('right')) {
       game.movePlayer('right');
     }
-    
+
+    strengthBar.style.width = player.strength + '%';
+    strengthBarText.innerText = player.strength;
+
     game.update();
   }
 }

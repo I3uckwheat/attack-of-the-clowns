@@ -118,7 +118,7 @@ ul {
   position: absolute;
   width: 30vw;
   height: 30px;
-  border: 1px solid red;
+  border: 1px solid #891F14;
   line-height: 0;
   color: white;
 }
@@ -129,10 +129,34 @@ ul {
   top: 0;
   height: 100%;
   width: 100%;
-  background: red;
+  background: #891F14;
 }
 
 #ui #player-health p {
+  position: relative;
+  z-index: 100;
+}
+
+#ui #player-strength {
+  position: absolute;
+  top: 32px;
+  width: 30vw;
+  height: 30px;
+  border: 1px solid #F7911E;
+  line-height: 0;
+  color: white;
+}
+
+#ui #player-strength div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  background: #F7911E;
+}
+
+#ui #player-strength p {
   position: relative;
   z-index: 100;
 }

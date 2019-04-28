@@ -305,6 +305,8 @@ __webpack_require__.r(__webpack_exports__);
 const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
+const strengthBar = document.querySelector('#player-strength div');
+const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
 
@@ -379,7 +381,10 @@ function update() {
     if (controls.isPressed('right')) {
       game.movePlayer('right');
     }
-    
+
+    strengthBar.style.width = player.strength + '%';
+    strengthBarText.innerText = player.strength;
+
     game.update();
   }
 }
@@ -471,7 +476,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.direction = 'right';
 
     this.health = 100;
-    this.strength = 55;
+    this.strength = 50;
     this.dead = false;
 
     this.attackCooldown = 700;
@@ -524,6 +529,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
           if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
             if(opponent.takeHit(this.strength) === 'killed') {
+              (this.strength + 10 <= 100) ? this.strength += 10 : this.strength = 100;
               result.kills++;
             } else {
               result.hits++;
@@ -676,6 +682,7 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.y = y;
     this.footHeight = 38;
     this.speed = 2;
+    this.strength = 35;
     this.directionBias;
 
     this.preparingToAttack = false;
@@ -1182,11 +1189,15 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.attackCooldown = 100;
 
     setInterval(() => {
+      (this.strength - 1 >= 0) ? this.strength-- : this.strength = 0;
+    }, 5000)
+
+    setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-        this.health += 5;
+        (this.strength - 5 >= 0) ? this.strength -= 5 : this.strength = 0;
+        (this.health + 5 <= 100) ? this.health += 5 : this.health = 100;
         this.healthChanged();
       }
-
       this.healDelayIterations--;
     }, 1000)
   }
