@@ -306,6 +306,21 @@ const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
 const score = document.querySelector('#score');
+const restartButton = document.querySelector('#button-link');
+
+restartButton.addEventListener('click', event => {
+  event.preventDefault();
+  location.reload();
+});
+
+// changes gamestate and removed overlay
+const startButton = document.querySelector('#startbutton')
+
+startButton.addEventListener('click', () => {
+  gameState = 1
+  document.getElementById("start-overlay").style.display = "none";
+  game.start();
+});
  
 // Globals
 let player;
@@ -343,14 +358,6 @@ function initialize() {
 
   game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"], scoreTracker);
 
-  // changes gamestate and removed overlay
-  const startButton = document.querySelector('#startbutton')
-
-  startButton.addEventListener('click', () => {
-    gameState = 1
-    document.getElementById("start-overlay").style.display = "none";
-    game.start();
-  });
 
   requestAnimationFrame(tick);
 }
@@ -887,11 +894,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
-    this.width = 1366;
-    this.height = 820;
+    this.width = 1360;
+    this.height = 768;
     this.xOffset = 0;
     this.playAreaTop = 230; // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
+    this.playAreaBottom = this.playAreaTop + 348; // Bottom of walkable area
 
     this.gameStopped = true;
 
@@ -1298,20 +1305,20 @@ __webpack_require__.r(__webpack_exports__);
 const left = -900;
 const width = 2800;
 
-const top = 297;
-const height = 760;
+const top = 296;
+const height = 650;
 
-const amountOfObjects = 20;
+const amountOfObjects = 15;
 
 const levelObjects = [];
 
 // Left and right walls
-levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](left, top, 13, height, 'barrier'))
-levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](left + width, top, 13, height, 'barrier'))
+levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](left, top - 9, 13, height, 'barrier'))
+levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](left + width, top - 9, 13, height, 'barrier'))
 
 
 for(let i = 0; i < amountOfObjects; i++) {
-  const x = Math.floor(Math.random() * (left - width - 80)) + width - 80;
+  const x = Math.floor(Math.random() * (left + 2000 - width - 1000)) + width - 1000;
   const y = Math.floor(Math.random() * (top - height)) + height;
 
   levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, 67, 50, 'box'));

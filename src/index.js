@@ -9,6 +9,21 @@ const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
 const score = document.querySelector('#score');
+const restartButton = document.querySelector('#button-link');
+
+restartButton.addEventListener('click', event => {
+  event.preventDefault();
+  location.reload();
+});
+
+// changes gamestate and removed overlay
+const startButton = document.querySelector('#startbutton')
+
+startButton.addEventListener('click', () => {
+  gameState = 1
+  document.getElementById("start-overlay").style.display = "none";
+  game.start();
+});
  
 // Globals
 let player;
@@ -46,14 +61,6 @@ function initialize() {
 
   game = new Game(gameField, player, background, scoreTracker);
 
-  // changes gamestate and removed overlay
-  const startButton = document.querySelector('#startbutton')
-
-  startButton.addEventListener('click', () => {
-    gameState = 1
-    document.getElementById("start-overlay").style.display = "none";
-    game.start();
-  });
 
   requestAnimationFrame(tick);
 }
