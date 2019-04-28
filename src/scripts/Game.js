@@ -18,6 +18,8 @@ class World {
     this.width = 1366;
     this.height = 820;
 
+    this.xOffset = 0;
+
     this.playAreaTop = 230; // Top of walkable area
     this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
 
@@ -207,6 +209,7 @@ class World {
   }
 
   moveCamera(amount) {
+    this.xOffset += amount;
     this.playFieldObjects.forEach(object => {
       object.x += amount;
     });

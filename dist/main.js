@@ -767,7 +767,10 @@ class EnemySpawner {
       let enemy;
 
       do {
-        x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
+        const minX = this.leftBoundary + this.game.xOffset;
+        const maxX = this.rightBoundary + this.game.xOffset;
+
+        x = Math.floor(Math.random() * (minX - maxX)) + maxX;
         y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
         enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](x, y)
       } while (this.game.hasCollisions(enemy.feet) || this.game.isColliding(this.player.feet, enemy.feet));
@@ -903,6 +906,8 @@ class World {
 
     this.width = 1366;
     this.height = 820;
+
+    this.xOffset = 0;
 
     this.playAreaTop = 230; // Top of walkable area
     this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
@@ -1093,6 +1098,7 @@ class World {
   }
 
   moveCamera(amount) {
+    this.xOffset += amount;
     this.playFieldObjects.forEach(object => {
       object.x += amount;
     });

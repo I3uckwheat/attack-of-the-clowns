@@ -35,7 +35,10 @@ class EnemySpawner {
       let enemy;
 
       do {
-        x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
+        const minX = this.leftBoundary + this.game.xOffset;
+        const maxX = this.rightBoundary + this.game.xOffset;
+
+        x = Math.floor(Math.random() * (minX - maxX)) + maxX;
         y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
         enemy = new Enemy(x, y)
       } while (this.game.hasCollisions(enemy.feet) || this.game.isColliding(this.player.feet, enemy.feet));
