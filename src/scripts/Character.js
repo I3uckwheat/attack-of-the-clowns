@@ -17,7 +17,7 @@ class Character extends Entity {
     this.direction = 'right';
 
     this.health = 100;
-    this.strength = 55;
+    this.strength = 50;
     this.dead = false;
 
     this.attackCooldown = 700;
@@ -70,6 +70,7 @@ class Character extends Entity {
           if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
             if(opponent.takeHit(this.strength) === 'killed') {
+              (this.strength + 5 <= 100) ? this.strength += 5 : this.strength = 100;
               result.kills++;
             } else {
               result.hits++;

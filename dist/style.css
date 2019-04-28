@@ -137,6 +137,30 @@ ul {
   z-index: 100;
 }
 
+#ui #player-strength {
+  position: absolute;
+  top: 32px;
+  width: 30vw;
+  height: 30px;
+  border: 1px solid skyblue;
+  line-height: 0;
+  color: white;
+}
+
+#ui #player-strength div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  background: skyblue;
+}
+
+#ui #player-strength p {
+  position: relative;
+  z-index: 100;
+}
+
 #ui #score-container {
   position: absolute;
   right: 20px;

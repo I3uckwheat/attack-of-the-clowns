@@ -305,6 +305,8 @@ __webpack_require__.r(__webpack_exports__);
 const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
+const strengthBar = document.querySelector('#player-strength div');
+const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
 
@@ -379,7 +381,10 @@ function update() {
     if (controls.isPressed('right')) {
       game.movePlayer('right');
     }
-    
+
+    strengthBar.style.width = player.strength + '%';
+    strengthBarText.innerText = player.strength;
+
     game.update();
   }
 }
@@ -456,7 +461,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(spriteClass) {
-    super(300, 400, 55, 136, spriteClass);
+    super(450, 400, 55, 136, spriteClass);
 
     this.spriteOffsetX = 72;
     this.spriteOffsetY = 64;
@@ -471,7 +476,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.direction = 'right';
 
     this.health = 100;
-    this.strength = 55;
+    this.strength = 50;
     this.dead = false;
 
     this.attackCooldown = 700;
@@ -524,6 +529,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
           if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
             if(opponent.takeHit(this.strength) === 'killed') {
+              (this.strength + 5 <= 100) ? this.strength += 5 : this.strength = 100;
               result.kills++;
             } else {
               result.hits++;
@@ -1053,12 +1059,12 @@ class World {
     }
 
     // Edge bounds
-    if (player.x < 150) {
-      player.x = 150;
+    if (player.x < 300) {
+      player.x = 300;
       this.background.right()
       this.moveCamera(5);
-    } else if (player.x > this.width - 150) {
-      player.x = this.width - 150;
+    } else if (player.x > this.width - 300) {
+      player.x = this.width - 300;
       this.background.left()
       this.moveCamera(-5);
     }
@@ -1183,10 +1189,10 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-        this.health += 5;
+        (this.health + 5 <= 100) ? this.health += 5 : this.health = 100;
         this.healthChanged();
+        (this.strength - 1 >= 0) ? this.strength-- : this.strength = 0;
       }
-
       this.healDelayIterations--;
     }, 1000)
   }
