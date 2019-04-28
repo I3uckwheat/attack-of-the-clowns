@@ -115,6 +115,7 @@ class Character extends Entity {
   }
 
   runAnimation(animation, callback) {
+    this.stopAnimations('walk', 'punch');
     this.startAnimations(animation);
 
     const animationEndHandler = event => {

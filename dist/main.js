@@ -456,7 +456,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(spriteClass) {
-    super(300, 400, 55, 136, spriteClass);
+    super(450, 400, 55, 136, spriteClass);
 
     this.spriteOffsetX = 72;
     this.spriteOffsetY = 64;
@@ -1053,12 +1053,12 @@ class World {
     }
 
     // Edge bounds
-    if (player.x < 150) {
-      player.x = 150;
+    if (player.x < 300) {
+      player.x = 300;
       this.background.right()
       this.moveCamera(5);
-    } else if (player.x > this.width - 150) {
-      player.x = this.width - 150;
+    } else if (player.x > this.width - 300) {
+      player.x = this.width - 300;
       this.background.left()
       this.moveCamera(-5);
     }

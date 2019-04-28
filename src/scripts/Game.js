@@ -37,12 +37,9 @@ class World {
     // left and right are in level.js, on the walls
     this.enemySpawner = new EnemySpawner(this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
 
-    while(this.hasCollisions(player.feet)) {
-        const minX = 0;
-        const maxX = this.width;
-
-        this.player.x = Math.floor(Math.random() * (200 - 900)) + 900;
-        this.player.y = Math.floor(Math.random() * (300 - 400)) + 400;
+    while (this.hasCollisions(player.feet)) {
+      this.player.x = Math.floor(Math.random() * (200 - 900)) + 900;
+      this.player.y = Math.floor(Math.random() * (300 - 400)) + 400;
     }
   }
 
