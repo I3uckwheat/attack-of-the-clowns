@@ -937,12 +937,9 @@ class World {
     // left and right are in level.js, on the walls
     this.enemySpawner = new _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__["default"](this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
 
-    while(this.hasCollisions(player.feet)) {
-        const minX = 0;
-        const maxX = this.width;
-
-        this.player.x = Math.floor(Math.random() * (200 - 900)) + 900;
-        this.player.y = Math.floor(Math.random() * (300 - 400)) + 400;
+    while (this.hasCollisions(player.feet)) {
+      this.player.x = Math.floor(Math.random() * (200 - 900)) + 900;
+      this.player.y = Math.floor(Math.random() * (300 - 400)) + 400;
     }
   }
 
@@ -1162,7 +1159,6 @@ class World {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (World);
-
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
