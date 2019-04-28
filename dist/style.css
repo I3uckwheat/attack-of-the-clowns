@@ -114,8 +114,20 @@ ul {
   /* position: absolute; */
 }
 
+#ui #health-label {
+  font-size: 20px;
+  font-family: 'Circus';
+  position: absolute;
+  left: 10px;
+  width: 30vw;
+  height: 30px;
+  line-height: 30px;
+  color: white;
+}
+
 #ui #player-health {
   position: absolute;
+  left: 140px;
   width: 30vw;
   height: 30px;
   border: 1px solid #891F14;
@@ -137,9 +149,22 @@ ul {
   z-index: 100;
 }
 
+#ui #strength-label {
+  font-size: 20px;
+  font-family: 'Circus';
+  position: absolute;
+  top: 32px;
+  left: 10px;
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  color: white;
+}
+
 #ui #player-strength {
   position: absolute;
   top: 32px;
+  left: 140px;
   width: 30vw;
   height: 30px;
   border: 1px solid #F7911E;
@@ -162,6 +187,8 @@ ul {
 }
 
 #ui #score-container {
+  font-size: 20px;
+  font-family: 'Circus';
   position: absolute;
   right: 20px;
   color: white;
