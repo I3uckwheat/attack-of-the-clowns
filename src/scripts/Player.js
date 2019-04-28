@@ -8,9 +8,7 @@ class Player extends Character {
     this.healDelayIterations = 0;
 
     setInterval(() => {
-      console.log('heal attempt');
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-      console.log('heal');
         this.health += 5;
         this.healthChanged();
       }

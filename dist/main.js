@@ -1159,9 +1159,7 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.healDelayIterations = 0;
 
     setInterval(() => {
-      console.log('heal attempt');
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-      console.log('heal');
         this.health += 5;
         this.healthChanged();
       }
