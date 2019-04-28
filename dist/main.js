@@ -1289,14 +1289,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Entity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Entity */ "./src/scripts/Entity.js");
 
 
-/* harmony default export */ __webpack_exports__["default"] = ([
-  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](600, 450, 67, 50, 'box'),
-  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](200, 350, 67, 50, 'box'),
-  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](400, 350, 67, 50, 'box'),
-  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](230, 680, 67, 50, 'box'),
-  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](-900, 287, 13, 600, 'barrier'),
-  new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](1900, 287, 13, 553, 'barrier')
-]);
+const left = -900;
+const width = 2800;
+
+const top = 297;
+const height = 760;
+
+const amountOfObjects = 20;
+
+const levelObjects = [];
+
+// Left and right walls
+levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](left, top, 13, height, 'barrier'))
+levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](left + width, top, 13, height, 'barrier'))
+
+
+for(let i = 0; i < amountOfObjects; i++) {
+  const x = Math.floor(Math.random() * (left - width - 80)) + width - 80;
+  const y = Math.floor(Math.random() * (top - height)) + height;
+
+  levelObjects.push(new _Entity__WEBPACK_IMPORTED_MODULE_0__["default"](x, y, 67, 50, 'box'));
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (levelObjects);
 
 /***/ })
 
