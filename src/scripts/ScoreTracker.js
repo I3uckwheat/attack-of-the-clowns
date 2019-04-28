@@ -51,7 +51,7 @@ class ScoreTracker {
       return firstEl.score < secondEl.score;
     });
 
-    this.savedScores = this.savedScores.slice(0, 2);
+    this.savedScores = this.savedScores.slice(0, 5);
 
     localStorage.setItem('scores', JSON.stringify(this.savedScores));
   }
