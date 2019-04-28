@@ -8,6 +8,7 @@ class Enemy extends Character {
     this.y = y;
     this.footHeight = 38;
     this.speed = 2;
+    this.strength = 35;
     this.directionBias;
 
     this.preparingToAttack = false;
