@@ -1,8 +1,8 @@
 import Enemy from "./Enemy";
 
 class EnemySpawner {
-  constructor(world, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
-    this.world = world;
+  constructor(game, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
+    this.game = game;
     this.player = player;
     this.viewWidth = viewWidth;
     this.leftBoundary = leftBoundary;
@@ -38,7 +38,7 @@ class EnemySpawner {
         x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
         y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
         enemy = new Enemy(x, y)
-      } while (this.world.hasCollisions(enemy.feet) || this.world.isColliding(this.player.feet, enemy.feet));
+      } while (this.game.hasCollisions(enemy.feet) || this.game.isColliding(this.player.feet, enemy.feet));
 
       this.queue.push(enemy);
     }

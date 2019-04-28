@@ -470,8 +470,10 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.direction = 'right';
 
     this.health = 100;
-    this.strength = 90;
+    this.strength = 55;
     this.dead = false;
+
+    this.attackCooldown = 700;
 
     if (process.env.DEVELOPMENT) {
       this.footbox = document.createElement('div');
@@ -539,7 +541,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
       this.attacking = false;
       setTimeout(() => {
         this.attackCoolingDown = false;
-      }, 700);
+      }, this.attackCooldown);
     });
 
     return result;
@@ -676,11 +678,7 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.preparingToAttack = false;
     this.preparingToAttackTimeout = null;
 
-    this.strength = 90;
-
-    // This is so the AI can move away from being stuck on things if they aren't moving
-    this.xBias = ['up', 'down'][Math.floor(Math.random() * 2)];
-    this.yBias = ['left', 'right'][Math.floor(Math.random() * 2)];
+    this.strength = Math.floor(Math.random() * 20) + 28;
   }
 
   attack(player) {
@@ -735,8 +733,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class EnemySpawner {
-  constructor(world, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
-    this.world = world;
+  constructor(game, player, viewWidth, leftBoundary, rightBoundary, topBoundary, bottomBoundary) {
+    this.game = game;
     this.player = player;
     this.viewWidth = viewWidth;
     this.leftBoundary = leftBoundary;
@@ -772,7 +770,7 @@ class EnemySpawner {
         x = Math.floor(Math.random() * (this.leftBoundary - this.rightBoundary)) + this.rightBoundary;
         y = Math.floor(Math.random() * (this.topBoundary - this.bottomBoundary)) + this.bottomBoundary;
         enemy = new _Enemy__WEBPACK_IMPORTED_MODULE_0__["default"](x, y)
-      } while (this.world.hasCollisions(enemy.feet) || this.world.isColliding(this.player.feet, enemy.feet));
+      } while (this.game.hasCollisions(enemy.feet) || this.game.isColliding(this.player.feet, enemy.feet));
 
       this.queue.push(enemy);
     }
@@ -1158,6 +1156,8 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
     this.healDelayIterations = 0;
+
+    this.attackCooldown = 100;
 
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
