@@ -41,8 +41,8 @@ class World {
         const minX = 0;
         const maxX = this.width;
 
-        this.player.x = Math.floor(Math.random() * (minX - maxX)) + maxX;
-        this.player.y = Math.floor(Math.random() * (0 - this.height)) + this.height;
+        this.player.x = Math.floor(Math.random() * (200 - 900)) + 900;
+        this.player.y = Math.floor(Math.random() * (300 - 400)) + 400;
     }
   }
 
