@@ -306,7 +306,7 @@ const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
 const score = document.querySelector('#score');
-const restartButton = document.querySelector('#button-link');
+const restartButton = document.querySelector('#play-again');
 
 restartButton.addEventListener('click', event => {
   event.preventDefault();
@@ -621,6 +621,7 @@ class Controls {
 
     // Add event listeners for keys
     document.addEventListener('keydown', event => {
+      event.preventDefault();
       this.controlState[this.controls[event.code]] = 1;
       if (this.controlEvents.keydown[event.code]) {
         this.controlEvents.keydown[event.code].forEach(cb => cb());

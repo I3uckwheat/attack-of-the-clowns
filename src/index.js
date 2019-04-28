@@ -9,7 +9,7 @@ const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
 const score = document.querySelector('#score');
-const restartButton = document.querySelector('#button-link');
+const restartButton = document.querySelector('#play-again');
 
 restartButton.addEventListener('click', event => {
   event.preventDefault();

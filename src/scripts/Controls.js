@@ -14,6 +14,7 @@ class Controls {
 
     // Add event listeners for keys
     document.addEventListener('keydown', event => {
+      event.preventDefault();
       this.controlState[this.controls[event.code]] = 1;
       if (this.controlEvents.keydown[event.code]) {
         this.controlEvents.keydown[event.code].forEach(cb => cb());
