@@ -7,6 +7,8 @@ class Player extends Character {
     this.onHitCallbacks = [];
     this.healDelayIterations = 0;
 
+    this.attackCooldown = 100;
+
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
         this.health += 5;

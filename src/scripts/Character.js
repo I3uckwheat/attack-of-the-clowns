@@ -17,8 +17,10 @@ class Character extends Entity {
     this.direction = 'right';
 
     this.health = 100;
-    this.strength = 90;
+    this.strength = 55;
     this.dead = false;
+
+    this.attackCooldown = 700;
 
     if (process.env.DEVELOPMENT) {
       this.footbox = document.createElement('div');
@@ -86,7 +88,7 @@ class Character extends Entity {
       this.attacking = false;
       setTimeout(() => {
         this.attackCoolingDown = false;
-      }, 700);
+      }, this.attackCooldown);
     });
 
     return result;

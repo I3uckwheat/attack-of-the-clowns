@@ -13,7 +13,7 @@ class Enemy extends Character {
     this.preparingToAttack = false;
     this.preparingToAttackTimeout = null;
 
-    this.strength = 90;
+    this.strength = Math.floor(Math.random() * 20) + 28;
   }
 
   attack(player) {
