@@ -473,7 +473,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.strength = 90;
     this.dead = false;
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
     }
@@ -494,7 +494,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
       this.footbox.style.left = this.feet.x + 'px';
       this.footbox.style.top = this.feet.y + 'px';
@@ -507,6 +507,8 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
       misses: 0,
       kills: 0
     };
+
+    if (this.dead) return result;
 
     opponents.forEach(opponent => {
       if (!this.attackCoolingDown && !this.attacking) {
@@ -669,11 +671,16 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.y = y;
     this.footHeight = 38;
     this.speed = 2;
+    this.directionBias;
 
     this.preparingToAttack = false;
     this.preparingToAttackTimeout = null;
 
     this.strength = 90;
+
+    // This is so the AI can move away from being stuck on things if they aren't moving
+    this.xBias = ['up', 'down'][Math.floor(Math.random() * 2)];
+    this.yBias = ['left', 'right'][Math.floor(Math.random() * 2)];
   }
 
   attack(player) {
@@ -774,7 +781,7 @@ class EnemySpawner {
   startSpawnTimeout(amount) {
     return setTimeout(() => {
       if (this.shouldSpawn)  {
-        this.spawnAmount += .08;
+        this.spawnAmount += .02;
         this.addEnemiesToQueue(Math.floor(this.spawnAmount));
         this.startSpawnTimeout();
       }
@@ -815,7 +822,7 @@ __webpack_require__.r(__webpack_exports__);
     this.element.style.left = this.x;
     this.element.style.top = this.y;
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.hitbox = document.createElement('div');
       this.hitbox.style = `position: absolute; border: 1px solid blue; width: ${this.width}px; height: ${this.height}px`;
     }
@@ -857,7 +864,7 @@ __webpack_require__.r(__webpack_exports__);
     this.element.style.left = this.x + 'px';
     this.element.style.top = this.y + 'px';
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.hitbox.style.left = this.x + 'px';
       this.hitbox.style.top = this.y + 'px';
     }
@@ -891,8 +898,10 @@ class World {
     // Sets up player
     this.player = player;
     gameField.appendChild(player.element);
-    gameField.appendChild(player.footbox);
-    gameField.appendChild(player.hitbox);
+    if (process.env.DEVELOPMENT) {
+      gameField.appendChild(player.footbox);
+      gameField.appendChild(player.hitbox);
+    }
 
     this.width = 1366;
     this.height = 820;
@@ -1107,7 +1116,7 @@ class World {
 
     this.gameField.appendChild(object.element);
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.gameField.appendChild(object.hitbox);
       if (object.footbox) this.gameField.appendChild(object.footbox);
     }
@@ -1151,14 +1160,12 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.healDelayIterations = 0;
 
     setInterval(() => {
-      if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
+      if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
         this.health += 5;
         this.healthChanged();
       }
 
-      if(this.damageCoolingDownIterations > 0) {
-        this.damageCoolingDownIterations--;
-      }
+      this.healDelayIterations--;
     }, 1000)
   }
 

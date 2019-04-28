@@ -47,7 +47,7 @@ class EnemySpawner {
   startSpawnTimeout(amount) {
     return setTimeout(() => {
       if (this.shouldSpawn)  {
-        this.spawnAmount += .08;
+        this.spawnAmount += .02;
         this.addEnemiesToQueue(Math.floor(this.spawnAmount));
         this.startSpawnTimeout();
       }

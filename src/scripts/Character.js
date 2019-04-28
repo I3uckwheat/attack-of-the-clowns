@@ -20,7 +20,7 @@ class Character extends Entity {
     this.strength = 90;
     this.dead = false;
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
     }
@@ -41,7 +41,7 @@ class Character extends Entity {
     this.element.style.top = this.y - this.spriteOffsetY + 'px';
     this.element.style.zIndex = this.y;
 
-    if (process.env.DEVELOPMENT || true) {
+    if (process.env.DEVELOPMENT) {
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
       this.footbox.style.left = this.feet.x + 'px';
       this.footbox.style.top = this.feet.y + 'px';
@@ -54,6 +54,8 @@ class Character extends Entity {
       misses: 0,
       kills: 0
     };
+
+    if (this.dead) return result;
 
     opponents.forEach(opponent => {
       if (!this.attackCoolingDown && !this.attacking) {

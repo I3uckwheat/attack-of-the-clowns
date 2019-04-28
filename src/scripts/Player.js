@@ -8,14 +8,12 @@ class Player extends Character {
     this.healDelayIterations = 0;
 
     setInterval(() => {
-      if(this.health < 100 && !this.dead && this.damageCoolingDownIterations <= 0) {
+      if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
         this.health += 5;
         this.healthChanged();
       }
 
-      if(this.damageCoolingDownIterations > 0) {
-        this.damageCoolingDownIterations--;
-      }
+      this.healDelayIterations--;
     }, 1000)
   }
 
