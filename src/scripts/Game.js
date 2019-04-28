@@ -1,11 +1,30 @@
 import EnemySpawner from "./EnemySpawner";
+import level from "./level";
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
+    this.width = 1366;
+    this.height = 820;
+    this.xOffset = 0;
+    this.playAreaTop = 230; // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
+
     this.gameStopped = true;
 
     this.background = background;
     this.scoreTracker = scoreTracker;
+
+    this.playFieldObjects = [];
+    this.enemies = [];
+
+    // Sets up gamefield 
+    this.gameField = gameField;
+    this.gameField.style.height = this.height + 'px';
+    this.gameField.style.width = this.width + 'px';
+
+    level.forEach(entity => {
+      this.registerObject(entity);
+    })
 
     // Sets up player
     this.player = player;
@@ -15,24 +34,16 @@ class World {
       gameField.appendChild(player.hitbox);
     }
 
-    this.width = 1366;
-    this.height = 820;
-
-    this.xOffset = 0;
-
-    this.playAreaTop = 230; // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
-
-    // Sets up gamefield 
-    this.gameField = gameField;
-    this.gameField.style.height = this.height + 'px';
-    this.gameField.style.width = this.width + 'px';
-
-    this.playFieldObjects = [];
-    this.enemies = [];
-
     // left and right are in level.js, on the walls
     this.enemySpawner = new EnemySpawner(this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
+
+    while(this.hasCollisions(player.feet)) {
+        const minX = 0;
+        const maxX = this.width;
+
+        this.player.x = Math.floor(Math.random() * (minX - maxX)) + maxX;
+        this.player.y = Math.floor(Math.random() * (0 - this.height)) + this.height;
+    }
   }
 
   start() {

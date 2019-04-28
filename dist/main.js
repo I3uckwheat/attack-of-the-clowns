@@ -294,9 +294,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./scripts/Controls */ "./src/scripts/Controls.js");
 /* harmony import */ var _scripts_Player__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./scripts/Player */ "./src/scripts/Player.js");
 /* harmony import */ var _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./scripts/ScoreTracker */ "./src/scripts/ScoreTracker.js");
-/* harmony import */ var _scripts_level__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/level */ "./src/scripts/level.js");
-/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
-
+/* harmony import */ var _scripts_Background__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./scripts/Background */ "./src/scripts/Background.js");
 
 
 
@@ -326,7 +324,6 @@ function initialize() {
     game.stop();
 
     scoreTracker.saveScore();
-    console.log('game over');
     document.getElementById("end-overlay").style.display = "grid";
   })
 
@@ -344,10 +341,7 @@ function initialize() {
   controls.addEvent('keyup', 'KeyW', () => player.endAnimations('walking'));
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
-  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_5__["default"], scoreTracker);
-  _scripts_level__WEBPACK_IMPORTED_MODULE_4__["default"].forEach(entity => {
-    game.registerObject(entity);
-  })
+  game = new _scripts_Game__WEBPACK_IMPORTED_MODULE_0__["default"](gameField, player, _scripts_Background__WEBPACK_IMPORTED_MODULE_4__["default"], scoreTracker);
 
   // changes gamestate and removed overlay
   const startButton = document.querySelector('#startbutton')
@@ -887,14 +881,34 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EnemySpawner */ "./src/scripts/EnemySpawner.js");
+/* harmony import */ var _level__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./level */ "./src/scripts/level.js");
+
 
 
 class World {
   constructor(gameField, player, background, scoreTracker) {
+    this.width = 1366;
+    this.height = 820;
+    this.xOffset = 0;
+    this.playAreaTop = 230; // Top of walkable area
+    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
+
     this.gameStopped = true;
 
     this.background = background;
     this.scoreTracker = scoreTracker;
+
+    this.playFieldObjects = [];
+    this.enemies = [];
+
+    // Sets up gamefield 
+    this.gameField = gameField;
+    this.gameField.style.height = this.height + 'px';
+    this.gameField.style.width = this.width + 'px';
+
+    _level__WEBPACK_IMPORTED_MODULE_1__["default"].forEach(entity => {
+      this.registerObject(entity);
+    })
 
     // Sets up player
     this.player = player;
@@ -904,24 +918,16 @@ class World {
       gameField.appendChild(player.hitbox);
     }
 
-    this.width = 1366;
-    this.height = 820;
-
-    this.xOffset = 0;
-
-    this.playAreaTop = 230; // Top of walkable area
-    this.playAreaBottom = this.playAreaTop + 458; // Bottom of walkable area
-
-    // Sets up gamefield 
-    this.gameField = gameField;
-    this.gameField.style.height = this.height + 'px';
-    this.gameField.style.width = this.width + 'px';
-
-    this.playFieldObjects = [];
-    this.enemies = [];
-
     // left and right are in level.js, on the walls
     this.enemySpawner = new _EnemySpawner__WEBPACK_IMPORTED_MODULE_0__["default"](this, this.player, this.width, -900, 1900, this.playAreaTop, this.playAreaBottom);
+
+    while(this.hasCollisions(player.feet)) {
+        const minX = 0;
+        const maxX = this.width;
+
+        this.player.x = Math.floor(Math.random() * (minX - maxX)) + maxX;
+        this.player.y = Math.floor(Math.random() * (0 - this.height)) + this.height;
+    }
   }
 
   start() {

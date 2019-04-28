@@ -3,7 +3,6 @@ import Controls from "./scripts/Controls";
 import Player from "./scripts/Player";
 import ScoreTracker from "./scripts/ScoreTracker";
 
-import level from "./scripts/level";
 import background from "./scripts/Background";
 
 const gameField = document.querySelector('#game');
@@ -28,7 +27,6 @@ function initialize() {
     game.stop();
 
     scoreTracker.saveScore();
-    console.log('game over');
     document.getElementById("end-overlay").style.display = "grid";
   })
 
@@ -47,9 +45,6 @@ function initialize() {
   controls.addEvent('keyup', 'KeyS', () => player.endAnimations('walking'));
 
   game = new Game(gameField, player, background, scoreTracker);
-  level.forEach(entity => {
-    game.registerObject(entity);
-  })
 
   // changes gamestate and removed overlay
   const startButton = document.querySelector('#startbutton')
