@@ -2,7 +2,7 @@ import Entity from "./Entity";
 
 class Character extends Entity {
   constructor(spriteClass) {
-    super(300, 400, 55, 136, spriteClass);
+    super(450, 400, 55, 136, spriteClass);
 
     this.spriteOffsetX = 72;
     this.spriteOffsetY = 64;
