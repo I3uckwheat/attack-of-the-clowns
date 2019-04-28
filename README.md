@@ -12,14 +12,9 @@ Using a random game concept generator, our team got the following concept:
 > "An action game where you beat up clowns just because."
 
 ### Game functionality
- - Looping side-scroller game
- - Different clowns with different attacks
- - Ability to move and attack
+ - Beat-em-up
+ - randomly spawned clowns
  
-### Random aspects of game play
- - random clown NPCs
- - random items/obstacles
-
 ## Developing
 1. Clone the repository
 1. run `npm i`
