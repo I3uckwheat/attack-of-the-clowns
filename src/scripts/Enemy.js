@@ -14,10 +14,6 @@ class Enemy extends Character {
     this.preparingToAttackTimeout = null;
 
     this.strength = 90;
-
-    // This is so the AI can move away from being stuck on things if they aren't moving
-    this.xBias = ['up', 'down'][Math.floor(Math.random() * 2)];
-    this.yBias = ['left', 'right'][Math.floor(Math.random() * 2)];
   }
 
   attack(player) {
