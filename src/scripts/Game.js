@@ -4,7 +4,7 @@ import level from "./level";
 class World {
   constructor(gameField, player, background, scoreTracker) {
     this.width = 1360;
-    this.height = 768;
+    this.height = 707;
     this.xOffset = 0;
     this.playAreaTop = 230; // Top of walkable area
     this.playAreaBottom = this.playAreaTop + 348; // Bottom of walkable area
