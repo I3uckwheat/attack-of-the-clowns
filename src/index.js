@@ -45,6 +45,7 @@ function initialize() {
 
     scoreTracker.saveScore();
     document.getElementById("end-overlay").style.display = "grid";
+    document.getElementById("current-score").innerText = "SCORE: " + scoreTracker.currentScore;
   })
 
   player.onHealthChange(health => {

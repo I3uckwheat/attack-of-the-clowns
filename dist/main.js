@@ -342,6 +342,7 @@ function initialize() {
 
     scoreTracker.saveScore();
     document.getElementById("end-overlay").style.display = "grid";
+    document.getElementById("current-score").innerText = "SCORE: " + scoreTracker.currentScore;
   })
 
   player.onHealthChange(health => {
@@ -1289,7 +1290,7 @@ class ScoreTracker {
       return firstEl.score < secondEl.score;
     });
 
-    this.savedScores = this.savedScores.slice(0, 2);
+    this.savedScores = this.savedScores.slice(0, 5);
 
     localStorage.setItem('scores', JSON.stringify(this.savedScores));
   }
