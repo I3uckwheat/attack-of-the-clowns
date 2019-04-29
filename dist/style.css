@@ -397,3 +397,11 @@ ul {
     color: white;
     text-decoration: none;
   }
+
+  @media (max-width: 1024px) {
+    body {
+      zoom: .7;
+      -moz-transform: scale(.7);
+      -moz-transform-origin: 0 0;
+    }
+  }
