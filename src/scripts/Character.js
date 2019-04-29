@@ -50,7 +50,7 @@ class Character extends Entity {
     }
   }
 
-  attack(opponents) {
+  attack(opponents, animationClass) {
     let result = {
       hits: 0,
       misses: 0,
@@ -85,7 +85,7 @@ class Character extends Entity {
     this.attackCoolingDown = true;
     this.attacking = true;
 
-    this.runAnimation('punch', () => {
+    this.runAnimation(animationClass, () => {
       this.attacking = false;
       setTimeout(() => {
         this.attackCoolingDown = false;

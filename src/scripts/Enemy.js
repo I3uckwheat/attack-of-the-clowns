@@ -26,7 +26,11 @@ class Enemy extends Character {
 
       this.preparingToAttackTimeout = setTimeout(() => {
         this.preparingToAttack = false;
-        super.attack([player]);
+        if (player.dead){
+          super.attack([player], 'kick');
+        } else {
+        super.attack([player], 'punch');
+        }
       }, randomAttackTime);
     }
   }

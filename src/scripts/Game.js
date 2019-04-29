@@ -170,7 +170,7 @@ class World {
 
   playerAttack() {
     if (!this.player.attacking && !this.player.attackCoolingDown) {
-      const result = this.player.attack(this.enemies);
+      const result = this.player.attack(this.enemies,'punch');
       if (result.kills > 0) {
         this.cleanUpDead();
         this.scoreTracker.killedEnemy(result.kills);

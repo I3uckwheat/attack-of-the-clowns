@@ -241,12 +241,21 @@ ul {
 }
 
 .punch {
-  animation: punch 0.5s steps(2, end) 1;
+  animation: punch 0.5s steps(1, end) 1;
 }
 
 @keyframes punch {
   0% { background-position: -580px 50%; }
   100% { background-position: -1020px 50%; }
+}
+
+.kick {
+  animation: kick 0.5s steps(1, end) 1;
+}
+
+@keyframes kick {
+  0% { background-position: 0px 50%; }
+  100% { background-position: 1000px 50%; }
 }
 
 .takeHit {
