@@ -20,7 +20,7 @@ body {
   z-index: 5000;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   grid-template-areas: 
     "title title title"
     ". startbutton ."
@@ -354,7 +354,7 @@ ul {
   z-index: 5000;
   display: none;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   grid-template-areas: 
     "game-over game-over game-over"
     "current-score current-score current-score"
