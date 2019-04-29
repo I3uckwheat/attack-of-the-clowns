@@ -24,7 +24,7 @@ body {
   grid-template-areas: 
     "title title title"
     ". startbutton ."
-    "controls . .";
+    "controls . hi-scores"
 }
 
 #title {
@@ -100,6 +100,18 @@ body {
 }
 
 #controls-title {
+  font-size: 40px;
+  color: #939598;
+}
+
+#hi-scores {
+  grid-area: hi-scores;
+  font-family: 'Circus';
+  align-self: start;
+  justify-self: start;
+}
+
+#hi-scores-title {
   font-size: 40px;
   color: #939598;
 }
@@ -342,7 +354,7 @@ ul {
   z-index: 5000;
   display: none;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   grid-template-areas: 
     "game-over game-over game-over"
     "current-score current-score current-score"

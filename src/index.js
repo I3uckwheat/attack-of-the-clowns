@@ -12,6 +12,7 @@ const strengthBar = document.querySelector('#player-strength div');
 const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
+const hi_scores = document.querySelector('#hi-scores-list');
 
 restartButton.addEventListener('click', event => {
   event.preventDefault();
@@ -39,6 +40,16 @@ let gameState = 0;
 function initialize() {
   player = new Player();
 
+  scoreTracker = new ScoreTracker();
+  
+  for (let i = 0; i < scoreTracker.savedScores.length; i++ ) {
+      let item = document.createElement("li");
+      item.innerHTML = scoreTracker.savedScores[i].score;
+      hi_scores.appendChild(item);
+  }
+
+  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
+
   // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
     game.stop();
@@ -52,9 +63,6 @@ function initialize() {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
-
-  scoreTracker = new ScoreTracker();
-  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
