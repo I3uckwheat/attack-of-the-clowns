@@ -6,21 +6,19 @@ class Player extends Character {
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
     this.healDelayIterations = 0;
-
+    this.rageDuration = 5;
+    this.rageMode = false; 
     this.attackCooldown = 100;
-
-    setInterval(() => {
-      (this.strength - 1 >= 50) ? this.strength-- : this.strength = 50;
-    }, 5000)
-
+    
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-        (this.strength - 5 >= 50) ? this.strength -= 5 : this.strength = 50;
         (this.health + 5 <= 100) ? this.health += 5 : this.health = 100;
         this.healthChanged();
+      } else if (this.strength < 100) {
+        (this.strength - 1 > 50) ? this.strength-- : this.strength = 50;
       }
       this.healDelayIterations--;
-    }, 1000)
+    }, 2000)
   }
 
   die() {
