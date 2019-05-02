@@ -836,7 +836,7 @@ class EnemySpawner {
     }
   }
 
-  startSpawnTimeout(amount) {
+  startSpawnTimeout() {
     return setTimeout(() => {
       if (this.shouldSpawn)  {
         this.spawnAmount += .02;
