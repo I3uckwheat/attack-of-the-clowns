@@ -231,16 +231,6 @@ ul {
   height: 200px;
 }
 
-.hasHammer {
-  position: absolute;
-  background: url("assets/ringLeaderHammerSpriteSheet.png");
-  z-index: 500;
-  transform: scaleX(-1);
-  background-position: -800px;
-  width: 200px;
-  height: 200px;
-}
-
 .clown {
 	position: absolute;
   background: url("assets/clownSpriteSheet.png");
@@ -261,7 +251,7 @@ ul {
 }
 
 .hammer {
-  animation: hammer .5s steps(3, end) 1;
+  animation: hammer .5s steps(3, end) infinite;
 }
 
 @keyframes hammer {

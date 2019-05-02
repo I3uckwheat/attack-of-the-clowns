@@ -13,11 +13,6 @@ class Player extends Character {
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
         (this.health + 5 <= 100) ? this.health += 5 : this.health = 100;
-        
-        if (this.element.classList.contains('hasHammer')){
-          this.element.classList.remove('hasHammer');
-        }
-        
         this.healthChanged();
       } else if (this.strength < 100) {
         (this.strength - 1 > 50) ? this.strength-- : this.strength = 50;
