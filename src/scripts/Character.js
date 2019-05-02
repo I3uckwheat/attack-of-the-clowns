@@ -22,6 +22,8 @@ class Character extends Entity {
 
     this.attackCooldown = 700;
 
+    this.soundPunch = document.querySelector('#sound-punch');
+
     if (process.env.DEVELOPMENT) {
       this.footbox = document.createElement('div');
       this.footbox.style = `position: absolute; border: 1px solid green; width: ${this.feet.width}px; height: ${this.feet.height}px`;
@@ -97,6 +99,7 @@ class Character extends Entity {
 
   takeHit(damage) {
     const oldHealth = this.health;
+    this.soundPunch.play();
     this.health -= damage;
     if(this.health < 0) this.health = 0;
     if (oldHealth > 0 && this.health <= 0) {

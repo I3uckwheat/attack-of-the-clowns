@@ -418,6 +418,10 @@ ul {
     text-decoration: none;
   }
 
+  audio {
+    display: none;
+  }
+
   @media (max-width: 1024px) {
     body {
       zoom: .7;
