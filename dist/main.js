@@ -309,6 +309,7 @@ const strengthBar = document.querySelector('#player-strength div');
 const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
+const hi_scores = document.querySelector('#hi-scores-list');
 
 restartButton.addEventListener('click', event => {
   event.preventDefault();
@@ -336,21 +337,28 @@ let gameState = 0;
 function initialize() {
   player = new _scripts_Player__WEBPACK_IMPORTED_MODULE_2__["default"]();
 
+  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__["default"]();
+  
+  for (let i = 0; i < scoreTracker.savedScores.length; i++ ) {
+      let item = document.createElement("li");
+      item.innerHTML = scoreTracker.savedScores[i].score;
+      hi_scores.appendChild(item);
+  }
+
+  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
+
   // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
     game.stop();
 
-    scoreTracker.saveScore();
     document.getElementById("end-overlay").style.display = "grid";
+    document.getElementById("current-score").innerText = "SCORE: " + scoreTracker.currentScore;
   })
 
   player.onHealthChange(health => {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
-
-  scoreTracker = new _scripts_ScoreTracker__WEBPACK_IMPORTED_MODULE_3__["default"]();
-  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
   controls = new _scripts_Controls__WEBPACK_IMPORTED_MODULE_1__["default"]({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -1289,7 +1297,7 @@ class ScoreTracker {
       return firstEl.score < secondEl.score;
     });
 
-    this.savedScores = this.savedScores.slice(0, 2);
+    this.savedScores = this.savedScores.slice(0, 5);
 
     localStorage.setItem('scores', JSON.stringify(this.savedScores));
   }
