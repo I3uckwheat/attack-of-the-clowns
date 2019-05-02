@@ -12,6 +12,9 @@ const strengthBar = document.querySelector('#player-strength div');
 const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
+const hi_scores = document.querySelector('#hi-scores-list');
+const bgMusic = document.querySelector('#bgMusic');
+const soundRage = document.querySelector('#sound-rage');
 
 restartButton.addEventListener('click', event => {
   event.preventDefault();
@@ -22,6 +25,7 @@ restartButton.addEventListener('click', event => {
 const startButton = document.querySelector('#startbutton')
 
 startButton.addEventListener('click', () => {
+  bgMusic.play();
   gameState = 1
   document.getElementById("start-overlay").style.display = "none";
   game.start();
@@ -33,27 +37,38 @@ let game;
 let controls;
 let scoreTracker;
 
+// set timer for rage duration
+let rageTimer;
+let rageElapsedTime = 0;
+
 // game will run  
 let gameState = 0;
 
 function initialize() {
   player = new Player();
 
+  scoreTracker = new ScoreTracker();
+  
+  for (let i = 0; i < scoreTracker.savedScores.length; i++ ) {
+      let item = document.createElement("li");
+      item.innerHTML = scoreTracker.savedScores[i].score;
+      hi_scores.appendChild(item);
+  }
+
+  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
+
   // This can be used to change game state and such too. Also trigger game over screen
   player.onDeath(() => {
     game.stop();
 
-    scoreTracker.saveScore();
     document.getElementById("end-overlay").style.display = "grid";
+    document.getElementById("current-score").innerText = "SCORE: " + scoreTracker.currentScore;
   })
 
   player.onHealthChange(health => {
     healthBar.style.width = health + '%';
     healthBarText.innerText = health;
   });
-
-  scoreTracker = new ScoreTracker();
-  scoreTracker.onScoreUpdate(newScore => {score.innerText = newScore});
 
   controls = new Controls({KeyW: 'up', KeyA: 'left', KeyS: 'down', KeyD: 'right', Space: 'attack'});
   controls.addEvent('keyup', 'KeyA', () => player.endAnimations('walking'));
@@ -67,7 +82,9 @@ function initialize() {
   requestAnimationFrame(tick);
 }
 
+
 function update() {
+
   if (gameState === 1) {
     if (controls.isPressed('attack')) {
       game.playerAttack();
@@ -84,13 +101,32 @@ function update() {
     if (controls.isPressed('right')) {
       game.movePlayer('right');
     }
-
+    
+    if (player.strength == 100 && player.rageMode == false) {
+      soundRage.play();
+      rageTimer = setInterval(() => { rageElapsedTime++; }, 1000);
+      strengthBarText.innerText = "RAGE MODE";
+      strengthBar.classList.add("glowing");
+      player.rageMode = true;
+    } else if (player.strength < 100) {
+      strengthBarText.innerText = player.strength + "/100";
+      strengthBar.classList.remove("glowing");
+    }
+  
     strengthBar.style.width = player.strength + '%';
-    strengthBarText.innerText = player.strength;
+    
+    if (rageElapsedTime >= player.rageDuration) {
+      clearInterval(rageTimer);
+      rageElapsedTime = 0;
+      player.strength = 50;
+      player.rageMode = false;
+    }
 
     game.update();
   }
 }
+
+
 
 function draw() {
   player.draw();
