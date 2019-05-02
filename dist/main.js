@@ -331,6 +331,10 @@ let game;
 let controls;
 let scoreTracker;
 
+// set timer for rage duration
+let rageTimer;
+let rageElapsedTime = 0;
+
 // game will run  
 let gameState = 0;
 
@@ -372,7 +376,9 @@ function initialize() {
   requestAnimationFrame(tick);
 }
 
+
 function update() {
+
   if (gameState === 1) {
     if (controls.isPressed('attack')) {
       game.playerAttack();
@@ -389,13 +395,32 @@ function update() {
     if (controls.isPressed('right')) {
       game.movePlayer('right');
     }
+    
+    if (player.strength == 100 && player.rageMode == false) {
+      rageTimer = setInterval(() => { rageElapsedTime++; }, 1000);
+      strengthBarText.innerText = "RAGE MODE";
+      strengthBar.classList.add("glowing");
+      player.rageMode = true;
+    } else if (player.strength < 100) {
+      strengthBarText.innerText = player.strength + "/100";
+      strengthBar.classList.remove("glowing");
+    }
+    console.log(rageElapsedTime);
 
     strengthBar.style.width = player.strength + '%';
-    strengthBarText.innerText = player.strength;
+    
+    if (rageElapsedTime >= player.rageDuration) {
+      clearInterval(rageTimer);
+      rageElapsedTime = 0;
+      player.strength = 50;
+      player.rageMode = false;
+    }
 
     game.update();
   }
 }
+
+
 
 function draw() {
   player.draw();
@@ -537,7 +562,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
           if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
             if(opponent.takeHit(this.strength) === 'killed') {
-              (this.strength + 10 <= 100) ? this.strength += 10 : this.strength = 100;
+              if (this.strength < 100) { this.strength = Math.min(this.strength + 10, 100) };
               result.kills++;
             } else {
               result.hits++;
@@ -1193,21 +1218,19 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.onDeathCallbacks = [];
     this.onHitCallbacks = [];
     this.healDelayIterations = 0;
-
+    this.rageDuration = 5;
+    this.rageMode = false; 
     this.attackCooldown = 100;
-
-    setInterval(() => {
-      (this.strength - 1 >= 50) ? this.strength-- : this.strength = 50;
-    }, 5000)
-
+    
     setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-        (this.strength - 5 >= 50) ? this.strength -= 5 : this.strength = 50;
         (this.health + 5 <= 100) ? this.health += 5 : this.health = 100;
         this.healthChanged();
+      } else if (this.strength < 100) {
+        (this.strength - 1 > 50) ? this.strength-- : this.strength = 50;
       }
       this.healDelayIterations--;
-    }, 1000)
+    }, 2000)
   }
 
   die() {

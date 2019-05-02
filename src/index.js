@@ -34,6 +34,10 @@ let game;
 let controls;
 let scoreTracker;
 
+// set timer for rage duration
+let rageTimer;
+let rageElapsedTime = 0;
+
 // game will run  
 let gameState = 0;
 
@@ -75,7 +79,9 @@ function initialize() {
   requestAnimationFrame(tick);
 }
 
+
 function update() {
+
   if (gameState === 1) {
     if (controls.isPressed('attack')) {
       game.playerAttack();
@@ -92,13 +98,32 @@ function update() {
     if (controls.isPressed('right')) {
       game.movePlayer('right');
     }
+    
+    if (player.strength == 100 && player.rageMode == false) {
+      rageTimer = setInterval(() => { rageElapsedTime++; }, 1000);
+      strengthBarText.innerText = "RAGE MODE";
+      strengthBar.classList.add("glowing");
+      player.rageMode = true;
+    } else if (player.strength < 100) {
+      strengthBarText.innerText = player.strength + "/100";
+      strengthBar.classList.remove("glowing");
+    }
+    console.log(rageElapsedTime);
 
     strengthBar.style.width = player.strength + '%';
-    strengthBarText.innerText = player.strength;
+    
+    if (rageElapsedTime >= player.rageDuration) {
+      clearInterval(rageTimer);
+      rageElapsedTime = 0;
+      player.strength = 50;
+      player.rageMode = false;
+    }
 
     game.update();
   }
 }
+
+
 
 function draw() {
   player.draw();

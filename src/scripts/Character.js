@@ -70,7 +70,7 @@ class Character extends Entity {
           if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
             (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
             if(opponent.takeHit(this.strength) === 'killed') {
-              (this.strength + 10 <= 100) ? this.strength += 10 : this.strength = 100;
+              if (this.strength < 100) { this.strength = Math.min(this.strength + 10, 100) };
               result.kills++;
             } else {
               result.hits++;
