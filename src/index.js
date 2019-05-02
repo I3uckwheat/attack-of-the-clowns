@@ -13,6 +13,8 @@ const strengthBarText = document.querySelector('#strength-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
 const hi_scores = document.querySelector('#hi-scores-list');
+const bgMusic = document.querySelector('#bgMusic');
+const soundRage = document.querySelector('#sound-rage');
 
 restartButton.addEventListener('click', event => {
   event.preventDefault();
@@ -23,6 +25,7 @@ restartButton.addEventListener('click', event => {
 const startButton = document.querySelector('#startbutton')
 
 startButton.addEventListener('click', () => {
+  bgMusic.play();
   gameState = 1
   document.getElementById("start-overlay").style.display = "none";
   game.start();
@@ -100,6 +103,7 @@ function update() {
     }
     
     if (player.strength == 100 && player.rageMode == false) {
+      soundRage.play();
       rageTimer = setInterval(() => { rageElapsedTime++; }, 1000);
       strengthBarText.innerText = "RAGE MODE";
       strengthBar.classList.add("glowing");
@@ -108,8 +112,7 @@ function update() {
       strengthBarText.innerText = player.strength + "/100";
       strengthBar.classList.remove("glowing");
     }
-    console.log(rageElapsedTime);
-
+  
     strengthBar.style.width = player.strength + '%';
     
     if (rageElapsedTime >= player.rageDuration) {
