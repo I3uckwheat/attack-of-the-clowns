@@ -470,13 +470,13 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
     this.speed = 9;
 
-    this.weapon = 'fist';
+    this.weapon = 'hammer';
     this.attackCoolingDown = false;
     this.attacking = false;
     this.direction = 'right';
 
     this.health = 100;
-    this.strength = 50;
+    this.strength = 100;
     this.dead = false;
 
     this.attackCooldown = 700;
@@ -518,6 +518,34 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
     if (this.dead) return result;
 
+    if (this.weapon === 'hammer' && !this.attackCoolingDown && !this.attacking) {
+      setTimeout( () => {
+
+        opponents.forEach(opponent => {
+
+          console.log("hammer");
+
+          // check distances and determine hits
+          if (opponent) {
+            const dx = this.x - opponent.x;
+            const dy = this.y - opponent.y;
+  
+            if ((Math.abs(dx) < 100 && Math.abs(dy) < 40) &&
+              (dx < 0 && this.direction === 'right' || dx > 0 && this.direction === 'left')) {
+              if(opponent.takeHit(this.strength) === 'killed') {
+                (this.strength + 10 <= 100) ? this.strength += 10 : this.strength = 100;
+                result.kills++;
+              } else {
+                result.hits++;
+              }
+            } else {
+              result.misses++;
+            }
+          }
+        
+      })}, 300);
+    } else {
+
     opponents.forEach(opponent => {
       if (!this.attackCoolingDown && !this.attacking) {
 
@@ -540,6 +568,23 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
         }
       }
     });
+  
+  }
+
+    if(this.strength === 100) {
+      this.weapon = 'hammer';
+      if (!(this.element.classList.contains('hasHammer'))){
+        this.element.classList.add('hasHammer');
+      }
+      animationClass = 'hammer';
+    } else {
+      this.weapon = 'fist';
+      if (this.element.classList.contains('hasHammer')){
+        this.element.classList.remove('hasHammer');
+      }
+      animationClass = 'punch';
+    }
+    
 
     this.attackCoolingDown = true;
     this.attacking = true;
@@ -1189,13 +1234,14 @@ class Player extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.attackCooldown = 100;
 
     setInterval(() => {
-      (this.strength - 1 >= 50) ? this.strength-- : this.strength = 50;
-    }, 5000)
-
-    setInterval(() => {
       if(this.health < 100 && !this.dead && this.healDelayIterations < 0) {
-        (this.strength - 5 >= 50) ? this.strength -= 5 : this.strength = 50;
+        (this.strength - 5 >= 10) ? this.strength -= 5 : this.strength = 10;
         (this.health + 5 <= 100) ? this.health += 5 : this.health = 100;
+        
+        if (this.element.classList.contains('hasHammer')){
+          this.element.classList.remove('hasHammer');
+        }
+        
         this.healthChanged();
       }
       this.healDelayIterations--;
