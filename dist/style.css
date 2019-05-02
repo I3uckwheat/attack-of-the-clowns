@@ -20,7 +20,7 @@ body {
   z-index: 5000;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   grid-template-areas: 
     "title title title"
     ". startbutton ."
@@ -161,7 +161,7 @@ ul {
   z-index: 100;
 }
 
-#ui #strength-label {
+#ui #rage-label {
   font-size: 20px;
   font-family: 'Circus';
   position: absolute;
@@ -173,7 +173,7 @@ ul {
   color: white;
 }
 
-#ui #player-strength {
+#ui #player-rage {
   position: absolute;
   top: 32px;
   left: 140px;
@@ -184,16 +184,16 @@ ul {
   color: white;
 }
 
-#ui #player-strength div {
+#ui #player-rage div {
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
-  width: 50%;
+  width: 0%;
   background: #F7911E;
 }
 
-#ui #player-strength p {
+#ui #player-rage p {
   position: relative;
   z-index: 100;
 }
@@ -374,7 +374,7 @@ ul {
   z-index: 5000;
   display: none;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   grid-template-areas: 
     "game-over game-over game-over"
     "current-score current-score current-score"

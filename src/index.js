@@ -8,8 +8,8 @@ import background from "./scripts/Background";
 const gameField = document.querySelector('#game');
 const healthBar = document.querySelector('#player-health div');
 const healthBarText = document.querySelector('#health-points');
-const strengthBar = document.querySelector('#player-strength div');
-const strengthBarText = document.querySelector('#strength-points');
+const rageBar = document.querySelector('#player-rage div');
+const rageBarText = document.querySelector('#rage-points');
 const score = document.querySelector('#score');
 const restartButton = document.querySelector('#play-again');
 const hi_scores = document.querySelector('#hi-scores-list');
@@ -102,22 +102,24 @@ function update() {
       game.movePlayer('right');
     }
     
-    if (player.strength == 100 && player.rageMode == false) {
+    if (player.rage == 100 && player.rageMode == false) {
       soundRage.play();
+      player.strength = 100;
       rageTimer = setInterval(() => { rageElapsedTime++; }, 1000);
-      strengthBarText.innerText = "RAGE MODE";
-      strengthBar.classList.add("glowing");
+      rageBarText.innerText = 'RAGE MODE';
+      rageBar.classList.add('glowing');
       player.rageMode = true;
-    } else if (player.strength < 100) {
-      strengthBarText.innerText = player.strength + "/100";
-      strengthBar.classList.remove("glowing");
+    } else if (player.rage < 100) {
+      rageBarText.innerText = player.rage + '/100';
+      rageBar.classList.remove('glowing');
     }
   
-    strengthBar.style.width = player.strength + '%';
+    rageBar.style.width = player.rage + '%';
     
     if (rageElapsedTime >= player.rageDuration) {
       clearInterval(rageTimer);
       rageElapsedTime = 0;
+      player.rage = 0;
       player.strength = 50;
       player.rageMode = false;
     }
