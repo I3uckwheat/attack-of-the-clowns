@@ -517,7 +517,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     }
   }
 
-  attack(opponents) {
+  attack(opponents, animationClass) {
     let result = {
       hits: 0,
       misses: 0,
@@ -552,7 +552,7 @@ class Character extends _Entity__WEBPACK_IMPORTED_MODULE_0__["default"] {
     this.attackCoolingDown = true;
     this.attacking = true;
 
-    this.runAnimation('punch', () => {
+    this.runAnimation(animationClass, () => {
       this.attacking = false;
       setTimeout(() => {
         this.attackCoolingDown = false;
@@ -708,7 +708,11 @@ class Enemy extends _Character__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
       this.preparingToAttackTimeout = setTimeout(() => {
         this.preparingToAttack = false;
-        super.attack([player]);
+        if (player.dead){
+          super.attack([player], 'kick');
+        } else {
+        super.attack([player], 'punch');
+        }
       }, randomAttackTime);
     }
   }
@@ -1078,7 +1082,7 @@ class World {
 
   playerAttack() {
     if (!this.player.attacking && !this.player.attackCoolingDown) {
-      const result = this.player.attack(this.enemies);
+      const result = this.player.attack(this.enemies,'punch');
       if (result.kills > 0) {
         this.cleanUpDead();
         this.scoreTracker.killedEnemy(result.kills);
