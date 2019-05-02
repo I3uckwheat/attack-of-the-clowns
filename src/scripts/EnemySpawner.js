@@ -16,7 +16,6 @@ class EnemySpawner {
     this.shouldSpawn = false;
     this.spawnedEnemies = 0;
     this.spawnAmount = 1;
-    
   }
 
   spawnQueue() {
