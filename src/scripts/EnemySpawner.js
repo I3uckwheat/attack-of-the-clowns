@@ -14,8 +14,6 @@ class EnemySpawner {
     this.nextSpawn = 3000;
     this.enemyAddTimeout;
     this.shouldSpawn = false;
-
-    this.startSpawnTimeout();
     this.spawnedEnemies = 0;
     this.spawnAmount = 1;
   }
@@ -47,7 +45,7 @@ class EnemySpawner {
     }
   }
 
-  startSpawnTimeout(amount) {
+  startSpawnTimeout() {
     return setTimeout(() => {
       if (this.shouldSpawn)  {
         this.spawnAmount += .02;
@@ -59,6 +57,7 @@ class EnemySpawner {
 
   startSpawning() {
     this.shouldSpawn = true;
+    this.startSpawnTimeout();
   }
 
   stopSpawning() {
